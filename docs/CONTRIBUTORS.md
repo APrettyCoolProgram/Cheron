@@ -1,6 +1,6 @@
 <div align="center">
 
-  <h1>Repository: Contributors</h1>
+  <h1>Cheron: Contributors</h1>
 
 </div>
 
