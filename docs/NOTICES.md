@@ -1,6 +1,6 @@
 <div align="center">
 
-  <h1>Repository: Notices</h1>
+  <h1>Cheron: Notices</h1>
 
 </div>
 

@@ -1,0 +1,39 @@
+﻿<!--
+    ====================================================================================================================
+        FILE: DungineSplash.xaml
+     PROJECT: Dungine (https://github.com/aprettycoolprogram/Dungine)
+     UPDATED: 4-1-2021-3:54 PM
+     AUTHORS: development@aprettycoolprogram.com
+     LICENSE: Apache v2 (https://apache.org/licenses/LICENSE-2.0)
+              © 2021 A Pretty Cool Program. All rights reserved.
+     ===================================================================================================================
+-->
+
+<Window x:Class="Dungine.Splash.DungineSplash"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:Dungine.Splash"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        Title="DungineSplash"
+        Width="270"
+        Height="300"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        mc:Ignorable="d">
+    <Grid>
+        <Image x:Name="imgDungineLogo"
+               Width="250"
+               Height="250"
+               Margin="10"
+               VerticalAlignment="top"
+               Source="/Resources/Dungine/Asset/Image/Logo/dungine-logo-250x250.png" />
+        <Label x:Name="lblDungineUrl"
+               Margin="10"
+               VerticalAlignment="bottom"
+               Content="https://github.com/APrettyCoolProgram/Dungine"
+               FontSize="11" />
+
+    </Grid>
+</Window>

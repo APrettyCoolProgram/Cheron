@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyVersion>0.1.21091.2003</AssemblyVersion>
+    <FileVersion>0.1.21091.2003</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\Dungine\Asset\Image\Logo\apcp-logo-250x250.png" />
+    <None Remove="Resources\Dungine\Asset\Image\Logo\cg-logo-250x250.png" />
+    <None Remove="Resources\Dungine\Asset\Image\Logo\crispy-logo-250x250.png" />
+    <None Remove="Resources\Dungine\Asset\Image\Logo\dungine-logo-250x250.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\Dungine\Asset\Image\Logo\apcp-logo-250x250.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Dungine\Asset\Image\Logo\cg-logo-250x250.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Dungine\Asset\Image\Logo\crispy-logo-250x250.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="Resources\Dungine\Asset\Image\Logo\dungine-logo-250x250.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\du\src\Du.csproj" />
+  </ItemGroup>
+
+</Project>

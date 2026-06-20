@@ -1,0 +1,101 @@
+{
+  "name": "Space Station Alpha",
+  "description": "You are aboard Space Station Alpha, orbiting a distant planet. Systems are failing and you need to find a way to restore power.",
+  "author": "TextGame Engine",
+  "version": "1.0.0",
+  "startingRoomId": "bridge",
+  "rooms": [
+    {
+      "id": "bridge",
+      "name": "Command Bridge",
+      "description": "The command bridge is dimly lit by emergency lights. Control panels flicker sporadically.",
+      "exits": {
+        "south": "corridor",
+        "west": "airlock"
+      },
+      "itemIds": ["tablet"]
+    },
+    {
+      "id": "corridor",
+      "name": "Main Corridor",
+      "description": "A long corridor connects the various sections of the station. Emergency lighting casts eerie shadows.",
+      "exits": {
+        "north": "bridge",
+        "east": "engineering",
+        "west": "medbay"
+      },
+      "itemIds": []
+    },
+    {
+      "id": "engineering",
+      "name": "Engineering Bay",
+      "description": "The heart of the station's systems. Diagnostic screens show critical failures across multiple systems.",
+      "exits": {
+        "west": "corridor"
+      },
+      "itemIds": ["wrench", "powercell", "console"]
+    },
+    {
+      "id": "medbay",
+      "name": "Medical Bay",
+      "description": "A sterile medical facility with several examination beds. Medical supplies are scattered about.",
+      "exits": {
+        "east": "corridor"
+      },
+      "itemIds": ["medkit"]
+    },
+    {
+      "id": "airlock",
+      "name": "Airlock Chamber",
+      "description": "The airlock chamber leading to the exterior of the station. Warning lights flash on the door control panel.",
+      "exits": {
+        "east": "bridge"
+      },
+      "itemIds": ["spacesuit"]
+    }
+  ],
+  "items": [
+    {
+      "id": "tablet",
+      "name": "tablet",
+      "description": "A portable data tablet with station schematics and system status information.",
+      "canTake": true,
+      "useDescription": "The tablet displays critical system alerts and a map of the station."
+    },
+    {
+      "id": "wrench",
+      "name": "wrench",
+      "description": "A heavy-duty magnetic wrench used for station repairs.",
+      "canTake": true,
+      "useDescription": "You tighten a few loose bolts with the wrench."
+    },
+    {
+      "id": "powercell",
+      "name": "powercell",
+      "description": "A fresh power cell that could restore systems to full functionality.",
+      "canTake": true,
+      "useDescription": "The power cell hums with energy as you activate it."
+    },
+    {
+      "id": "console",
+      "name": "console",
+      "description": "The main engineering console. It's powered down but looks intact.",
+      "canTake": false,
+      "useDescription": "The console requires a power cell to function."
+    },
+    {
+      "id": "medkit",
+      "name": "medkit",
+      "description": "A standard emergency medical kit containing bandages and basic medical supplies.",
+      "canTake": true,
+      "useDescription": "You apply some bandages from the medkit. You feel a bit better."
+    },
+    {
+      "id": "spacesuit",
+      "name": "spacesuit",
+      "description": "A full EVA spacesuit designed for extravehicular activities.",
+      "canTake": false,
+      "useDescription": "You put on the spacesuit. It seals with a hiss and the heads-up display activates."
+    }
+  ]
+}

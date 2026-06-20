@@ -1,0 +1,122 @@
+{
+  "name": "The Lost Temple",
+  "description": "Deep in the jungle, you've discovered the entrance to an ancient lost temple. Navigate its mysterious chambers and uncover its secrets.",
+  "author": "TextGame Engine",
+  "version": "1.0.0",
+  "startingRoomId": "jungle",
+  "rooms": [
+    {
+      "id": "jungle",
+      "name": "Jungle Clearing",
+      "description": "You stand in a small clearing surrounded by dense jungle. Vines hang from towering trees, and the air is thick with humidity. To the north, you see an ancient stone archway partially covered in moss.",
+      "exits": {
+        "north": "temple_entrance"
+      },
+      "itemIds": ["machete"]
+    },
+    {
+      "id": "temple_entrance",
+      "name": "Temple Entrance",
+      "description": "You enter through the stone archway into a grand entrance hall. Massive pillars line both sides, covered in ancient hieroglyphs. Dust motes dance in shafts of light from cracks in the ceiling.",
+      "exits": {
+        "south": "jungle",
+        "east": "treasure_room",
+        "west": "chamber_of_trials"
+      },
+      "itemIds": ["torch"]
+    },
+    {
+      "id": "chamber_of_trials",
+      "name": "Chamber of Trials",
+      "description": "This chamber is dominated by a large stone puzzle in the center. The walls are carved with scenes of ancient rituals. Strange symbols glow faintly in the darkness.",
+      "exits": {
+        "east": "temple_entrance",
+        "north": "inner_sanctum"
+      },
+      "itemIds": ["crystal", "puzzle"]
+    },
+    {
+      "id": "treasure_room",
+      "name": "Treasure Room",
+      "description": "Gold and precious gems are piled in every corner of this room! Ancient pottery and artifacts line stone shelves. This must be the temple's treasury.",
+      "exits": {
+        "west": "temple_entrance"
+      },
+      "itemIds": ["golden_idol", "emerald", "ancient_scroll"]
+    },
+    {
+      "id": "inner_sanctum",
+      "name": "Inner Sanctum",
+      "description": "The holiest chamber of the temple. A shaft of light illuminates an altar in the center. The air feels electric with ancient power.",
+      "exits": {
+        "south": "chamber_of_trials"
+      },
+      "itemIds": ["altar", "sacred_gem"]
+    }
+  ],
+  "items": [
+    {
+      "id": "machete",
+      "name": "machete",
+      "description": "A well-worn machete with a wooden handle. Perfect for cutting through jungle vegetation.",
+      "canTake": true,
+      "useDescription": "You swing the machete, clearing some vines from your path."
+    },
+    {
+      "id": "torch",
+      "name": "torch",
+      "description": "An unlit torch made of wood and wrapped cloth. It looks ancient but might still work.",
+      "canTake": true,
+      "useDescription": "You light the torch. Shadows dance on the walls as it flickers to life."
+    },
+    {
+      "id": "crystal",
+      "name": "crystal",
+      "description": "A clear crystal that seems to pulse with inner light. It's warm to the touch.",
+      "canTake": true,
+      "useDescription": "The crystal glows brighter, illuminating hidden passages and symbols."
+    },
+    {
+      "id": "puzzle",
+      "name": "puzzle",
+      "description": "A complex stone mechanism with rotating rings covered in symbols. It appears to be a locking mechanism.",
+      "canTake": false,
+      "useDescription": "You turn the rings, trying different combinations. The mechanism is still locked."
+    },
+    {
+      "id": "golden_idol",
+      "name": "idol",
+      "description": "A small golden idol depicting a jaguar deity. Its eyes are made of rubies.",
+      "canTake": true,
+      "useDescription": "You hold up the idol. It's surprisingly heavy and radiates an ancient power."
+    },
+    {
+      "id": "emerald",
+      "name": "emerald",
+      "description": "A massive emerald the size of your fist. It's flawless and incredibly valuable.",
+      "canTake": true,
+      "useDescription": "You admire the emerald's perfect clarity and deep green color."
+    },
+    {
+      "id": "ancient_scroll",
+      "name": "scroll",
+      "description": "A fragile scroll written in an ancient language. The ink has faded but you can make out some symbols.",
+      "canTake": true,
+      "useDescription": "You carefully unroll the scroll and study the mysterious symbols. They seem to describe a ritual."
+    },
+    {
+      "id": "altar",
+      "name": "altar",
+      "description": "A massive stone altar carved with intricate patterns. There's a depression in the center that looks like it could hold something.",
+      "canTake": false,
+      "useDescription": "You examine the altar closely. The depression seems to be the exact size of a gem or crystal."
+    },
+    {
+      "id": "sacred_gem",
+      "name": "gem",
+      "description": "A mystical gem resting on the altar. It glows with an otherworldly blue light.",
+      "canTake": true,
+      "useDescription": "As you touch the sacred gem, you feel a surge of energy. The temple seems to awaken!"
+    }
+  ]
+}

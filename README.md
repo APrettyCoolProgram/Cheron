@@ -1,122 +1,121 @@
 <!--
-  README.md for Repository -Template
-  R26.6
+  260619_code
+  260619_documentation
 -->
 
 <div align="center">
 
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset=".github/repository/logo/repository-logo-dark.jpg">
-    <source media="(prefers-color-scheme: light)" srcset=".github/repository/logo/repository-logo-light.jpg">
-    <img alt="Repository Template logo" src=".github/repository/logo/repository-logo-light.jpg">
+    <source media="(prefers-color-scheme: dark)" srcset=".github/repository/logo/CheronLogo-Trans-512x512.png">
+    <source media="(prefers-color-scheme: light)" srcset=".github/repository/logo/CheronLogo-Trans-512x512.png">
+    <img alt="Fallback image description" src=".github/repository/logo/CheronLogo-Trans-512x512.png">
   </picture>
 
-  <br>
+  ![RELEASE](https://img.shields.io/badge/release-26.6-teal)&nbsp;
+  ![STAGE](https://img.shields.io/badge/ALPHA-red)&nbsp; <!-- Alpha = Red, Beta = Yellow, Stable = Green -->
+  ![LICENSE](https://img.shields.io/badge/License-apache-blue)&nbsp;
+  ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)&nbsp;
 
-  ![RELEASE](https://img.shields.io/badge/Release-26.6-teal)&nbsp;&nbsp;
-  ![LICENSE](https://img.shields.io/badge/license-Apache%202.0-blue)
-
-# Repository Template
+  <h3>Game engine(s)</h3>
 
 </div>
 
-This repository is a reusable starting point for GitHub repositories. It collects a root README, alternate README
-templates, standard supporting documentation, and GitHub metadata so a new repository can start with a consistent 
-structure instead of an empty scaffold.
+---
 
-## Contents
+<h6 align="center">
 
-- [What this repository includes](#what-this-repository-includes)
-- [Using the template](#using-the-template)
-- [Repository layout](#repository-layout)
-- [Supporting documentation](#supporting-documentation)
+  [MANUAL](docs/man/README.md)&nbsp;&bull;&nbsp;[CHANGELOG](docs/CHANGELOG.md)&nbsp;&bull;&nbsp;[ROADMAP](docs/ROADMAP.md)&nbsp;&bull;&nbsp;[KNOWN ISSUES](docs/KNOWN-ISSUES.md)
+  
+</h6>
 
-## What this repository includes
+---
 
-- A root README for the template repository itself.
-- [README-REPO.md](README-REPO.md) as an alternate root README for this template repository.
-- [Collection-README.md](Collection-README.md) for collection-style repositories.
-- [SourceCode-README.md](SourceCode-README.md) for software or source-code repositories.
-- A [docs](docs) folder containing common repository documents including the changelog, roadmap, development
-  notes, testing, support, security guidance, FAQ, and troubleshooting guidance.
-- A [src](src) folder for source code organization.
-- A [.github](.github) folder for repository assets, workspace data, and repository-specific metadata.
+| CONTENTS                                    |
+|---------------------------------------------|
+| [About Cheron](#about-cheron) |
+| [How it works](#how-it-works)               |
+| [Getting started](#getting-started)         |
+| [Installing](#installing)                   |
+| [Usage](#usage)                             |
+| [Acknowledgements](#acknowledgements)       |
+| [Related projects](#related-projects)       |
+| [License](#license)                         |
 
-## Using the template
+---
 
-1. Create a new repository from this template, or copy the parts you want into an existing repository.
-2. Decide which README variant best matches the new repository:
-   - Use [Collection-README.md](Collection-README.md) for repositories that primarily collect links, notes, or
-     documentation.
-   - Use [SourceCode-README.md](SourceCode-README.md) for repositories that contain buildable software or other
-     source code.
-3. Copy the selected README template into the target repository as `README.md` and replace the placeholder text,
-   badges, links, screenshots, and release details.
-4. Review the files in [docs](docs) and remove any documents the new repository does not need.
-5. Update the repository assets under [.github/repository](.github/repository), especially the logo and README
-   screenshots, so the new repository branding matches the project.
-6. Add the `.do-not-commit/` folder to `.github/`
-7. Clean up any template-only content before publishing.
+## About Cheron
 
-## Repository layout
+Game engine(s)
 
-Your repository should look like this:
+<!--
+### Features
 
-```text
-.
-|-- .github/
-|   |-- archive/
-|   |-- copilot/
-|   |-- development/
-|   |   |-- old-src/
-|   |   |-- scratch/
-|   |   |-- working/
-|   |-- repository/
-|   |   |-- logo/
-|   |   |-- readme/
-|   |-- third-party/
-|   |-- workspace/
-|   |-- copilot-instructions.md
-|   
-|-- docs/
-|   |-- api/
-|   |-- man/
-|   |-- CHANGELOG.md
-|   |-- CODEOWNERS
-|   |-- CONTRIBUTORS.md
-|   |-- DEVELOPMENT.md
-|   |-- FAQ.md
-|   |-- KNOWN-ISSUES.md
-|   |-- NOTICES.md
-|   |-- ROADMAP.md
-|   |-- SECURITY.md
-|   |-- SUPPORT.md
-|   |-- TESTING.md
-|   |-- TROUBLESHOOTING.md
-|
-|-- src/
-|-- .gitignore
-|-- Collection-README.md
-|-- LICENSE
-|-- README.md
-|-- SourceCode-README.md
-```
+* Feature — What it does and why it matters.
+* Feature — What it does and why it matters.
+* Feature — What it does and why it matters.
 
-## Supporting documentation
+## How it works
 
-The [docs](docs) folder contains the following standard documents:
+A blurb describing how the project works at a high level.
 
-| File | Purpose |
-|------|---------|
-| [CHANGELOG.md](docs/CHANGELOG.md) | History of notable changes across releases. |
-| [CODEOWNERS](docs/CODEOWNERS) | GitHub code ownership assignments. |
-| [CONTRIBUTORS.md](docs/CONTRIBUTORS.md) | Acknowledgment of project contributors. |
-| [DEVELOPMENT.md](docs/DEVELOPMENT.md) | Developer setup, workflow, and contribution guidance. |
-| [FAQ.md](docs/FAQ.md) | Answers to frequently asked questions. |
-| [KNOWN-ISSUES.md](docs/KNOWN-ISSUES.md) | Documented known issues and workarounds. |
-| [NOTICES.md](docs/NOTICES.md) | Legal notices and third-party attributions. |
-| [ROADMAP.md](docs/ROADMAP.md) | Planned work and future direction. |
-| [SECURITY.md](docs/SECURITY.md) | Security policy and vulnerability reporting guidance. |
-| [SUPPORT.md](docs/SUPPORT.md) | How to get help and file issues. |
-| [TESTING.md](docs/TESTING.md) | Testing strategy and instructions. |
-| [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | Common problems and resolution steps. |
+## Getting started
+
+A quick overview of how to get started with the project.
+
+### Before you begin
+
+Any assumptions, or other information a user should know before
+
+### Requirements
+
+| Requirement | Minimum version | Notes |
+|-------------|-----------------|-------|
+| Requirement |                 |       |
+| Requirement |                 |       |
+| Requirement |                 |       |
+
+## Installing
+
+Quick summary of installation instructions, or link to the Installing documentation.
+
+## Usage
+
+Step-by-step instructions for using the project on supported platforms.
+
+## Documentation
+
+Documentation is available.
+
+## Acknowledgements
+
+None.
+
+## Built with
+
+* [Technology or framework](URL)  - Role it plays in the project.
+* [Technology or framework](URL)  - Role it plays in the project.
+* [Technology or framework](URL)  - Role it plays in the project.
+
+## Related projects
+
+None.
+
+## License
+
+Distributed under the [Apache 2.0 License](LICENSE).  
+Copyright &copy; 2026 [A Pretty Cool Program](https://github.com/APrettyCoolProgram)
+
+
+<h6 align="center">
+
+  [FAQ](docs/FAQ.md)&nbsp;&bull;&nbsp;[DEVELOPMENT](docs/DEVELOPMENT.md)&nbsp;&bull;&nbsp;[API](docs/api/README.md)&nbsp;&bull;&nbsp;[TESTING](docs/TESTING.md)&nbsp;&bull;&nbsp;[SUPPORT](docs/SUPPORT.md)&nbsp;&bull;&nbsp;[NOTICES](docs/NOTICES.md)
+
+</h6>
+
+<!-- ===================================================== [HORIZONTAL MENU] -->
+
+---
+
+<sub>Last updated: 260619</sub>
+
+-->

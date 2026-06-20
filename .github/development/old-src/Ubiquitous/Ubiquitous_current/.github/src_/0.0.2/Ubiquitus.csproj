@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    
+    <!-- Version Information -->
+    <Version>0.0.2</Version>
+    <AssemblyVersion>0.0.2.0</AssemblyVersion>
+    <FileVersion>0.0.2.0</FileVersion>
+    
+    <!-- Documentation -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+    
+    <!-- Optimization -->
+    <Optimize>true</Optimize>
+    <DebugType>embedded</DebugType>
+    
+    <!-- Disable auto-generation of assembly info attributes -->
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="AppData\Documentation\Generated\" />
+    <Folder Include="Cartridge\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="AppData\Image\Logo\ubiquitus-splash_512x512.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="GameLibrary\TextGame\TextGame.csproj" />
+  </ItemGroup>
+
+</Project>

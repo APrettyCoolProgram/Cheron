@@ -1,0 +1,77 @@
+﻿================
+THE CARDS
+ROADMAP
+NOVEMBER 23,2015
+================
+
+01.00.00.YYMMDD : RELEASE
+-------------------------
+* Release
+
+00.91.00.YYMMDD - 00.99.00.YYMMDD : RELEASE CANDIDATES
+------------------------------------------------------
+* Feature complete, bug fixes
+
+00.01.00.YYMMDD - 00.90.00.YYMMDD : PUBLIC DEVELOPMENT
+------------------------------------------------------
+* TBD
+
+00.00.51.YYMMDD - 00.00.99.YYMMDD : PUBLIC BETA
+----------------------------------------
+* Cleanup and polish of View and Collection functionality
+
+00.00.01.YYMMDD - 00.00.50.YYMMDD : PRIVATE BETA
+----------------------------------------
+* Viewer and Collection functionality stable
+
+00.00.00.150826 - 00.00.00.YYMMDD : PRIVATE ALPHA
+-----------------------------------------
+* Basic framework for Viewer functionality
+
+
+
+
+This is the old roadmap, and will be removed prior to public release
+--------------------------------------------------------------------
+
+
+1.00        : Release
+
+0.90 - 0.99 : Release Candidates
+
+	   0.99 : Bugs
+
+	   0.98 : Polish
+
+	   0.97 : Viewer RC3 / Collection RC3 / Builder RC3 / Player RC3 / UI RC7   
+		
+	   0.96 : Player RC2 / UI RC6
+		
+	   0.95 : Viewer RC2 / Collection RC2 / Builder RC2 / UI RC5
+		
+	   0.94 : Player RC1 / UI RC4
+		
+	   0.93 : Builder RC1 / UI RC3
+		
+	   0.92 : Collection RC1 / UI RC2	
+		
+	   0.91 : Viewer RC1 / UI RC1
+
+0.80 - 0.90 : Player B3 / UI B5
+
+0.70 - 0.80 : Viewer B2 / Collection B2 / Builder B2 / UI B4
+
+0.60 - 0.70 : Player B2 / UI B3 (January 2015)
+
+0.50 - 0.60 : Builder B1 / Player B1 / UI B2
+
+0.41 - 0.50 : Viewer B1 / Collection B1 / UI B1
+
+0.31 - 0.40 : Player A0 / UI A4
+
+0.21 - 0.30 : Builder A0 / UI A3
+
+0.11 - 0.20 : Collection A0 / UI A2
+
+0.00 - 0.10 : Viewer A0 / UI A1
+

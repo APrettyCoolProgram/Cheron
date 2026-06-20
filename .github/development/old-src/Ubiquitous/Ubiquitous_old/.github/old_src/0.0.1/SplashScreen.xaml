@@ -1,0 +1,18 @@
+<Window
+    x:Class="Ubiquitus.SplashScreen"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Width="512"
+    Height="512"
+    AllowsTransparency="True"
+    Background="Transparent"
+    ResizeMode="NoResize"
+    WindowStartupLocation="CenterScreen"
+    WindowStyle="None">
+    <Grid>
+        <Image
+            RenderOptions.BitmapScalingMode="HighQuality"
+            Source="AppData/Image/Logo/ubiquitus-v1_1024x1024.png"
+            Stretch="Uniform" />
+    </Grid>
+</Window>

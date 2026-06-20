@@ -1,0 +1,544 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TextGame</name>
+    </assembly>
+    <members>
+        <member name="T:TextGame.GameBuilder">
+            <summary>
+            Utility class for building and loading text adventure games
+            </summary>
+            <remarks>
+            Provides static methods to:
+            - Load games from JSON cartridge files
+            - Build a sample game for testing and demonstration
+            - Discover available cartridges in a directory
+            This class serves as the main entry point for game creation and loading.
+            </remarks>
+        </member>
+        <member name="M:TextGame.GameBuilder.LoadFromCartridge(System.String)">
+            <summary>
+            Loads a game from a JSON cartridge file.
+            </summary>
+            <param name="cartridgePath">Path to the JSON cartridge file</param>
+            <returns>Starting room or null if load fails</returns>
+            <remarks>
+            This method delegates to CartridgeLoader.LoadFromJson() to handle
+            JSON deserialization and game graph construction.
+            </remarks>
+        </member>
+        <member name="M:TextGame.GameBuilder.BuildSampleGame">
+            <summary>
+            Builds the default sample game (Haunted Mansion).
+            This method is kept for backward compatibility.
+            </summary>
+            <returns>The starting room of the sample game</returns>
+            <remarks>
+            Creates a hardcoded game with:
+            - 4 rooms: Entrance Hall, Library, Garden, Cellar
+            - 4 items: key, lamp, statue, book
+            This method demonstrates programmatic game creation and provides
+            a quick way to test the game engine without loading a cartridge.
+            </remarks>
+        </member>
+        <member name="M:TextGame.GameBuilder.FindCartridges(System.String)">
+            <summary>
+            Finds all cartridge files in the specified directory.
+            </summary>
+            <param name="cartridgeDirectory">Directory to search for cartridges</param>
+            <returns>List of cartridge file paths</returns>
+            <remarks>
+            Searches recursively for all .json files in the specified directory.
+            Useful for implementing cartridge browsing and selection UI.
+            If the directory doesn't exist, it will be created.
+            </remarks>
+        </member>
+        <member name="T:TextGame.GameEngine">
+            <summary>
+            Core game engine for text-based adventure games
+            </summary>
+            <remarks>
+            The GameEngine class manages all game state including the current room,
+            player inventory, and game running status. It processes player commands,
+            handles room navigation, item interactions, and generates text output
+            through an event-driven architecture.
+            </remarks>
+        </member>
+        <member name="E:TextGame.GameEngine.OutputGenerated">
+            <summary>
+            Event raised when the game generates output text
+            </summary>
+            <remarks>
+            Subscribe to this event to receive all game output including room descriptions,
+            command responses, error messages, and help text. This allows for flexible
+            output handling (console, GUI, logging, etc.).
+            </remarks>
+        </member>
+        <member name="M:TextGame.GameEngine.#ctor">
+            <summary>
+            Initializes a new instance of the GameEngine class
+            </summary>
+            <remarks>
+            Creates empty room and inventory dictionaries and sets the game state to not running.
+            Call Start() with a starting room to begin gameplay.
+            </remarks>
+        </member>
+        <member name="M:TextGame.GameEngine.Start(TextGame.Room)">
+            <summary>
+            Starts the game at the specified starting room
+            </summary>
+            <param name="startingRoom">The room where the game begins</param>
+            <remarks>
+            Sets the current room, marks the game as running, displays a welcome message,
+            and describes the starting room. This should be called before processing any commands.
+            </remarks>
+        </member>
+        <member name="M:TextGame.GameEngine.ProcessCommand(System.String)">
+            <summary>
+            Processes a player command
+            </summary>
+            <param name="input">The command string entered by the player</param>
+            <remarks>
+            Parses the input string and executes the appropriate action. Supported commands include:
+            go/move, look, take/get, inventory/inv, use, examine, help, quit/exit.
+            Commands are case-insensitive and multi-word item names are supported.
+            </remarks>
+        </member>
+        <member name="M:TextGame.GameEngine.Move(System.String)">
+            <summary>
+            Moves the player in the specified direction
+            </summary>
+            <param name="direction">The direction to move (north, south, east, west, up, down)</param>
+            <remarks>
+            Checks if the current room has an exit in the specified direction.
+            If valid, moves to the new room and describes it. Otherwise, displays an error message.
+            </remarks>
+        </member>
+        <member name="M:TextGame.GameEngine.DescribeCurrentRoom">
+            <summary>
+            Displays the description of the current room
+            </summary>
+            <remarks>
+            Outputs the room name, description, list of visible items, and available exits.
+            This is called when entering a room or when the player uses the 'look' command.
+            </remarks>
+        </member>
+        <member name="M:TextGame.GameEngine.TakeItem(System.String)">
+            <summary>
+            Attempts to take an item from the current room
+            </summary>
+            <param name="itemName">The name of the item to take</param>
+            <remarks>
+            Searches for the item in the current room (case-insensitive).
+            If found and takeable, moves it to inventory. Otherwise, displays appropriate error message.
+            </remarks>
+        </member>
+        <member name="M:TextGame.GameEngine.ShowInventory">
+            <summary>
+            Displays the player's current inventory
+            </summary>
+            <remarks>
+            Lists all items currently carried by the player.
+            If inventory is empty, displays an appropriate message.
+            </remarks>
+        </member>
+        <member name="M:TextGame.GameEngine.UseItem(System.String)">
+            <summary>
+            Uses an item from the player's inventory
+            </summary>
+            <param name="itemName">The name of the item to use</param>
+            <remarks>
+            Checks if the item exists in inventory and displays its use description.
+            The item remains in inventory after use (unless removed by game logic).
+            </remarks>
+        </member>
+        <member name="M:TextGame.GameEngine.ExamineItem(System.String)">
+            <summary>
+            Examines an item in detail
+            </summary>
+            <param name="itemName">The name of the item to examine</param>
+            <remarks>
+            Searches for the item in both inventory and current room.
+            Displays the item's detailed description if found.
+            </remarks>
+        </member>
+        <member name="M:TextGame.GameEngine.ShowHelp">
+            <summary>
+            Displays the help message with available commands
+            </summary>
+            <remarks>
+            Lists all supported commands with brief descriptions of their usage.
+            This is shown when the player types 'help'.
+            </remarks>
+        </member>
+        <member name="M:TextGame.GameEngine.Output(System.String)">
+            <summary>
+            Sends output to subscribers of the OutputGenerated event
+            </summary>
+            <param name="message">The message to output</param>
+            <remarks>
+            Internal method used to generate all game output through the event system.
+            </remarks>
+        </member>
+        <member name="P:TextGame.GameEngine.IsRunning">
+            <summary>
+            Gets a value indicating whether the game is currently running
+            </summary>
+            <value>true if the game is running; otherwise, false</value>
+            <remarks>
+            The game is running after Start() is called and until the player quits.
+            </remarks>
+        </member>
+        <member name="T:TextGame.Item">
+            <summary>
+            Represents an object in the game world
+            </summary>
+            <remarks>
+            Items can be examined, taken (if CanTake is true), used, and carried in inventory.
+            Items can be either portable objects or fixed scenery depending on the CanTake property.
+            </remarks>
+        </member>
+        <member name="P:TextGame.Item.Name">
+            <summary>
+            Gets or sets the name of the item
+            </summary>
+            <value>The item's name as used in commands and displayed to the player</value>
+            <remarks>
+            This is the identifier used when players reference the item in commands.
+            Item name matching is case-insensitive.
+            </remarks>
+        </member>
+        <member name="P:TextGame.Item.Description">
+            <summary>
+            Gets or sets the detailed description of the item
+            </summary>
+            <value>A description shown when the player examines the item</value>
+            <remarks>
+            This provides additional narrative detail about the item's appearance,
+            history, or potential uses.
+            </remarks>
+        </member>
+        <member name="P:TextGame.Item.UseDescription">
+            <summary>
+            Gets or sets the description displayed when the item is used
+            </summary>
+            <value>Text shown when the player uses this item from inventory</value>
+            <remarks>
+            Defaults to "Nothing happens." if not specified. This can describe
+            the result of using the item or provide hints about its purpose.
+            </remarks>
+        </member>
+        <member name="P:TextGame.Item.CanTake">
+            <summary>
+            Gets or sets a value indicating whether the item can be taken
+            </summary>
+            <value>true if the item can be added to inventory; otherwise, false</value>
+            <remarks>
+            Set to false for scenery, fixed objects, or items that are too heavy to carry.
+            Set to true for portable items that can be collected and used.
+            </remarks>
+        </member>
+        <member name="M:TextGame.Item.#ctor(System.String,System.String,System.Boolean,System.String)">
+            <summary>
+            Initializes a new instance of the Item class
+            </summary>
+            <param name="name">The name of the item</param>
+            <param name="description">The detailed description of the item</param>
+            <param name="canTake">Whether the item can be taken (default: true)</param>
+            <param name="useDescription">Description when item is used (default: "Nothing happens.")</param>
+            <remarks>
+            Creates a new item with the specified properties. By default, items are takeable
+            and have a generic use description.
+            </remarks>
+        </member>
+        <member name="T:TextGame.Loaders.CartridgeLoader">
+            <summary>
+            Handles loading and parsing of JSON cartridge files
+            </summary>
+            <remarks>
+            The CartridgeLoader provides functionality to:
+            - Load complete games from JSON files
+            - Load only cartridge metadata for browsing
+            - Discover available cartridges in a directory
+            - Build runtime game objects from cartridge data
+            </remarks>
+        </member>
+        <member name="M:TextGame.Loaders.CartridgeLoader.LoadFromJson(System.String)">
+            <summary>
+            Loads a game from a JSON cartridge file
+            </summary>
+            <param name="jsonPath">Path to the cartridge JSON file</param>
+            <returns>The starting room of the game, or null if loading fails</returns>
+            <remarks>
+            This method reads the JSON file, deserializes it to a GameCartridge object,
+            builds the complete game graph (rooms, items, connections), and returns
+            the starting room. Any errors during loading are logged to the console.
+            </remarks>
+        </member>
+        <member name="M:TextGame.Loaders.CartridgeLoader.BuildGameFromCartridge(TextGame.Models.GameCartridge)">
+            <summary>
+            Builds a game graph from a GameCartridge data model
+            </summary>
+            <param name="cartridge">The cartridge data to build from</param>
+            <returns>The starting room, or null if the starting room ID is invalid</returns>
+            <remarks>
+            This method constructs the runtime game objects in the following order:
+            1. Create all Item objects from ItemData
+            2. Create all Room objects from RoomData
+            3. Populate rooms with their items
+            4. Establish room connections (exits)
+            5. Return the starting room
+            This order prevents circular reference issues.
+            </remarks>
+        </member>
+        <member name="M:TextGame.Loaders.CartridgeLoader.LoadCartridgeMetadata(System.String)">
+            <summary>
+            Loads only the metadata from a cartridge file
+            </summary>
+            <param name="jsonPath">Path to the cartridge JSON file</param>
+            <returns>The GameCartridge metadata object, or null if loading fails</returns>
+            <remarks>
+            This is useful for browsing available cartridges without building the full game.
+            It allows quick access to name, description, author, and version information.
+            </remarks>
+        </member>
+        <member name="M:TextGame.Loaders.CartridgeLoader.FindCartridges(System.String)">
+            <summary>
+            Finds all JSON cartridge files in a directory
+            </summary>
+            <param name="cartridgeDirectory">Directory path to search</param>
+            <returns>List of paths to cartridge JSON files</returns>
+            <remarks>
+            Searches recursively for all .json files in the specified directory.
+            If the directory doesn't exist, it will be created and an empty list returned.
+            </remarks>
+        </member>
+        <member name="T:TextGame.Models.GameCartridge">
+            <summary>
+            Data model representing a complete game cartridge
+            </summary>
+            <remarks>
+            This class is used for JSON serialization/deserialization of game cartridges.
+            It contains all metadata, rooms, and items required to build a complete game.
+            </remarks>
+        </member>
+        <member name="P:TextGame.Models.GameCartridge.Name">
+            <summary>
+            Gets or sets the name of the game
+            </summary>
+            <value>The display name of the game</value>
+        </member>
+        <member name="P:TextGame.Models.GameCartridge.Description">
+            <summary>
+            Gets or sets the description of the game
+            </summary>
+            <value>A brief summary of the game's story or theme</value>
+        </member>
+        <member name="P:TextGame.Models.GameCartridge.Author">
+            <summary>
+            Gets or sets the author's name
+            </summary>
+            <value>The name of the person or team who created this game</value>
+        </member>
+        <member name="P:TextGame.Models.GameCartridge.Version">
+            <summary>
+            Gets or sets the version number
+            </summary>
+            <value>Version number following semantic versioning (e.g., "1.0.0")</value>
+        </member>
+        <member name="P:TextGame.Models.GameCartridge.StartingRoomId">
+            <summary>
+            Gets or sets the ID of the starting room
+            </summary>
+            <value>The room ID where the game begins</value>
+            <remarks>
+            Must match the Id of one of the rooms in the Rooms list.
+            </remarks>
+        </member>
+        <member name="P:TextGame.Models.GameCartridge.Rooms">
+            <summary>
+            Gets or sets the list of rooms in the game
+            </summary>
+            <value>Collection of room definitions</value>
+        </member>
+        <member name="P:TextGame.Models.GameCartridge.Items">
+            <summary>
+            Gets or sets the list of items in the game
+            </summary>
+            <value>Collection of item definitions</value>
+        </member>
+        <member name="T:TextGame.Models.RoomData">
+            <summary>
+            Data model representing a room definition
+            </summary>
+            <remarks>
+            This class is used for JSON serialization of room data. It contains
+            references to connected rooms and items rather than object instances.
+            </remarks>
+        </member>
+        <member name="P:TextGame.Models.RoomData.Id">
+            <summary>
+            Gets or sets the unique identifier for this room
+            </summary>
+            <value>A unique string identifying this room</value>
+            <remarks>
+            Used as a reference in exit definitions and the starting room ID.
+            </remarks>
+        </member>
+        <member name="P:TextGame.Models.RoomData.Name">
+            <summary>
+            Gets or sets the display name of the room
+            </summary>
+            <value>The room's name as shown to the player</value>
+        </member>
+        <member name="P:TextGame.Models.RoomData.Description">
+            <summary>
+            Gets or sets the description of the room
+            </summary>
+            <value>A narrative description of the room's appearance</value>
+        </member>
+        <member name="P:TextGame.Models.RoomData.Exits">
+            <summary>
+            Gets or sets the exits from this room
+            </summary>
+            <value>Dictionary mapping direction names to room IDs</value>
+            <remarks>
+            Keys are direction strings (e.g., "north", "down").
+            Values are room IDs that must match other rooms in the cartridge.
+            </remarks>
+        </member>
+        <member name="P:TextGame.Models.RoomData.ItemIds">
+            <summary>
+            Gets or sets the items present in this room
+            </summary>
+            <value>List of item IDs found in this room</value>
+            <remarks>
+            Item IDs must match items defined in the cartridge's Items list.
+            </remarks>
+        </member>
+        <member name="T:TextGame.Models.ItemData">
+            <summary>
+            Data model representing an item definition
+            </summary>
+            <remarks>
+            This class is used for JSON serialization of item data.
+            </remarks>
+        </member>
+        <member name="P:TextGame.Models.ItemData.Id">
+            <summary>
+            Gets or sets the unique identifier for this item
+            </summary>
+            <value>A unique string identifying this item</value>
+            <remarks>
+            Used as a reference in room item lists.
+            </remarks>
+        </member>
+        <member name="P:TextGame.Models.ItemData.Name">
+            <summary>
+            Gets or sets the display name of the item
+            </summary>
+            <value>The item's name as used in commands</value>
+        </member>
+        <member name="P:TextGame.Models.ItemData.Description">
+            <summary>
+            Gets or sets the detailed description of the item
+            </summary>
+            <value>Description shown when examining the item</value>
+        </member>
+        <member name="P:TextGame.Models.ItemData.CanTake">
+            <summary>
+            Gets or sets whether the item can be taken
+            </summary>
+            <value>true if the item can be added to inventory; otherwise, false</value>
+        </member>
+        <member name="P:TextGame.Models.ItemData.UseDescription">
+            <summary>
+            Gets or sets the description shown when using the item
+            </summary>
+            <value>Text displayed when the player uses this item</value>
+        </member>
+        <member name="T:TextGame.Room">
+            <summary>
+            Represents a location in the game world
+            </summary>
+            <remarks>
+            A Room contains a name, description, connections to other rooms (exits),
+            and items present in the room. Rooms form the graph structure of the game world.
+            </remarks>
+        </member>
+        <member name="P:TextGame.Room.Name">
+            <summary>
+            Gets or sets the display name of the room
+            </summary>
+            <value>The room's name as displayed to the player</value>
+        </member>
+        <member name="P:TextGame.Room.Description">
+            <summary>
+            Gets or sets the narrative description of the room
+            </summary>
+            <value>A description of the room's appearance and atmosphere</value>
+        </member>
+        <member name="P:TextGame.Room.Exits">
+            <summary>
+            Gets or sets the available exits from this room
+            </summary>
+            <value>Dictionary mapping direction names (e.g., "north") to connected rooms</value>
+            <remarks>
+            Keys are direction strings (case-insensitive). Values are the Room objects
+            that can be reached by traveling in that direction.
+            </remarks>
+        </member>
+        <member name="P:TextGame.Room.Items">
+            <summary>
+            Gets or sets the items present in this room
+            </summary>
+            <value>Dictionary mapping item names to Item objects</value>
+            <remarks>
+            Items can be examined, taken (if CanTake is true), or used by the player.
+            When an item is taken, it is removed from this dictionary.
+            </remarks>
+        </member>
+        <member name="M:TextGame.Room.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the Room class
+            </summary>
+            <param name="name">The display name of the room</param>
+            <param name="description">The narrative description of the room</param>
+            <remarks>
+            Creates a room with empty exits and items dictionaries.
+            Use AddExit() and AddItem() to populate the room.
+            </remarks>
+        </member>
+        <member name="M:TextGame.Room.AddExit(System.String,TextGame.Room)">
+            <summary>
+            Adds an exit from this room to another room
+            </summary>
+            <param name="direction">The direction name (e.g., "north", "down")</param>
+            <param name="room">The destination room</param>
+            <remarks>
+            Direction names are automatically converted to lowercase for consistency.
+            If an exit already exists in that direction, it will be replaced.
+            </remarks>
+        </member>
+        <member name="M:TextGame.Room.AddItem(TextGame.Item)">
+            <summary>
+            Adds an item to this room
+            </summary>
+            <param name="item">The item to add</param>
+            <remarks>
+            The item is added using its Name property as the dictionary key.
+            If an item with the same name already exists, it will be replaced.
+            </remarks>
+        </member>
+        <member name="M:TextGame.Room.RemoveItem(System.String)">
+            <summary>
+            Removes an item from this room
+            </summary>
+            <param name="itemName">The name of the item to remove</param>
+            <remarks>
+            Typically called when a player takes an item. If the item doesn't exist,
+            the method has no effect (no error is raised).
+            </remarks>
+        </member>
+    </members>
+</doc>
