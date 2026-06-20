@@ -45,10 +45,9 @@
 
 ## About Cheron
 
-A brief description of the project, what it does, and who it's for. This should
-be a concise summary that gives readers a clear understanding of the project's
-purpose and value proposition.
+Game engine(s)
 
+<!--
 ### Features
 
 * Feature — What it does and why it matters.
@@ -118,3 +117,5 @@ Copyright &copy; 2026 [A Pretty Cool Program](https://github.com/APrettyCoolProg
 ---
 
 <sub>Last updated: 260619</sub>
+
+-->
