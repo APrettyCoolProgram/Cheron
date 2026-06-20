@@ -1,21 +1,15 @@
 // 260619_code
-// 260619_documentation
+// 260620_documentation
 
 using Tekst.Cartridge;
 using Tekst.State;
 
 namespace Tekst.Engine;
 
-/// <summary>
-/// Evaluates the win condition described by a <see cref="WinRuleData"/> entry
-/// against the current <see cref="GameState"/>.
-/// </summary>
+/// <summary>Evaluates the win condition described by a <see cref="WinRuleData"/> entryagainst the current <see cref="GameState"/>.</summary>
 public static class WinEvaluator
 {
-    /// <summary>
-    /// Returns a formatted victory message if the win condition is met,
-    /// otherwise returns <see langword="null"/>.
-    /// </summary>
+    /// <summary>Returns a formatted victory message if the win condition is met,otherwise returns <see langword="null"/>.</summary>
     public static string? Check(WinRuleData rule, GameState state)
     {
         var hasItem = state.Inventory.Any(i => i.Id.Equals(rule.RequiredItemId, StringComparison.OrdinalIgnoreCase));

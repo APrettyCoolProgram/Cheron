@@ -17,10 +17,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include=".github\copilot-instructions.md" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Engines\Tekst\Tekst.csproj" />
   </ItemGroup>
 </Project>

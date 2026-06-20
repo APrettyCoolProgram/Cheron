@@ -1,8 +1,7 @@
 {
   "profiles": {
     "CheronTextGame": {
-      "commandName": "Project",
-      "commandLineArgs": "TAK-A"
+      "commandName": "Project"
     }
   }
 }

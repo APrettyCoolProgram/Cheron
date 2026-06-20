@@ -15,8 +15,8 @@ public static class CartridgeLoader
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
-        ReadCommentHandling = JsonCommentHandling.Skip,
-        AllowTrailingCommas = true,
+        ReadCommentHandling         = JsonCommentHandling.Skip,
+        AllowTrailingCommas         = true,
     };
 
     /// <summary>

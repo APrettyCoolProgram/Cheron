@@ -1,5 +1,5 @@
-// 260619_code
-// 260619_documentation
+// 260620_code
+// 260620_documentation
 
 namespace Tekst.Engine;
 
@@ -17,5 +17,9 @@ public class CommandResult
     /// <param name="showRoom">Whether to show the room description after this command.</param>
     /// <returns>A new CommandResult instance.</returns>
     public static CommandResult Say(string message, bool showRoom = false) =>
-        new() { Message = message, ShowRoomDescription = showRoom };
+        new()
+        {
+            Message             = message,
+            ShowRoomDescription = showRoom
+        };
 }
