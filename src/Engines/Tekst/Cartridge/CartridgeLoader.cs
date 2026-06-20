@@ -1,7 +1,8 @@
-// 260619_code
-// 260619_documentation
+// 260620_code
+// 260620_documentation
 
 using System.Text.Json;
+using Tekst.Catalog;
 using Tekst.Engine;
 using Tekst.Models;
 using Tekst.State;
@@ -34,59 +35,46 @@ public static class CartridgeLoader
     {
         var cartPath = Path.Combine(AppContext.BaseDirectory, "GameCartridges", cartName);
 
-        Console.WriteLine($"---- Looking for game cartridge at: {cartPath} ----");
+        ValidateCartridge(cartPath);
+
+        CartridgeData cartridgeData = Deserialize(cartPath);
+
+        List<Room> rooms = cartridgeData.Rooms.ConvertAll(Room.MapRoom);
+        GameWorld world  = new GameWorld(rooms, cartridgeData.StartingRoomId);
+        Room? startRoom  = world.GetRoom(cartridgeData.StartingRoomId);
+        GameState state  = new GameState
+        {
+            CurrentRoom = startRoom
+        };
+        CommandProcessor processor = new CommandProcessor(world);
+
+        return (world, state, processor, cartridgeData);
+    }
+
+    /// <summary>Checks if the cartridge file exists at the specified path. If it does not exist, a <see cref="FileNotFoundException"/> is thrown.</summary>
+    /// <param name="cartPath">The path to the cartridge file.</param>
+    /// <exception cref="FileNotFoundException">Thrown when the .cart file does not exist.</exception>
+    private static void ValidateCartridge(string cartPath)
+    {
+        Console.WriteLine(msg_Cartridge.LookingFor(cartPath));
+
+        Console.ReadLine();
 
         if (!File.Exists(cartPath))
         {
-            throw new FileNotFoundException($"Game cartridge path not found: {cartPath}", cartPath);
+            throw new FileNotFoundException(msg_Cartridge.NotFound(cartPath), cartPath);
         }
-
-        var json = File.ReadAllText(cartPath);
-        var data = JsonSerializer.Deserialize<CartridgeData>(json, JsonOptions)
-            ?? throw new InvalidOperationException($"Failed to deserialize cartridge: {cartPath}");
-
-        var rooms = data.Rooms.Select(MapRoom).ToList();
-        var world = new GameWorld(rooms, data.StartingRoomId);
-
-        var startRoom = world.GetRoom(data.StartingRoomId)
-            ?? throw new InvalidOperationException($"StartingRoomId '{data.StartingRoomId}' not found in cartridge.");
-
-        var state     = new GameState { CurrentRoom = startRoom };
-        var processor = new CommandProcessor(world);
-
-        return (world, state, processor, data);
     }
 
-    /// <summary>Maps a RoomData object into a Room object.</summary>
-    /// <param name="room">The RoomData object to map.</param>
-    /// <returns>A new Room object created from the provided data.</returns>
-    private static Room MapRoom(RoomData room) => new()
+    /// <summary>Reads the cartridge file from the specified path and deserializes it into a <see cref="CartridgeData"/> object.</summary>
+    /// <param name="cartPath">The path to the cartridge file.</param>
+    /// <returns>The deserialized <see cref="CartridgeData"/> object.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the file cannot be deserialized.</exception>
+    private static CartridgeData Deserialize(string cartPath)
     {
-        Id          = room.Id,
-        Title       = room.Title,
-        Description = room.Description,
-        Items       = room.Items.Select(MapItem).ToList(),
-        Exits       = room.Exits.Select(MapExit).ToList(),
-    };
+        var json = File.ReadAllText(cartPath);
 
-    /// <summary>Maps an ItemData object into an Item object.</summary>
-    /// <param name="item">The ItemData object to map.</param>
-    /// <returns>A new Item object created from the provided data.</returns>
-    private static Item MapItem(ItemData item) => new()
-    {
-        Id          = item.Id,
-        Name        = item.Name,
-        Description = item.Description,
-        CanTake     = item.CanTake,
-    };
-
-    /// <summary>Maps an ExitData object into an Exit object.</summary>
-    /// <param name="exit">The ExitData object to map.</param>
-    /// <returns>A new Exit object created from the provided data.</returns>
-    private static Exit MapExit(ExitData exit) => new()
-    {
-        Direction       = exit.Direction,
-        TargetRoomId    = exit.TargetRoomId,
-        MoveDescription = exit.MoveDescription,
-    };
+        return JsonSerializer.Deserialize<CartridgeData>(json, JsonOptions)
+            ?? throw new InvalidOperationException(msg_Cartridge.DeserializationFailed(cartPath));
+    }
 }

@@ -1,6 +1,8 @@
 // 260619_code
 // 260619_documentation
 
+using Tekst.Cartridge;
+
 namespace Tekst.Models;
 
 /// <summary>A one-way directional link from one room to another.</summary>
@@ -14,4 +16,14 @@ public class Exit
 
     /// <summary>Optional description shown when the player moves through this exit.</summary>
     public string? MoveDescription { get; init; }
+
+    /// <summary>Maps an ExitData object into an Exit object.</summary>
+    /// <param name="exit">The ExitData object to map.</param>
+    /// <returns>A new Exit object created from the provided data.</returns>
+    public static Exit MapExit(ExitData exit) => new()
+    {
+        Direction       = exit.Direction,
+        TargetRoomId    = exit.TargetRoomId,
+        MoveDescription = exit.MoveDescription,
+    };
 }
