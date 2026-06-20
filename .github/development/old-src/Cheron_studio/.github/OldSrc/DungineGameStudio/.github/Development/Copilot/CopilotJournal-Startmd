@@ -1,0 +1,83 @@
+Copilot Journal - Start
+
+---
+
+User prompts and supplied contexts:
+
+1) Prompt:
+"When the user presses the \"Create Text Game\" button on the Main Window:
+
+1. Hide the MainWindow
+2. Show the TextBasedWindow
+3. When the TextBasedWindow closes, show the MainWindow again"
+
+Context: `MainWindow.xaml` provided.
+
+2) Prompt:
+"Why doesn't the image show on the TextGameWindow?"
+
+Context: `GameType/TextBased/TextBasedWindow.xaml` with `<Image Source="/AppData/Artwork/Box/VcsCartridge-v2.png" />`.
+
+3) Prompt:
+"Add a black border around the image on TextGameWindow"
+
+Context: updated `TextBasedWindow.xaml` with the `Image`.
+
+4) Prompt:
+"Give the border curved corners"
+
+Context: `TextBasedWindow.xaml` with newly added `Border` around the `Image`.
+
+5) Prompt:
+"Modify the buttons on TextGameWindow to have curved corners"
+
+Context: `TextBasedWindow.xaml` containing two buttons: `btnChooseBoxart` and `btnChooseLabel` inside a `DockPanel`.
+
+6) Prompt:
+"Create a document named \"../.github/Development/Copilot/CopilotJournal-Startmd\" that contains all of the prompts I've given, and all of the responses/work you have done."
+
+---
+
+Assistant responses and work performed (summary):
+
+A) Implemented MainWindow button behavior
+- Files read: `MainWindow.xaml.cs`, `GameType/TextBased/TextBasedWindow.xaml.cs`, `App.xaml`.
+- Changes made to `MainWindow.xaml.cs`:
+  - Added `using DungineStudio.GameType.TextBased;`.
+  - Implemented `btnCreateTextGame_Click` to:
+    - `this.Hide();`
+    - Create `var textWindow = new TextBasedWindow();`
+    - Attach `textWindow.Closed += (_, __) => this.Show();`
+    - `textWindow.Show();`
+- Purpose: Hide main window, show text window, reshow main window when text window closes.
+
+B) Diagnosed why image might not show (text response)
+- Provided checklist of likely causes and fixes:
+  - Build Action should be `Resource` (use `pack://application:,,,/` or `/Assembly;component/...`), or `Content` with copy to output and `pack://siteoforigin` URI.
+  - Confirm file path and spelling.
+  - Remove `OpacityMask` which can hide the image.
+  - Watch Visual Studio Output for resource/URI errors.
+- Recommended quick test: embed image as resource at project root and try `pack://application:,,,/VcsCartridge-v2.png` and remove opacity mask.
+
+C) Added a black border around the image
+- Edited `GameType/TextBased/TextBasedWindow.xaml`:
+  - Wrapped the `Image` in a `Border` with `BorderBrush="Black"` and `BorderThickness="2"`.
+
+D) Gave the border curved corners
+- Edited `GameType/TextBased/TextBasedWindow.xaml`:
+  - Added `CornerRadius="8"` and `ClipToBounds="True"` on the `Border` so the image respects the rounded corners.
+
+E) Made the buttons have curved corners
+- Edited `GameType/TextBased/TextBasedWindow.xaml`:
+  - Added a `Window.Resources` style `RoundedButtonStyle` (TargetType=`Button`) with a `ControlTemplate` that uses a `Border` with `CornerRadius="5"` and templates the button content inside.
+  - Applied `Style="{StaticResource RoundedButtonStyle}"` to `btnChooseBoxart` and `btnChooseLabel`.
+
+F) Notes about file edits
+- All edits applied to files in the workspace using the repository editor.
+- Files changed include:
+  - `MainWindow.xaml.cs` (implemented button handler)
+  - `GameType/TextBased/TextBasedWindow.xaml` (border around image, rounded corners, button style and style application)
+
+---
+
+End of journal entry.

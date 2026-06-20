@@ -1,0 +1,28 @@
+<Window x:Class="DungineStudio.Views.AddExitDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Add Exit" Height="180" Width="400" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="0,0,0,10">
+            <TextBlock Text="Direction (e.g., north, south, east, west, up, down):" FontWeight="SemiBold" Margin="0,0,0,5"/>
+            <TextBox x:Name="DirectionTextBox" Padding="5"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Margin="0,0,0,10">
+            <TextBlock Text="Target Location ID:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+            <TextBox x:Name="TargetTextBox" Padding="5"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Content="OK" Width="80" Height="30" Margin="0,0,10,0" Click="OkButton_Click" IsDefault="True"/>
+            <Button Content="Cancel" Width="80" Height="30" Click="CancelButton_Click" IsCancel="True"/>
+        </StackPanel>
+    </Grid>
+</Window>
