@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31624.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dungine", "Dungine.csproj", "{44F6EF81-A173-4647-850B-8C2C07CC4FE5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dungine.Core", "Dungine.Core\Dungine.Core.csproj", "{ECF28E95-A931-4396-9A96-B129676BD9FF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{44F6EF81-A173-4647-850B-8C2C07CC4FE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44F6EF81-A173-4647-850B-8C2C07CC4FE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44F6EF81-A173-4647-850B-8C2C07CC4FE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44F6EF81-A173-4647-850B-8C2C07CC4FE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECF28E95-A931-4396-9A96-B129676BD9FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECF28E95-A931-4396-9A96-B129676BD9FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECF28E95-A931-4396-9A96-B129676BD9FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECF28E95-A931-4396-9A96-B129676BD9FF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {33067B3B-DFA1-471C-ADC0-FC0C4558A3C9}
+	EndGlobalSection
+EndGlobal

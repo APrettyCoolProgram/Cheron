@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31624.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dungine.Core", "Dungine.Core\Dungine.Core.csproj", "{C96E534F-67EC-488F-A0A5-5C9A341C7BE1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dungine.WPF", "Dungine.WPF\Dungine.WPF.csproj", "{4A51F269-1DBC-47D0-8EC5-2FBBEE35B6BF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C96E534F-67EC-488F-A0A5-5C9A341C7BE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C96E534F-67EC-488F-A0A5-5C9A341C7BE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C96E534F-67EC-488F-A0A5-5C9A341C7BE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C96E534F-67EC-488F-A0A5-5C9A341C7BE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A51F269-1DBC-47D0-8EC5-2FBBEE35B6BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A51F269-1DBC-47D0-8EC5-2FBBEE35B6BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A51F269-1DBC-47D0-8EC5-2FBBEE35B6BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A51F269-1DBC-47D0-8EC5-2FBBEE35B6BF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D9D53EFC-695E-4EC5-AD2C-8D7FFDCEB420}
+	EndGlobalSection
+EndGlobal

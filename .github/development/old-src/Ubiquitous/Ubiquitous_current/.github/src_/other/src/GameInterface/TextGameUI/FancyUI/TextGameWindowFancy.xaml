@@ -1,0 +1,379 @@
+<Window x:Class="Ubiquitous.GameInterface.TextGameUI.FancyUI.TextGameWindowFancy"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Ubiquitous - Text Adventure (Fancy)" Height="700" Width="1400"
+        Background="#1E1E1E">
+    
+    <Window.Resources>
+        <!-- Style for inventory item cards -->
+        <Style x:Key="InventoryItemCard" TargetType="Border">
+            <Setter Property="Background" Value="#2D2D30"/>
+            <Setter Property="BorderBrush" Value="#007ACC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+
+        <Style x:Key="SectionHeader" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#569CD6"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="15">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="15"/>
+            <ColumnDefinition Width="2.5*"/>
+            <ColumnDefinition Width="15"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="150"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- LEFT COLUMN: Status Panel -->
+        <Border x:Name="StatusBorder"
+                Grid.Column="0" Grid.Row="0"
+                Background="#252526" 
+                BorderBrush="#3F3F46" 
+                BorderThickness="2" 
+                CornerRadius="4"
+                Padding="15">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <TextBlock Grid.Row="0" 
+                           Text="STATUS" 
+                           HorizontalAlignment="Center"
+                           Style="{StaticResource SectionHeader}"/>
+                
+                <ScrollViewer Grid.Row="1" 
+                              VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <!-- Location -->
+                        <Border x:Name="LocationCard"
+                                Background="#2D2D30" 
+                                BorderBrush="#007ACC" 
+                                BorderThickness="1" 
+                                CornerRadius="4" 
+                                Padding="10" 
+                                Margin="0,0,0,8">
+                            <StackPanel>
+                                <TextBlock x:Name="LocationLabel"
+                                           Text="LOCATION" 
+                                           Foreground="#9CDCFE"
+                                           FontFamily="Consolas"
+                                           FontSize="11"
+                                           FontWeight="Bold"
+                                           Margin="0,0,0,4"/>
+                                <TextBlock x:Name="LocationText"
+                                           Foreground="#CCCCCC"
+                                           FontFamily="Consolas"
+                                           FontSize="12"
+                                           TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+                        
+                        <!-- Available Exits -->
+                        <Border x:Name="ExitsCard"
+                                Background="#2D2D30" 
+                                BorderBrush="#007ACC" 
+                                BorderThickness="1" 
+                                CornerRadius="4" 
+                                Padding="10" 
+                                Margin="0,0,0,8">
+                            <StackPanel>
+                                <TextBlock x:Name="ExitsLabel"
+                                           Text="EXITS" 
+                                           Foreground="#9CDCFE"
+                                           FontFamily="Consolas"
+                                           FontSize="11"
+                                           FontWeight="Bold"
+                                           Margin="0,0,0,4"/>
+                                <TextBlock x:Name="ExitsText"
+                                           Foreground="#CCCCCC"
+                                           FontFamily="Consolas"
+                                           FontSize="11"
+                                           TextWrapping="Wrap"
+                                           Text="None"/>
+                            </StackPanel>
+                        </Border>
+                        
+                        <!-- Statistics Grid -->
+                        <Border x:Name="StatsCard"
+                                Background="#2D2D30" 
+                                BorderBrush="#007ACC" 
+                                BorderThickness="1" 
+                                CornerRadius="4" 
+                                Padding="10" 
+                                Margin="0,0,0,8">
+                            <StackPanel>
+                                <TextBlock x:Name="StatsLabel"
+                                           Text="STATISTICS" 
+                                           Foreground="#9CDCFE"
+                                           FontFamily="Consolas"
+                                           FontSize="11"
+                                           FontWeight="Bold"
+                                           Margin="0,0,0,6"/>
+                                
+                                <Grid Margin="0,0,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" 
+                                               Text="Moves: " 
+                                               Foreground="#808080"
+                                               FontFamily="Consolas"
+                                               FontSize="11"/>
+                                    <TextBlock Grid.Column="1" 
+                                               x:Name="MovesText"
+                                               Foreground="#CCCCCC"
+                                               FontFamily="Consolas"
+                                               FontSize="11"
+                                               HorizontalAlignment="Right"
+                                               FontWeight="Bold"/>
+                                </Grid>
+                                
+                                <Grid Margin="0,0,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" 
+                                               Text="Score: " 
+                                               Foreground="#808080"
+                                               FontFamily="Consolas"
+                                               FontSize="11"/>
+                                    <TextBlock Grid.Column="1" 
+                                               x:Name="ScoreText"
+                                               Foreground="#CCCCCC"
+                                               FontFamily="Consolas"
+                                               FontSize="11"
+                                               HorizontalAlignment="Right"
+                                               FontWeight="Bold"/>
+                                </Grid>
+                                
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" 
+                                               Text="Items: " 
+                                               Foreground="#808080"
+                                               FontFamily="Consolas"
+                                               FontSize="11"/>
+                                    <TextBlock Grid.Column="1" 
+                                               x:Name="ItemCountText"
+                                               Foreground="#CCCCCC"
+                                               FontFamily="Consolas"
+                                               FontSize="11"
+                                               HorizontalAlignment="Right"
+                                               FontWeight="Bold"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+        <!-- CENTER COLUMN: Game Output -->
+        <Border x:Name="OutputBorder"
+                Grid.Column="2" Grid.Row="0"
+                Background="#252526" 
+                BorderBrush="#3F3F46" 
+                BorderThickness="2" 
+                CornerRadius="4"
+                Padding="15">
+            <ScrollViewer x:Name="OutputScrollViewer" 
+                          VerticalScrollBarVisibility="Auto"
+                          Background="#1E1E1E">
+                <RichTextBox x:Name="GameOutputText"
+                             Background="#1E1E1E"
+                             Foreground="#CCCCCC"
+                             FontFamily="Consolas"
+                             FontSize="14"
+                             BorderThickness="0"
+                             IsReadOnly="True"
+                             VerticalScrollBarVisibility="Disabled"
+                             Block.LineHeight="20"/>
+            </ScrollViewer>
+        </Border>
+
+        <!-- RIGHT COLUMN: Inventory Panel -->
+        <Border x:Name="InventoryBorder"
+                Grid.Column="4" Grid.Row="0"
+                Background="#252526" 
+                BorderBrush="#3F3F46" 
+                BorderThickness="2" 
+                CornerRadius="4"
+                Padding="15">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <TextBlock Grid.Row="0" 
+                           Text="INVENTORY" 
+                           HorizontalAlignment="Center"
+                           Style="{StaticResource SectionHeader}"/>
+                
+                <!-- Inventory Summary -->
+                <Border Grid.Row="1"
+                        Background="#2D2D30" 
+                        BorderBrush="#007ACC" 
+                        BorderThickness="1" 
+                        CornerRadius="4" 
+                        Padding="8" 
+                        Margin="0,0,0,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0"
+                                   Text="Total Items:" 
+                                   Foreground="#9CDCFE"
+                                   FontFamily="Consolas"
+                                   FontSize="11"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1"
+                                   x:Name="InventoryCountText"
+                                   Text="0"
+                                   Foreground="#CCCCCC"
+                                   FontFamily="Consolas"
+                                   FontSize="14"
+                                   FontWeight="Bold"
+                                   VerticalAlignment="Center"
+                                   Margin="10,0,0,0"/>
+                    </Grid>
+                </Border>
+                
+                <ScrollViewer Grid.Row="2" 
+                              x:Name="InventoryScrollViewer"
+                              VerticalScrollBarVisibility="Auto">
+                    <StackPanel x:Name="InventoryPanel">
+                        <TextBlock x:Name="EmptyInventoryText"
+                                   Text="Empty"
+                                   Foreground="#666666"
+                                   FontFamily="Consolas"
+                                   FontSize="12"
+                                   FontStyle="Italic"
+                                   Margin="0,10,0,0"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+        <!-- Command History (spans all columns) -->
+        <Border x:Name="HistoryBorder"
+                Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="2"
+                Background="#252526" 
+                BorderBrush="#3F3F46" 
+                BorderThickness="2" 
+                CornerRadius="4"
+                Padding="15">
+            <ScrollViewer x:Name="HistoryScrollViewer" 
+                          VerticalScrollBarVisibility="Auto"
+                          Background="#1E1E1E">
+                <TextBlock x:Name="CommandHistoryText" 
+                           TextWrapping="Wrap"
+                           Foreground="#808080"
+                           FontFamily="Consolas"
+                           FontSize="12"/>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Command Input Area (spans all columns) -->
+        <Grid Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock x:Name="CommandPrompt"
+                       Grid.Column="0" 
+                       Text=">" 
+                       VerticalAlignment="Center" 
+                       Foreground="#569CD6"
+                       FontFamily="Consolas"
+                       FontSize="18" 
+                       FontWeight="Bold"
+                       Margin="0,0,15,0"/>
+
+            <TextBox x:Name="CommandInput" 
+                     Grid.Column="1"
+                     Background="#1E1E1E"
+                     Foreground="#CCCCCC"
+                     BorderBrush="#3F3F46"
+                     BorderThickness="2"
+                     FontFamily="Consolas"
+                     FontSize="14"
+                     Padding="10"
+                     VerticalAlignment="Center"
+                     CaretBrush="#CCCCCC"
+                     KeyDown="CommandInput_KeyDown"/>
+
+            <Button x:Name="SendButton" 
+                    Grid.Column="2"
+                    Content="SEND" 
+                    Background="#007ACC"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Padding="25,10"
+                    Margin="15,0,0,0"
+                    FontWeight="Bold"
+                    FontFamily="Consolas"
+                    FontSize="14"
+                    Cursor="Hand"
+                    Click="SendButton_Click">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#007ACC"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                                            CornerRadius="4"
+                                            Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center" 
+                                                          VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#1C97EA"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#005A9E"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </Grid>
+    </Grid>
+</Window>

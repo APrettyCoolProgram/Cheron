@@ -1,0 +1,26 @@
+﻿﻿extensions: designer.cs generated.cs
+extensions: .xaml
+<!--
+    PROJECT: %Project% (https://github.com/calistadalanegames/%Project%)
+    FILE: %FileName%
+    UPDATED: %CurrentMonth%-%CurrentDay%-%CurrentYear%-%CurrentTime%
+    LICENSE: Apache v2 (https://apache.org/licenses/LICENSE-2.0)
+    Copyright 2020 A Pretty Cool Program & Calistadalane Games
+    All rights reserved
+-->
+
+extensions: .cs
+/* PROJECT: %Project% (https://github.com/calistadalanegames/%Project%)
+ *    FILE: %Namespace%.%FileName%
+ * UPDATED: %CurrentMonth%-%CurrentDay%-%CurrentYear%-%CurrentTime%
+ * LICENSE: Apache v2 (https://apache.org/licenses/LICENSE-2.0)
+ *          Copyright 2020 A Pretty Cool Program & Calistadalane Games
+ *          All rights reserved
+ */
+
+extensions: .md
+> PROJECT: %Project%<br>
+> FILE: %FileName%
+
+extensions: .comment.xml
+<!-- This file contains external XML comments. -->
