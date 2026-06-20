@@ -35,9 +35,9 @@ not using the this section, comment this divider out.
 <div align="center">
 
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset=".github/repository/logo/CheronLogo-Transparent-512x512.png">
-    <source media="(prefers-color-scheme: light)" srcset=".github/repository/logo/CheronLogo-Transparent-512x512.png">
-    <img alt="Fallback image description" src=".github/repository/logo/CheronLogo-Transparent-512x512.png">
+    <source media="(prefers-color-scheme: dark)" srcset=".github/repository/logo/CheronLogo-Trans-512x512.png">
+    <source media="(prefers-color-scheme: light)" srcset=".github/repository/logo/CheronLogo-Trans-512x512.png">
+    <img alt="Fallback image description" src=".github/repository/logo/CheronLogo-Trans-512x512.png">
   </picture>
 
   <h1>Source Code Repository README.md Template</h1>
