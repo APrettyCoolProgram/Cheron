@@ -17,7 +17,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Engines\Tekst\Tekst.csproj" />
-    <ProjectReference Include="..\Engine\Tekst.csproj" />
+    <ProjectReference Include="..\..\Tekst\Engine\Tekst.csproj" />
   </ItemGroup>
 </Project>

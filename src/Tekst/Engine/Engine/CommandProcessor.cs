@@ -1,4 +1,4 @@
-// 260619_code
+// 260621_code
 // 260619_documentation
 
 using Tekst.Models;
@@ -52,7 +52,7 @@ public class CommandProcessor
             "inventory" or "i" or "inv" => ShowInventory(state),
             "examine" or "x" or "ex" or "inspect" => Examine(noun, state),
             "quit" or "exit" or "q" => Quit(state),
-            "help" or "?" => Help(),
+            "help" or "h" or "?" => Help(),
             _ => CommandResult.Say($"You don't know how to \"{raw.Trim()}\"."),
         };
     }
@@ -64,8 +64,7 @@ public class CommandProcessor
     /// <summary>Describes the player's current room.</summary>
     /// <param name="state">The current game state.</param>
     /// <returns>A result containing the room description.</returns>
-    private static CommandResult Look(GameState state) =>
-        CommandResult.Say(DescribeRoom(state.CurrentRoom, state), showRoom: false);
+    private static CommandResult Look(GameState state) => CommandResult.Say(DescribeRoom(state.CurrentRoom, state), showRoom: false);
 
     /// <summary>Moves the player in the specified direction when an exit exists.</summary>
     /// <param name="direction">The direction to travel.</param>
@@ -202,19 +201,29 @@ public class CommandProcessor
 
     /// <summary>Returns a list of supported commands.</summary>
     /// <returns>A result containing the help text.</returns>
-    private static CommandResult Help() =>
-        CommandResult.Say(
+    private static CommandResult Help()
+    {
+        return CommandResult.Say(
             """
-            Available commands:
-              look (l)          - Describe your surroundings
-              go <direction>    - Move (north/south/east/west/up/down, or just n/s/e/w/u/d)
-              take <item>       - Pick up an item
-              drop <item>       - Drop a carried item
-              inventory (i)     - List what you're carrying
-              examine <item>    - Get a detailed look at something
-              quit (q)          - End the game
-              help (?)          - Show this list
+            Commands
+            --------
+              look/l                   - Describe your surroundings
+              go/move <direction>      - Move in a direction
+              get/take <item>          - Pick up an item
+              drop <item>              - Drop a carried item
+              inventory/inv/i          - List what you're carrying
+              examine/x/inspect <item> - Get a detailed look at something
+              quit/q                   - Quit the game
+              help/h/?                 - Show this list
+
+            Cardinal directions  Vertical directions
+            -------------------  -------------------
+              north/n              up/u
+              south/s              down/d
+              east/e
+              west/w
             """);
+    }
 
     // -------------------------------------------------------------------------
     // Helpers
