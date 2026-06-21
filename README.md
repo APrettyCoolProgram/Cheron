@@ -11,10 +11,8 @@
     <img alt="Fallback image description" src=".github/repository/logo/CheronLogo-Trans-512x512.png">
   </picture>
 
-  ![TEKST-ENGINE](https://img.shields.io/badge/Tekst-orange)&nbsp;
-  ![TEKST-RELEASE](https://img.shields.io/badge/release-26.6-teal)&nbsp;
-  ![TEKST-STATUS](https://img.shields.io/badge/status-stable-green)&nbsp;
-  ![TEKST-PLATFORMS](https://img.shields.io/badge/Platforms-windows%20%7C%20macos%20%7C%20linux-lightgrey)&nbsp;
+<h1>Game engines</h1>
+
 
 </div>
 
@@ -31,13 +29,7 @@
 | CONTENTS                                    |
 |---------------------------------------------|
 | [About Cheron](#about-cheron) |
-| [How it works](#how-it-works)               |
-| [Getting started](#getting-started)         |
-| [Installing](#installing)                   |
-| [Usage](#usage)                             |
-| [Acknowledgements](#acknowledgements)       |
-| [Related projects](#related-projects)       |
-| [License](#license)                         |
+| [Tekst](#tekst)               |
 
 ---
 
@@ -45,59 +37,20 @@
 
 Charon is a collection of game engines.
 
-## The engines
-
-### Tekst
+## Tekst ![TEKST-RELEASE](https://img.shields.io/badge/release-26.6-teal)&nbsp;
 
 An interactive text-based game engine that allows developers to create and manage text-based games efficiently. It provides tools and frameworks for handling game logic, player interactions, and narrative elements in a text-based format.
 
-#### Features
+  ![TEKST-ENGINE](https://img.shields.io/badge/Tekst-orange)&nbsp;
+  ![TEKST-RELEASE](https://img.shields.io/badge/release-26.6-teal)&nbsp;
+  ![TEKST-STATUS](https://img.shields.io/badge/status-stable-green)&nbsp;
+  ![TEKST-PLATFORMS](https://img.shields.io/badge/Platforms-windows%20%7C%20macos%20%7C%20linux-lightgrey)&nbsp;
+
+### Features
 
 * Feature — What it does and why it matters.
 * Feature — What it does and why it matters.
 * Feature — What it does and why it matters.
-
-## How it works
-
-A blurb describing how the project works at a high level.
-
-## Getting started
-
-A quick overview of how to get started with the project.
-
-### Before you begin
-
-Any assumptions, or other information a user should know before
-
-### Requirements
-
-| Requirement | Minimum version | Notes |
-|-------------|-----------------|-------|
-| Requirement |                 |       |
-| Requirement |                 |       |
-| Requirement |                 |       |
-
-## Installing
-
-Quick summary of installation instructions, or link to the Installing documentation.
-
-## Usage
-
-Step-by-step instructions for using the project on supported platforms.
-
-## Documentation
-
-Documentation is available.
-
-## Acknowledgements
-
-None.
-
-## Built with
-
-* [Technology or framework](URL)  - Role it plays in the project.
-* [Technology or framework](URL)  - Role it plays in the project.
-* [Technology or framework](URL)  - Role it plays in the project.
 
 ## Related projects
 
@@ -119,6 +72,6 @@ Copyright &copy; 2026 [A Pretty Cool Program](https://github.com/APrettyCoolProg
 
 ---
 
-<sub>Last updated: 260619</sub>
+<sub>Last updated: 260621</sub>
 
 -->
