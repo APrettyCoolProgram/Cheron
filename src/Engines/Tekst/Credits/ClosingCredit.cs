@@ -8,10 +8,11 @@ public static class ClosingCredit
 {
     /// <summary>Displays a closing message indicating the game has ended.</summary>
     /// <param name="state">The current game state.</param>
-    public static void Fin(Tekst.State.GameState state)
+    public static void Fin(State.GameState state)
     {
-        Console.ForegroundColor = ConsoleColor.DarkGray;
-        Console.WriteLine($"[ Game ended after {state.TurnCount} turn{(state.TurnCount == 1 ? "" : "s")}. ]");
-        Console.ResetColor();
+        Console.WriteLine(Catalog.msg_Credit.GameEnded(state.TurnCount));
+        //Console.ForegroundColor = ConsoleColor.DarkGray;
+        //Console.WriteLine($"[ Game ended after {state.TurnCount} turn{(state.TurnCount == 1 ? "" : "s")}. ]");
+        //Console.ResetColor();
     }
 }

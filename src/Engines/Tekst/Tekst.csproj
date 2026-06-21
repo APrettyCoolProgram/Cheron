@@ -9,14 +9,11 @@
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <DebugType>embedded</DebugType>
     <IncludeAllContentForSelfContained>true</IncludeAllContentForSelfContained>
-    <Version>1.0.0</Version>
-    <FileVersion>1.0.0</FileVersion>
+    <Version>26.6.0</Version>
+    <FileVersion>26.6.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="GameCartridges\TAK-A.tekst">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="GameCartridges\TheAbandonedKeep.tekst">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

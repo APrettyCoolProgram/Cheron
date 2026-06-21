@@ -4,8 +4,12 @@
 
 </div>
 
-## RYY.MM (YYYY-MM-DD)
+## R26.6 (2026-06-21)
 
-> Please see the [release notes](rel/RXX-release-notes.md) for more details.
+> Please see the [release notes](rel/R26.6-release-notes.md) for more details.
+
+### Tekst
+
+* Initial release
 
 ***

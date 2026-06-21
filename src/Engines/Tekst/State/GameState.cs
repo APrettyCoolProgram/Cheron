@@ -1,5 +1,5 @@
-// 260619_code
-// 260619_documentation
+// 260620_code
+// 260620_documentation
 
 using Tekst.Cartridge;
 using Tekst.Engine;
@@ -25,7 +25,14 @@ public class GameState
     /// <summary>Whether the player has chosen to quit.</summary>
     public bool IsGameOver { get; set; }
 
-    public static void MainGameLoop(Tekst.State.GameState state, CommandProcessor processor, CartridgeData cartData)
+    /// <summary>
+    /// Main game loop that continues until the game is over. On each iteration, it prompts the player for input,
+    /// processes the input, and updates the game state accordingly.
+    /// </summary>
+    /// <param name="state">The current game state.</param>
+    /// <param name="processor">The command processor responsible for handling player input.</param>
+    /// <param name="cartData">The cartridge data containing game rules and content.</param>
+    public static void MainGameLoop(GameState state, CommandProcessor processor, CartridgeData cartData)
     {
         while (!state.IsGameOver)
         {
@@ -55,10 +62,10 @@ public class GameState
         }
     }
 
-    public static void OpeningRoom(Tekst.State.GameState state)
+    /// <summary>Describes the current room to the player, including its name, description, items present, and available exits.</summary>
+    /// <param name="state">The current game state.</param>
+    public static void OpeningRoom(GameState state)
     {
-        string test = CommandProcessor.DescribeRoom(state.CurrentRoom, state);
-
         Console.WriteLine(CommandProcessor.DescribeRoom(state.CurrentRoom, state));
         Console.WriteLine();
     }

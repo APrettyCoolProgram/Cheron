@@ -11,20 +11,13 @@
     <img alt="Fallback image description" src=".github/repository/logo/CheronLogo-Trans-512x512.png">
   </picture>
 
-  ![RELEASE](https://img.shields.io/badge/release-26.6-teal)&nbsp;
-  ![STAGE](https://img.shields.io/badge/ALPHA-red)&nbsp; <!-- Alpha = Red, Beta = Yellow, Stable = Green -->
-  ![LICENSE](https://img.shields.io/badge/License-apache-blue)&nbsp;
-  ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)&nbsp;
-
-  <h3>Game engine(s)</h3>
+<h1>Game engines</h1>
 
 </div>
 
----
-
 <h6 align="center">
 
-  [MANUAL](docs/man/README.md)&nbsp;&bull;&nbsp;[CHANGELOG](docs/CHANGELOG.md)&nbsp;&bull;&nbsp;[ROADMAP](docs/ROADMAP.md)&nbsp;&bull;&nbsp;[KNOWN ISSUES](docs/KNOWN-ISSUES.md)
+  [MANUALS](docs/man/README.md)&nbsp;&bull;&nbsp;[CHANGELOG](docs/CHANGELOG.md)&nbsp;&bull;&nbsp;[ROADMAP](docs/ROADMAP.md)&nbsp;&bull;&nbsp;[KNOWN ISSUES](docs/KNOWN-ISSUES.md)
   
 </h6>
 
@@ -33,68 +26,32 @@
 | CONTENTS                                    |
 |---------------------------------------------|
 | [About Cheron](#about-cheron) |
-| [How it works](#how-it-works)               |
-| [Getting started](#getting-started)         |
-| [Installing](#installing)                   |
-| [Usage](#usage)                             |
-| [Acknowledgements](#acknowledgements)       |
-| [Related projects](#related-projects)       |
-| [License](#license)                         |
+| [Tekst](#tekst)               |
 
 ---
 
 ## About Cheron
 
-Game engine(s)
+Charon is a collection of game engines.
 
-<!--
+## Tekst
+
+![TEKST-RELEASE](https://img.shields.io/badge/release-26.6-teal)&nbsp;&nbsp;![LICENSE](https://img.shields.io/badge/license-apache-blue)&nbsp;&nbsp;![TEKST-STATUS](https://img.shields.io/badge/status-stable-green)&nbsp;&nbsp;![TEKST-PLATFORMS](https://img.shields.io/badge/Platforms-windows%20%7C%20macos%20%7C%20linux-lightgrey)&nbsp;
+
+**Tekst** is an interactive text-based game engine.
+
 ### Features
 
-* Feature — What it does and why it matters.
-* Feature — What it does and why it matters.
-* Feature — What it does and why it matters.
+* **Cartridge system**  
+  Tekst uses a cartridge-based system where each game is packaged into a self-contained file, making it easy to distribute and play games without external dependencies.
+* **Parser driven**  
+  Tekst uses a parser-driven, allowing for complex commands and interactions within the game world.
+* **Console based**  
+  Tekst runs in a console window, providing a retro text-based gaming experience reminiscent of classic text adventures.
 
-## How it works
+### Additional information
 
-A blurb describing how the project works at a high level.
-
-## Getting started
-
-A quick overview of how to get started with the project.
-
-### Before you begin
-
-Any assumptions, or other information a user should know before
-
-### Requirements
-
-| Requirement | Minimum version | Notes |
-|-------------|-----------------|-------|
-| Requirement |                 |       |
-| Requirement |                 |       |
-| Requirement |                 |       |
-
-## Installing
-
-Quick summary of installation instructions, or link to the Installing documentation.
-
-## Usage
-
-Step-by-step instructions for using the project on supported platforms.
-
-## Documentation
-
-Documentation is available.
-
-## Acknowledgements
-
-None.
-
-## Built with
-
-* [Technology or framework](URL)  - Role it plays in the project.
-* [Technology or framework](URL)  - Role it plays in the project.
-* [Technology or framework](URL)  - Role it plays in the project.
+* [Tekst manual](docs/man/tekst/README.md)
 
 ## Related projects
 
@@ -104,7 +61,6 @@ None.
 
 Distributed under the [Apache 2.0 License](LICENSE).  
 Copyright &copy; 2026 [A Pretty Cool Program](https://github.com/APrettyCoolProgram)
-
 
 <h6 align="center">
 
@@ -116,6 +72,4 @@ Copyright &copy; 2026 [A Pretty Cool Program](https://github.com/APrettyCoolProg
 
 ---
 
-<sub>Last updated: 260619</sub>
-
--->
+<sub>Last updated: 260621</sub>

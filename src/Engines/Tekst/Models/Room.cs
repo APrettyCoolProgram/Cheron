@@ -1,5 +1,7 @@
-// 260619_code
-// 260619_documentation
+// 260620_code
+// 260620_documentation
+
+using Tekst.Cartridge;
 
 namespace Tekst.Models;
 
@@ -20,4 +22,16 @@ public class Room
 
     /// <summary>Exits available from this room, keyed by direction.</summary>
     public List<Exit> Exits { get; init; } = [];
+
+    /// <summary>Maps a RoomData object into a Room object.</summary>
+    /// <param name="room">The RoomData object to map.</param>
+    /// <returns>A new Room object created from the provided data.</returns>
+    public static Room MapRoom(RoomData room) => new()
+    {
+        Id          = room.Id,
+        Title       = room.Title,
+        Description = room.Description,
+        Items       = room.Items.Select(Item.MapItem).ToList(),
+        Exits       = room.Exits.Select(Exit.MapExit).ToList(),
+    };
 }

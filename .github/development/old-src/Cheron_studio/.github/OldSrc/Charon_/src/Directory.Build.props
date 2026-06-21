@@ -1,0 +1,15 @@
+<Project>
+  <PropertyGroup>
+    <!-- NuGet / SDK package version -->
+    <Version>0.0.1</Version>
+    <PackageVersion>0.0.1</PackageVersion>
+
+    <!-- Assembly / file versions -->
+    <AssemblyVersion>0.0.1.1</AssemblyVersion>
+    <AssemblyFileVersion>0.0.1.1</AssemblyFileVersion>
+    <FileVersion>0.0.1.1</FileVersion>
+
+    <!-- Informational version (optional) -->
+    <InformationalVersion>0.0.1.1</InformationalVersion>
+  </PropertyGroup>
+</Project>

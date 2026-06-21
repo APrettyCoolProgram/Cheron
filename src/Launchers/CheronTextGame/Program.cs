@@ -1,5 +1,5 @@
-﻿// 260619_code
-// 260619_documentation
+﻿// 260620_code
+// 260620_documentation
 
 using Tekst.Cartridge;
 
@@ -18,6 +18,14 @@ public static class Program
             return;
         }
 
+        Launch(args[0]);
+
+    }
+
+    /// <summary>Launches the game by loading the cartridge, displaying the opening credits, and starting the main game loop.</summary>
+    /// <param name="gameName">The name of the game to launch.</param>
+    private static void Launch(string gameName)
+    {
         /* Separating these so it's easier to understand what is what.
          */
         Tekst.World.GameWorld          _;
@@ -25,7 +33,7 @@ public static class Program
         Tekst.Engine.CommandProcessor? processor;
         CartridgeData?                 cartData;
 
-        (_, state, processor, cartData) = CartridgeLoader.Load($"{args[0]}.tekst");
+        (_, state, processor, cartData) = CartridgeLoader.Load($"{gameName}.tekst");
 
         Tekst.Credits.OpeningCredit.GameTitle(cartData);
 
