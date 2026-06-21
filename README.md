@@ -38,7 +38,7 @@ Charon is a collection of game engines.
 
 ![TEKST-RELEASE](https://img.shields.io/badge/release-26.6-teal)&nbsp;&nbsp;![LICENSE](https://img.shields.io/badge/license-apache-blue)&nbsp;&nbsp;![TEKST-STATUS](https://img.shields.io/badge/status-stable-green)&nbsp;&nbsp;![TEKST-PLATFORMS](https://img.shields.io/badge/Platforms-windows%20%7C%20macos%20%7C%20linux-lightgrey)&nbsp;
 
-Tekst is an interactive text-based game engine for the Cheron platform. It loads a self-contained game cartridge (a .tekst file) and runs a turn-based, parser-driven adventure in a console window.
+Tekst is an interactive text-based game engine.
 
 ### Features
 
@@ -70,5 +70,3 @@ Copyright &copy; 2026 [A Pretty Cool Program](https://github.com/APrettyCoolProg
 ---
 
 <sub>Last updated: 260621</sub>
-
--->
