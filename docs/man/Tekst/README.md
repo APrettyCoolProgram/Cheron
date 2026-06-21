@@ -47,7 +47,7 @@ Tekst is entirely data-driven. No code changes are required to create a new game
 ## Architecture
 
 ```
-CheronTextGame (launcher)
+CheronTekst (launcher)
 │
 └── CartridgeLoader          loads .tekst → CartridgeData
 		│
@@ -106,7 +106,7 @@ Program.Main(args)
 Usage from the command line:
 
 ```
-CheronTextGame <CartridgeName>
+CheronTekst <CartridgeName>
 ```
 
 `<CartridgeName>` is the file stem of a `.tekst` file placed in the `GameCartridges/` directory next to the executable. The `.tekst` extension is appended automatically.
@@ -114,7 +114,7 @@ CheronTextGame <CartridgeName>
 **Example:**
 
 ```
-CheronTextGame TheAbandonedKeep
+CheronTekst TheAbandonedKeep
 ```
 
 ---

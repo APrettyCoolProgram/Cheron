@@ -192,7 +192,7 @@ Set `startingRoomId` to the id of the room where the player begins. The id must 
 2. Launch the engine, passing your cartridge name:
 
    ```
-   CheronTextGame MyGame
+   CheronTekst MyGame
    ```
 
 3. Walk through every room and test every exit.

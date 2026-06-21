@@ -1,5 +1,5 @@
 ﻿// =============================================================================
-// CheronTextGame
+// CheronTekst
 // Launcher for Tekst engine games.
 // https://github.com/APrettyCoolProgram/Ubiquitous
 // Copyright (c) A Pretty Cool Program. All rights reserved.
@@ -8,7 +8,7 @@
 // R26.6.0.0-development+211111
 // =============================================================================
 
-namespace CheronTextGame;
+namespace CheronTekst;
 
 internal class ProjectInfo
 {

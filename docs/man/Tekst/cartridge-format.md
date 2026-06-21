@@ -30,7 +30,7 @@ Cartridge files must be placed in the `GameCartridges/` directory next to the Te
 
 ```
 <install dir>/
-├── CheronTextGame.exe
+├── CheronTekst.exe
 └── GameCartridges/
 	└── MyGame.tekst
 ```
