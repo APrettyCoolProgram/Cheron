@@ -12,11 +12,8 @@
   </picture>
 
   ![RELEASE](https://img.shields.io/badge/release-26.6-teal)&nbsp;
-  ![STAGE](https://img.shields.io/badge/ALPHA-red)&nbsp; <!-- Alpha = Red, Beta = Yellow, Stable = Green -->
-  ![LICENSE](https://img.shields.io/badge/License-apache-blue)&nbsp;
-  ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)&nbsp;
 
-  <h3>Manuals</h3>
+  <h1>Tekst Engine Manual</h1>
 
 </div>
 
