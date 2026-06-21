@@ -51,7 +51,7 @@ Charon is a collection of game engines.
 
 ### Additional information
 
-* [Tekst manual](docs/man/tekst/README.md)
+* [Tekst manual](./docs/man/Tekst/README.md)
 
 ## Related projects
 
@@ -73,3 +73,8 @@ Copyright &copy; 2026 [A Pretty Cool Program](https://github.com/APrettyCoolProg
 ---
 
 <sub>Last updated: 260621</sub>
+* Correct the README link path/casing and update two ProjectInfo version strings to R26.6.0.0-development+211111.
+
+
+
+Enhance CheronTextGame Program.cs comments: add XML <remarks> detailing launcher steps, adjust header/comment text and a TODO phrasing for clarity. These changes improve documentation and bump build metadata.
