@@ -51,8 +51,8 @@ Charon is a collection of game engines.
 
 ### Additional information
 
-* [Tekst Launcher source code](./src/Launchers/CheronTekst)
-* [Tekst Engine source code](./src/Engines/Tekst)
+* [Tekst Launcher source code](./src/Tekst/Launcher/)
+* [Tekst Engine source code](./src/Tekst/Engine/)
 * [Tekst manual](./docs/man/Tekst/README.md)
 
 ## Related projects
