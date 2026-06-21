@@ -1,4 +1,4 @@
-// 260620_code
+// 260621_code
 // 260620_documentation
 
 using System.Text.Json;
@@ -57,8 +57,6 @@ public static class CartridgeLoader
     private static void ValidateCartridge(string cartPath)
     {
         Console.WriteLine(msg_Cartridge.LookingFor(cartPath));
-
-        Console.ReadLine();
 
         if (!File.Exists(cartPath))
         {
