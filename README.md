@@ -13,10 +13,7 @@
 
 <h1>Game engines</h1>
 
-
 </div>
-
----
 
 <h6 align="center">
 
@@ -37,14 +34,12 @@
 
 Charon is a collection of game engines.
 
-## Tekst ![TEKST-RELEASE](https://img.shields.io/badge/release-26.6-teal)&nbsp;
+## Tekst
 
-An interactive text-based game engine that allows developers to create and manage text-based games efficiently. It provides tools and frameworks for handling game logic, player interactions, and narrative elements in a text-based format.
+![TEKST-RELEASE](https://img.shields.io/badge/release-26.6-teal)&nbsp;&nbsp;![LICENSE](https://img.shields.io/badge/license-apache-blue)&nbsp;&nbsp;![TEKST-STATUS](https://img.shields.io/badge/status-stable-green)&nbsp;&nbsp;![TEKST-PLATFORMS](https://img.shields.io/badge/Platforms-windows%20%7C%20macos%20%7C%20linux-lightgrey)&nbsp;
 
-  ![TEKST-ENGINE](https://img.shields.io/badge/Tekst-orange)&nbsp;
-  ![TEKST-RELEASE](https://img.shields.io/badge/release-26.6-teal)&nbsp;
-  ![TEKST-STATUS](https://img.shields.io/badge/status-stable-green)&nbsp;
-  ![TEKST-PLATFORMS](https://img.shields.io/badge/Platforms-windows%20%7C%20macos%20%7C%20linux-lightgrey)&nbsp;
+
+
 
 ### Features
 
