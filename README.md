@@ -10,11 +10,11 @@
     <source media="(prefers-color-scheme: light)" srcset=".github/repository/logo/CheronLogo-Trans-512x512.png">
     <img alt="Fallback image description" src=".github/repository/logo/CheronLogo-Trans-512x512.png">
   </picture>
-  
+
   ![TEKST-ENGINE](https://img.shields.io/badge/Tekst-orange)&nbsp;
-  ![TEKST-RELEASE](https://img.shields.io/badge/R26.6-teal)&nbsp;
-  ![TEKST-STATUS](https://img.shields.io/badge/Stable-green)&nbsp;
-  ![TEKST-PLATFORMS](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)&nbsp;
+  ![TEKST-RELEASE](https://img.shields.io/badge/release-26.6-teal)&nbsp;
+  ![TEKST-STATUS](https://img.shields.io/badge/status-stable-green)&nbsp;
+  ![TEKST-PLATFORMS](https://img.shields.io/badge/Platforms-windows%20%7C%20macos%20%7C%20linux-lightgrey)&nbsp;
 
 </div>
 
