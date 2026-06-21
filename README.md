@@ -10,21 +10,11 @@
     <source media="(prefers-color-scheme: light)" srcset=".github/repository/logo/CheronLogo-Trans-512x512.png">
     <img alt="Fallback image description" src=".github/repository/logo/CheronLogo-Trans-512x512.png">
   </picture>
-
-
-
-
-
-<table>
-  <tr>
-    <td> <img src="https://img.shields.io/badge/Tekst-orange">&nbsp;&nbsp;<img src="https://img.shields.io/badge/R26.6-teal">&nbsp;&nbsp;<img src="https://img.shields.io/badge/Stable-green">&nbsp;&nbsp;<img src="https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey"</td>
-  </tr>
-  <!--
-  <tr>
-    <td> <img src="https://img.shields.io/badge/Dungine-orange">&nbsp;&nbsp;<img src="https://img.shields.io/badge/-------teal">&nbsp;&nbsp;<img src="https://img.shields.io/badge/In_development-yellow">&nbsp;&nbsp;<img src="https://img.shields.io/badge/Platform--------lightgrey"</td>
-  -->
-  </tr>
-</table>
+  
+  ![TEKST-ENGINE](https://img.shields.io/badge/Tekst-orange)&nbsp;
+  ![TEKST-RELEASE](https://img.shields.io/badge/R26.6-teal)&nbsp;
+  ![TEKST-STATUS](https://img.shields.io/badge/Stable-green)&nbsp;
+  ![TEKST-PLATFORMS](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)&nbsp;
 
 </div>
 
