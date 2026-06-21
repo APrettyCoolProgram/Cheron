@@ -11,12 +11,12 @@
     <img alt="Fallback image description" src=".github/repository/logo/CheronLogo-Trans-512x512.png">
   </picture>
 
-  ![RELEASE](https://img.shields.io/badge/release-26.6-teal)&nbsp;
-  ![STAGE](https://img.shields.io/badge/ALPHA-red)&nbsp; <!-- Alpha = Red, Beta = Yellow, Stable = Green -->
-  ![LICENSE](https://img.shields.io/badge/License-apache-blue)&nbsp;
-  ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)&nbsp;
+| Engine  | Release | Game types             | Status         | Platforms                 |
+|---------|:-------:|------------------------|----------------|:-------------------------:|
+| Tekst   | 26.6    | Interactive text-based | Stable         | Windows \| macOS \| Linux |
+| Dungine | ---     | Dungine crawler        | In development | Windows \| macOS \| Linux |
 
-  <h3>Game engine(s)</h3>
+  <h1>Game engines</h1>
 
 </div>
 
@@ -24,7 +24,7 @@
 
 <h6 align="center">
 
-  [MANUAL](docs/man/README.md)&nbsp;&bull;&nbsp;[CHANGELOG](docs/CHANGELOG.md)&nbsp;&bull;&nbsp;[ROADMAP](docs/ROADMAP.md)&nbsp;&bull;&nbsp;[KNOWN ISSUES](docs/KNOWN-ISSUES.md)
+  [MANUALS](docs/man/README.md)&nbsp;&bull;&nbsp;[CHANGELOG](docs/CHANGELOG.md)&nbsp;&bull;&nbsp;[ROADMAP](docs/ROADMAP.md)&nbsp;&bull;&nbsp;[KNOWN ISSUES](docs/KNOWN-ISSUES.md)
   
 </h6>
 
@@ -45,10 +45,15 @@
 
 ## About Cheron
 
-Game engine(s)
+Charon is a collection of game engines.
 
-<!--
-### Features
+## The engines
+
+### Tekst
+
+An interactive text-based game engine that allows developers to create and manage text-based games efficiently. It provides tools and frameworks for handling game logic, player interactions, and narrative elements in a text-based format.
+
+#### Features
 
 * Feature — What it does and why it matters.
 * Feature — What it does and why it matters.
