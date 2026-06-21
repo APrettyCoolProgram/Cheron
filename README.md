@@ -42,7 +42,7 @@ Charon is a collection of game engines.
 
 ### Features
 
-* **Cartridge based**  
+* **Cartridge system**  
   Tekst uses a cartridge-based system where each game is packaged into a self-contained file, making it easy to distribute and play games without external dependencies.
 * **Parser driven**  
   Tekst uses a parser-driven, allowing for complex commands and interactions within the game world.
