@@ -32,15 +32,17 @@
 
 ## About Cheron
 
-Charon is a collection of game engines.
+Charon is a collection of utilities and engines for creating and managing interactive text-based games and other types of digital games within the Cheron ecosystem.
 
-## Tekst
+## Game engines
+
+### Tekst
 
 ![TEKST-RELEASE](https://img.shields.io/badge/release-26.6-teal)&nbsp;&nbsp;![LICENSE](https://img.shields.io/badge/license-apache-blue)&nbsp;&nbsp;![TEKST-STATUS](https://img.shields.io/badge/status-stable-green)&nbsp;&nbsp;![TEKST-PLATFORMS](https://img.shields.io/badge/Platforms-windows%20%7C%20macos%20%7C%20linux-lightgrey)&nbsp;
 
 **Tekst** is an interactive text-based game engine.
 
-### Features
+#### Features
 
 * **Cartridge system**  
   Tekst uses a cartridge-based system where each game is packaged into a self-contained file, making it easy to distribute and play games without external dependencies.
@@ -49,11 +51,17 @@ Charon is a collection of game engines.
 * **Console based**  
   Tekst runs in a console window, providing a retro text-based gaming experience reminiscent of classic text adventures.
 
-### Additional information
+#### Additional information
 
 * [Tekst Launcher source code](./src/Tekst/Launcher/)
 * [Tekst Engine source code](./src/Tekst/Engine/)
 * [Tekst manual](./docs/man/Tekst/README.md)
+
+## Utilities
+
+### Cheron Studio
+
+**Cheron Studio** is a utility for creating and managing games within the Cheron ecosystem. It provides a graphical interface for developing text-based games, managing game assets, and packaging games into cartridges for distribution.
 
 ## Related projects
 

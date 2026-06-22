@@ -10,6 +10,8 @@
 - [ ] If Story is null or empty, GameDetailData.GameDescription is used.
 - [ ] Different fonts?
 - [ ] pre-built themes?
+- [ ] CLS between sessions
+- [ ] CLS between rooms
 - [X] --help command for listing available commands and options
 - [ ] Add support for rich text formatting
 - [ ] Optimize performance for large text blocks
@@ -37,3 +39,9 @@
 - TekstGameTypeVariationD: Experimental text-based game with cutting-edge features
 - TekstGameTypeVariationE: Future text-based game with experimental features
 - 
+
+## Engines
+
+* Tekst Engine: Interactive text-based game engine for creating and managing text-based games within the Cheron ecosystem.
+* Dungine: Interactive dungeon-crawling game engine for creating and managing dungeon-based games within the Cheron ecosystem. Roguelikes.
+* Kort Engine: Interactive card game engine for creating and managing card-based games within the Cheron ecosystem.
