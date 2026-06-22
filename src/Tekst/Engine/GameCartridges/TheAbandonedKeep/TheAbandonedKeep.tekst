@@ -1,0 +1,181 @@
+{
+  "Detail": {
+    "GameTitle": "The Abandoned Keep",
+    "GameAuthor": "---",
+    "GameVersion": "1.0",
+    "GameDescription": "Recover the Crown of the Keep and escape from an ancient, ruined fortress.",
+    "GameType": "Interactive text-based adventure",
+    "GameTypeVariation": "A",
+    "GameGenre": "Fantasy",
+    "GameDifficulty": "Easy"
+  },
+  "Title": {
+    "BannerContents": [
+      "\u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557",
+      "\u2551          T H E   A B A N D O N E D   K E E P         \u2551",
+      "\u2551               A Tekst Engine Adventure               \u2551",
+      "\u255A\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255D"
+    ],
+    "Story": "Recover the Crown of the Keep and escape with your life.",
+    "Instructions": "Type HELP for a list of commands."
+  },
+  "WinRule": {
+    "RequiredItemId": "crown",
+    "RequiredRoomId": "road",
+    "VictoryText": "\nAs you step onto the old road, the Crown of the Keep catches the last rays of dusk.\nGold and ruby blaze for a moment \u2014 then the light fades.\n\nYou have recovered the Crown of the Keep.\nThe keep\u0027s ancient covenant is fulfilled.\n\n  *** YOU WIN \u2014 in {0} turn{1}! ***"
+  },
+  "StartingRoomId": "courtyard",
+  "Rooms": [
+    {
+      "Id": "courtyard",
+      "Title": "Ruined Courtyard",
+      "Description": "You stand in the open courtyard of an abandoned keep. The sky above is a bruised purple \u2014 dusk is coming. Broken battlements loom to the north. A heavy wooden door leads east into the gatehouse. To the south the portcullis stands rusted open, leading back to the road.",
+      "Items": [
+        {
+          "Id": "torch",
+          "Name": "a flickering torch",
+          "Description": "A wooden torch soaked in pine resin. It casts a warm, unsteady light and will burn for some time yet.",
+          "CanTake": true
+        }
+      ],
+      "Exits": [
+        {
+          "Direction": "north",
+          "TargetRoomId": "great_hall",
+          "MoveDescription": "You push through the crumbling archway into the keep."
+        },
+        {
+          "Direction": "east",
+          "TargetRoomId": "gatehouse",
+          "MoveDescription": "The heavy door groans as you heave it open."
+        },
+        {
+          "Direction": "south",
+          "TargetRoomId": "road",
+          "MoveDescription": "You retreat toward the road. The keep looms at your back."
+        }
+      ]
+    },
+    {
+      "Id": "great_hall",
+      "Title": "Great Hall",
+      "Description": "A vast, cold hall. Rows of long tables lie overturned, their benches scattered like fallen soldiers. A massive fireplace yawns to the north wall, cold and black. Faded tapestries hang in tatters. Stairs lead up to the east, and the courtyard lies back to the south.",
+      "Items": [
+        {
+          "Id": "sword",
+          "Name": "a rusty sword",
+          "Description": "A short iron sword dulled by age. Rust blossoms along the blade, but the edge could still draw blood.",
+          "CanTake": true
+        },
+        {
+          "Id": "note",
+          "Name": "a crumpled note",
+          "Description": "The handwriting is hurried and ink-smeared:\n\n  \u0022The crown is hidden beneath the altar stone. Only the iron key\n   will open the vault below the chapel. Do not trust the shadows.\u0022",
+          "CanTake": true
+        }
+      ],
+      "Exits": [
+        {
+          "Direction": "south",
+          "TargetRoomId": "courtyard",
+          "MoveDescription": "You step back through the archway into the open air."
+        },
+        {
+          "Direction": "east",
+          "TargetRoomId": "armory",
+          "MoveDescription": "You duck through a low doorway into a side chamber."
+        },
+        {
+          "Direction": "up",
+          "TargetRoomId": "chapel",
+          "MoveDescription": "You climb the worn stone stairs."
+        }
+      ]
+    },
+    {
+      "Id": "gatehouse",
+      "Title": "Gatehouse",
+      "Description": "A low-ceilinged room that once housed the keep\u0027s guards. Arrow slits line the east wall. A broken portcullis mechanism occupies one corner. Cobwebs hang thick as curtains.",
+      "Items": [
+        {
+          "Id": "key",
+          "Name": "an ancient iron key",
+          "Description": "A heavy key etched with the crest of a long-forgotten lord. It looks important.",
+          "CanTake": true
+        },
+        {
+          "Id": "shield",
+          "Name": "a battered wooden shield",
+          "Description": "Round, painted black, cracked through the centre. Still serviceable in a pinch.",
+          "CanTake": true
+        }
+      ],
+      "Exits": [
+        {
+          "Direction": "west",
+          "TargetRoomId": "courtyard",
+          "MoveDescription": "You step back into the courtyard."
+        }
+      ]
+    },
+    {
+      "Id": "armory",
+      "Title": "Armory",
+      "Description": "Bare weapon racks line the walls, looted long ago. A single arrow lies in the far corner, forgotten or left behind on purpose. The air smells of old leather and rust.",
+      "Items": [
+        {
+          "Id": "arrow",
+          "Name": "a poisoned arrow",
+          "Description": "The tip is dark green, glistening. You\u0027d rather not touch it with bare hands.",
+          "CanTake": true
+        }
+      ],
+      "Exits": [
+        {
+          "Direction": "west",
+          "TargetRoomId": "great_hall",
+          "MoveDescription": "You return to the Great Hall."
+        }
+      ]
+    },
+    {
+      "Id": "chapel",
+      "Title": "Chapel of the Old Lords",
+      "Description": "A vaulted stone chapel, lit by pale light filtering through a cracked rose window. Pews are pushed aside to reveal the floor. At the far end, a great altar stone dominates the room. The stairs back down lie to the west.",
+      "Items": [
+        {
+          "Id": "altar",
+          "Name": "the altar stone",
+          "Description": "A massive slab of black granite. Carvings of an old religion cover its surface. It cannot be moved.",
+          "CanTake": false
+        },
+        {
+          "Id": "crown",
+          "Name": "the Crown of the Keep",
+          "Description": "A golden circlet set with a single blood-red ruby. This is what you came for.",
+          "CanTake": true
+        }
+      ],
+      "Exits": [
+        {
+          "Direction": "down",
+          "TargetRoomId": "great_hall",
+          "MoveDescription": "You descend the stairs back to the Great Hall."
+        }
+      ]
+    },
+    {
+      "Id": "road",
+      "Title": "The Old Road",
+      "Description": "A rutted dirt track stretches away into the twilight. The keep\u0027s gate stands open to the north. There is nothing for you here \u2014 your quest lies within.",
+      "Items": [],
+      "Exits": [
+        {
+          "Direction": "north",
+          "TargetRoomId": "courtyard",
+          "MoveDescription": "You steel yourself and re-enter the keep grounds."
+        }
+      ]
+    }
+  ]
+}

@@ -1,3 +1,6 @@
+// 260622_code
+// 260622_documentation
+
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -186,7 +189,8 @@ public partial class TekstGameEditor : UserControl
 
     private void CommitCurrentRoom()
     {
-        if (_selectedRoom is null) return;
+        if (_selectedRoom is null)
+            return;
         _selectedRoom.Description = TxtRoomDescription.Text;
         _selectedRoom.Title       = TxtRoomTitle.Text;
     }
@@ -195,14 +199,16 @@ public partial class TekstGameEditor : UserControl
 
     private void GameProperty_Changed(object sender, TextChangedEventArgs e)
     {
-        if (_suppressEvents) return;
+        if (_suppressEvents)
+            return;
         CommitGameProperties();
         IsDirty = true;
     }
 
     private void CboStartingRoom_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (_suppressEvents) return;
+        if (_suppressEvents)
+            return;
         _game.StartingRoomId = CboStartingRoom.SelectedItem as string ?? string.Empty;
         IsDirty = true;
     }
@@ -211,7 +217,8 @@ public partial class TekstGameEditor : UserControl
 
     private void RoomList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (_suppressEvents) return;
+        if (_suppressEvents)
+            return;
         CommitCurrentRoom();
         var selectedId = RoomList.SelectedItem as string;
         LoadRoomIntoEditor(_game.Rooms.FirstOrDefault(r => r.Id == selectedId));
@@ -231,9 +238,11 @@ public partial class TekstGameEditor : UserControl
 
     private void BtnDeleteRoom_Click(object sender, RoutedEventArgs e)
     {
-        if (RoomList.SelectedItem is not string id) return;
+        if (RoomList.SelectedItem is not string id)
+            return;
         var room = _game.Rooms.FirstOrDefault(r => r.Id == id);
-        if (room is null) return;
+        if (room is null)
+            return;
 
         var result = MessageBox.Show(
             $"Delete room \"{id}\"?",
@@ -241,7 +250,8 @@ public partial class TekstGameEditor : UserControl
             MessageBoxButton.YesNo,
             MessageBoxImage.Question);
 
-        if (result != MessageBoxResult.Yes) return;
+        if (result != MessageBoxResult.Yes)
+            return;
 
         _game.Rooms.Remove(room);
         _selectedRoom = null;
@@ -255,7 +265,8 @@ public partial class TekstGameEditor : UserControl
 
     private void TxtRoomId_TextChanged(object sender, TextChangedEventArgs e)
     {
-        if (_suppressEvents || _selectedRoom is null) return;
+        if (_suppressEvents || _selectedRoom is null)
+            return;
 
         var newId = TxtRoomId.Text.Trim();
         if (newId == _selectedRoom.Id || string.IsNullOrWhiteSpace(newId) || _game.Rooms.Any(r => r.Id == newId))
@@ -278,7 +289,8 @@ public partial class TekstGameEditor : UserControl
 
     private void RoomProperty_Changed(object sender, TextChangedEventArgs e)
     {
-        if (_suppressEvents || _selectedRoom is null) return;
+        if (_suppressEvents || _selectedRoom is null)
+            return;
         CommitCurrentRoom();
         IsDirty = true;
     }
@@ -287,7 +299,8 @@ public partial class TekstGameEditor : UserControl
 
     private void BtnAddExit_Click(object sender, RoutedEventArgs e)
     {
-        if (_selectedRoom is null) return;
+        if (_selectedRoom is null)
+            return;
         _selectedRoom.Exits.Add(new TekstExit());
         RefreshGrid(ExitsGrid, _selectedRoom.Exits);
         IsDirty = true;
@@ -295,7 +308,8 @@ public partial class TekstGameEditor : UserControl
 
     private void BtnDeleteExit_Click(object sender, RoutedEventArgs e)
     {
-        if (_selectedRoom is null || ExitsGrid.SelectedItem is not TekstExit exit) return;
+        if (_selectedRoom is null || ExitsGrid.SelectedItem is not TekstExit exit)
+            return;
         _selectedRoom.Exits.Remove(exit);
         RefreshGrid(ExitsGrid, _selectedRoom.Exits);
         IsDirty = true;
@@ -303,7 +317,8 @@ public partial class TekstGameEditor : UserControl
 
     private void ExitsGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
     {
-        if (_suppressEvents) return;
+        if (_suppressEvents)
+            return;
         IsDirty = true;
     }
 
@@ -311,7 +326,8 @@ public partial class TekstGameEditor : UserControl
 
     private void BtnAddItem_Click(object sender, RoutedEventArgs e)
     {
-        if (_selectedRoom is null) return;
+        if (_selectedRoom is null)
+            return;
         _selectedRoom.Items.Add(new TekstItem { CanTake = true });
         RefreshGrid(ItemsGrid, _selectedRoom.Items);
         IsDirty = true;
@@ -319,7 +335,8 @@ public partial class TekstGameEditor : UserControl
 
     private void BtnDeleteItem_Click(object sender, RoutedEventArgs e)
     {
-        if (_selectedRoom is null || ItemsGrid.SelectedItem is not TekstItem item) return;
+        if (_selectedRoom is null || ItemsGrid.SelectedItem is not TekstItem item)
+            return;
         _selectedRoom.Items.Remove(item);
         RefreshGrid(ItemsGrid, _selectedRoom.Items);
         IsDirty = true;
@@ -327,7 +344,8 @@ public partial class TekstGameEditor : UserControl
 
     private void ItemsGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
     {
-        if (_suppressEvents) return;
+        if (_suppressEvents)
+            return;
         IsDirty = true;
     }
 
