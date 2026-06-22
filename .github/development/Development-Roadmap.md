@@ -12,6 +12,15 @@
 - [ ] pre-built themes?
 - [ ] CLS between sessions
 - [ ] CLS between rooms
+- [ ] Custom colors for:
+    * Header
+- [ ] Standard colors for:
+      * Story
+      * Victory
+      * Help
+      * Cursor
+      * About
+
 - [X] --help command for listing available commands and options
 - [ ] Add support for rich text formatting
 - [ ] Optimize performance for large text blocks

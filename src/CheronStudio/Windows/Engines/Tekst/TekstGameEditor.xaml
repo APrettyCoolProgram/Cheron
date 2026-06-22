@@ -1,0 +1,221 @@
+﻿<UserControl
+    x:Class="CheronStudio.Engines.Tekst.TekstGameEditor"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    mc:Ignorable="d"
+    d:DesignHeight="620"
+    d:DesignWidth="1000">
+
+    <TabControl x:Name="SectionTabs">
+
+        <!-- Details tab -->
+        <TabItem Header="Details">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="14,10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="220" />
+                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="220" />
+                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Title"   VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox   Grid.Row="0" Grid.Column="1" x:Name="TxtGameTitle"         VerticalAlignment="Center" TextChanged="GameProperty_Changed" />
+                    <TextBlock Grid.Row="0" Grid.Column="3" Text="Author"  VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox   Grid.Row="0" Grid.Column="4" x:Name="TxtGameAuthor"        VerticalAlignment="Center" TextChanged="GameProperty_Changed" />
+                    <TextBlock Grid.Row="0" Grid.Column="6" Text="Version" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox   Grid.Row="0" Grid.Column="7" x:Name="TxtGameVersion"       VerticalAlignment="Center" TextChanged="GameProperty_Changed" />
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Type"      VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox   Grid.Row="2" Grid.Column="1" x:Name="TxtGameType"          VerticalAlignment="Center" TextChanged="GameProperty_Changed" />
+                    <TextBlock Grid.Row="2" Grid.Column="3" Text="Variation" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox   Grid.Row="2" Grid.Column="4" x:Name="TxtGameTypeVariation" VerticalAlignment="Center" TextChanged="GameProperty_Changed" />
+                    <TextBlock Grid.Row="2" Grid.Column="6" Text="Genre"     VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox   Grid.Row="2" Grid.Column="7" x:Name="TxtGameGenre"         VerticalAlignment="Center" TextChanged="GameProperty_Changed" />
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Difficulty"    VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox   Grid.Row="4" Grid.Column="1" x:Name="TxtGameDifficulty"   VerticalAlignment="Center" TextChanged="GameProperty_Changed" />
+                    <TextBlock Grid.Row="4" Grid.Column="3" Text="Starting Room" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <ComboBox  Grid.Row="4" Grid.Column="4" x:Name="CboStartingRoom"     VerticalAlignment="Center" SelectionChanged="CboStartingRoom_SelectionChanged" />
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Description" VerticalAlignment="Top" Margin="0,4,8,0" />
+                    <TextBox   Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="7"
+                               x:Name="TxtGameDescription"
+                               AcceptsReturn="True" TextWrapping="Wrap" Height="60"
+                               VerticalScrollBarVisibility="Auto"
+                               TextChanged="GameProperty_Changed" />
+                    <TextBlock Grid.Row="8" Grid.Column="0" Text="Banner" VerticalAlignment="Top" Margin="0,4,8,0" />
+                    <TextBox   Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="7"
+                               x:Name="TxtBanner"
+                               AcceptsReturn="True" TextWrapping="Wrap" Height="80"
+                               VerticalScrollBarVisibility="Auto"
+                               FontFamily="Consolas"
+                               ToolTip="One line per banner row."
+                               TextChanged="GameProperty_Changed" />
+                </Grid>
+            </ScrollViewer>
+        </TabItem>
+
+        <!-- Win Rule tab -->
+        <TabItem Header="Win Rule">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="14,10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="220" />
+                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Required Item ID" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox   Grid.Row="0" Grid.Column="1" x:Name="TxtWinItemId"   VerticalAlignment="Center" TextChanged="GameProperty_Changed" />
+                    <TextBlock Grid.Row="0" Grid.Column="3" Text="Required Room ID" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBox   Grid.Row="0" Grid.Column="4" x:Name="TxtWinRoomId"   VerticalAlignment="Center" TextChanged="GameProperty_Changed" />
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Victory Text" VerticalAlignment="Top" Margin="0,4,8,0" />
+                    <TextBox   Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4"
+                               x:Name="TxtVictoryText"
+                               AcceptsReturn="True" TextWrapping="Wrap" Height="120"
+                               VerticalScrollBarVisibility="Auto"
+                               FontFamily="Consolas"
+                               ToolTip="Use {0} for turn count and {1} for plural suffix."
+                               TextChanged="GameProperty_Changed" />
+                </Grid>
+            </ScrollViewer>
+        </TabItem>
+
+        <!-- Rooms tab -->
+        <TabItem Header="Rooms">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200" MinWidth="120" />
+                    <ColumnDefinition Width="4" />
+                    <ColumnDefinition Width="*" MinWidth="300" />
+                </Grid.ColumnDefinitions>
+                <DockPanel Grid.Column="0">
+                    <Border DockPanel.Dock="Top"
+                            BorderThickness="0,0,0,1"
+                            BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
+                            Padding="8,4">
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" x:Name="BtnDeleteRoom" Width="22" Height="22" Padding="2"
+                                    ToolTip="Delete room" Click="BtnDeleteRoom_Click">&#x2013;</Button>
+                            <Button DockPanel.Dock="Right" x:Name="BtnAddRoom" Width="22" Height="22" Padding="2"
+                                    Margin="0,0,4,0" ToolTip="Add room" Click="BtnAddRoom_Click">+</Button>
+                            <TextBlock Text="ROOMS" FontSize="10" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                                       VerticalAlignment="Center" />
+                        </DockPanel>
+                    </Border>
+                    <ListBox x:Name="RoomList" BorderThickness="0" SelectionChanged="RoomList_SelectionChanged" />
+                </DockPanel>
+                <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                <Grid Grid.Column="2" x:Name="RoomEditorPanel" IsEnabled="False">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" MinHeight="80" />
+                        <RowDefinition Height="4" />
+                        <RowDefinition Height="180" MinHeight="80" />
+                        <RowDefinition Height="4" />
+                        <RowDefinition Height="180" MinHeight="80" />
+                    </Grid.RowDefinitions>
+                    <Border Grid.Row="0"
+                            BorderThickness="0,0,0,1"
+                            BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
+                            Padding="10,6">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Room ID" VerticalAlignment="Center" Margin="0,0,8,0" />
+                            <TextBox x:Name="TxtRoomId" Width="160" VerticalAlignment="Center"
+                                     TextChanged="TxtRoomId_TextChanged" />
+                            <TextBlock Text="Title" VerticalAlignment="Center" Margin="16,0,8,0" />
+                            <TextBox x:Name="TxtRoomTitle" Width="260" VerticalAlignment="Center"
+                                     TextChanged="RoomProperty_Changed" />
+                        </StackPanel>
+                    </Border>
+                    <TextBox Grid.Row="1"
+                             x:Name="TxtRoomDescription"
+                             AcceptsReturn="True" TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto"
+                             BorderThickness="0,0,0,1"
+                             BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
+                             Padding="10,8" FontFamily="Consolas" FontSize="13"
+                             TextChanged="RoomProperty_Changed" />
+                    <GridSplitter Grid.Row="2" Height="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                    <DockPanel Grid.Row="3">
+                        <Border DockPanel.Dock="Top"
+                                BorderThickness="0,1,0,1"
+                                BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
+                                Padding="10,4">
+                            <DockPanel>
+                                <Button DockPanel.Dock="Right" x:Name="BtnDeleteExit" Width="22" Height="22" Padding="2"
+                                        ToolTip="Delete exit" Click="BtnDeleteExit_Click">&#x2013;</Button>
+                                <Button DockPanel.Dock="Right" x:Name="BtnAddExit" Width="22" Height="22" Padding="2"
+                                        Margin="0,0,4,0" ToolTip="Add exit" Click="BtnAddExit_Click">+</Button>
+                                <TextBlock Text="EXITS" FontSize="10" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                                           VerticalAlignment="Center" />
+                            </DockPanel>
+                        </Border>
+                        <DataGrid x:Name="ExitsGrid"
+                                  AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
+                                  BorderThickness="0" GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                                  CellEditEnding="ExitsGrid_CellEditEnding">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Direction"        Binding="{Binding Direction,       UpdateSourceTrigger=PropertyChanged}" Width="90" />
+                                <DataGridTextColumn Header="Target Room ID"   Binding="{Binding TargetRoomId,    UpdateSourceTrigger=PropertyChanged}" Width="160" />
+                                <DataGridTextColumn Header="Move Description" Binding="{Binding MoveDescription, UpdateSourceTrigger=PropertyChanged}" Width="*" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                    <GridSplitter Grid.Row="4" Height="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                    <DockPanel Grid.Row="5">
+                        <Border DockPanel.Dock="Top"
+                                BorderThickness="0,1,0,1"
+                                BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
+                                Padding="10,4">
+                            <DockPanel>
+                                <Button DockPanel.Dock="Right" x:Name="BtnDeleteItem" Width="22" Height="22" Padding="2"
+                                        ToolTip="Delete item" Click="BtnDeleteItem_Click">&#x2013;</Button>
+                                <Button DockPanel.Dock="Right" x:Name="BtnAddItem" Width="22" Height="22" Padding="2"
+                                        Margin="0,0,4,0" ToolTip="Add item" Click="BtnAddItem_Click">+</Button>
+                                <TextBlock Text="ITEMS" FontSize="10" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                                           VerticalAlignment="Center" />
+                            </DockPanel>
+                        </Border>
+                        <DataGrid x:Name="ItemsGrid"
+                                  AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
+                                  BorderThickness="0" GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                                  CellEditEnding="ItemsGrid_CellEditEnding">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn     Header="ID"          Binding="{Binding Id,          UpdateSourceTrigger=PropertyChanged}" Width="90" />
+                                <DataGridTextColumn     Header="Name"        Binding="{Binding Name,        UpdateSourceTrigger=PropertyChanged}" Width="160" />
+                                <DataGridTextColumn     Header="Description" Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Width="*" />
+                                <DataGridCheckBoxColumn Header="Can Take"    Binding="{Binding CanTake,     UpdateSourceTrigger=PropertyChanged}" Width="70" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                </Grid>
+            </Grid>
+        </TabItem>
+
+    </TabControl>
+
+</UserControl>
