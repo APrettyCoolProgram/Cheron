@@ -32,7 +32,7 @@
 
 ## About Cheron
 
-Charon is a collection of utilities and engines for creating and managing interactive text-based games and other types of digital games within the Cheron ecosystem.
+Charon is a collection of [engines](#game-engines) and [utilities](#utilities) for creating and managing interactive text-based games and other types of digital games within the Cheron ecosystem.
 
 ## Game engines
 
