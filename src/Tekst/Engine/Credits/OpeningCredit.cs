@@ -9,18 +9,18 @@ namespace Tekst.Credits;
 public static class OpeningCredit
 {
     /// <summary>Displays the game title and introductory information from the cartridge data.</summary>
-    /// <param name="cartData">The cartridge data containing the title and introductory information.</param>
-    public static void GameTitle(CartridgeData cartData)
+    /// <param name="cartShell">The cartridge data containing the title and introductory information.</param>
+    public static void GameTitle(CartridgeShell cartShell)
     {
         Console.Clear();
 
-        SetColorScheme(cartData.GameColorScheme);
+        SetColorScheme(cartShell.Detail.GameColorScheme);
 
-        DisplayBanner(cartData.Title.Banner);
+        DisplayBanner(cartShell.Title.Banner);
 
         Console.WriteLine();
-        Console.WriteLine(cartData.Title.Intro);
-        Console.WriteLine(cartData.Title.HelpPrompt);
+        Console.WriteLine(cartShell.Title.Intro);
+        Console.WriteLine(cartShell.Title.HelpPrompt);
         Console.WriteLine();
     }
 

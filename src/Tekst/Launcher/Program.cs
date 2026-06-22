@@ -41,7 +41,7 @@ public static class Program
         Tekst.World.GameWorld          _;
         Tekst.State.GameState?         state;
         Tekst.Engine.CommandProcessor? processor;
-        CartridgeData?                 cartData;
+        CartridgeShell?                 cartData;
 
         (_, state, processor, cartData) = CartridgeLoader.Load($"{gameName}.tekst");
 

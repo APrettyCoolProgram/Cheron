@@ -39,6 +39,7 @@ public class CommandProcessor
 
         return verb switch
         {
+            "about" => About(state),
             "look" or "l" => Look(state),
             "go" or "move" => Go(noun, state),
             "north" or "n" => Go("north", state),
@@ -61,6 +62,33 @@ public class CommandProcessor
     // Verb handlers
     // -------------------------------------------------------------------------
 
+    private static CommandResult About(GameState state)
+    {
+        var thing = $"{state.}"
+        
+        return CommandResult.Say(
+            """
+            Game details
+            ------------
+              Name:                  }
+              go/move <direction>      - Move in a direction
+              get/take <item>          - Pick up an item
+              drop <item>              - Drop a carried item
+              inventory/inv/i          - List what you're carrying
+              examine/x/inspect <item> - Get a detailed look at something
+              quit/q                   - Quit the game
+              help/h/?                 - Show this list
+
+            Cardinal directions  Vertical directions
+            -------------------  -------------------
+              north/n              up/u
+              south/s              down/d
+              east/e
+              west/w
+            """);
+    }
+    
+    
     /// <summary>Describes the player's current room.</summary>
     /// <param name="state">The current game state.</param>
     /// <returns>A result containing the room description.</returns>

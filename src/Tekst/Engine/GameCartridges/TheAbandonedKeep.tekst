@@ -1,18 +1,20 @@
 {
-  "gameTitle": "The Abandoned Keep",
-  "gameAuthor": "---",
-  "gameVersion": "1.0",
-  "gameDescription": "Recover the Crown of the Keep and escape from an ancient, ruined fortress.",
-  "gameEngine": "Tekst",
-  "gameType": "Interactive text-based adventure",
-  "gameTypeVariation": "A",
-  "gameGenre": "Fantasy",
-  "gameDifficulty": "Easy",
-  "textGameType": "Interactive text-based adventure",
+  "data":{
+    "gameName": "The Abandoned Keep",
+    "gameAuthor": "---",
+    "gameVersion": "1.0",
+    "gameDescription": "Recover the Crown of the Keep and escape from an ancient, ruined fortress.",
+    "gameEngine": "Tekst",
+    "gameType": "Interactive text-based adventure",
+    "gameTypeVariation": "A",
+    "gameGenre": "Fantasy",
+    "gameDifficulty": "Easy",
+    "textGameType": "Interactive text-based adventure",
+  },
   "title": {
     "banner": [
       "╔══════════════════════════════════════════════════════╗",
-      "║          T H E   A B A N D O N E D   K E E P         ║",
+      "║          T H E   A B A N D O N E D   K E E P z       ║",
       "║               A Tekst Engine Adventure               ║",
       "╚══════════════════════════════════════════════════════╝"
     ],

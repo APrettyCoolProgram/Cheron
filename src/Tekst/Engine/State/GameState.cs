@@ -31,8 +31,8 @@ public class GameState
     /// </summary>
     /// <param name="state">The current game state.</param>
     /// <param name="processor">The command processor responsible for handling player input.</param>
-    /// <param name="cartData">The cartridge data containing game rules and content.</param>
-    public static void MainGameLoop(GameState state, CommandProcessor processor, CartridgeData cartData)
+    /// <param name="cartShell">The cartridge data containing game rules and content.</param>
+    public static void MainGameLoop(GameState state, CommandProcessor processor, CartridgeShell cartShell)
     {
         while (!state.IsGameOver)
         {
@@ -43,14 +43,24 @@ public class GameState
             var input = Console.ReadLine() ?? string.Empty;
             Console.WriteLine();
 
-            var result = processor.Process(input, state);
 
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine(result.Message);
-            Console.ResetColor();
-            Console.WriteLine();
+            
+            if (input == "about")
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                
+            }
+            else
+            {
+                var result = processor.Process(input, state);
+                
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine(result.Message);
+                Console.ResetColor();
+                Console.WriteLine();
+            }
 
-            var winMessage = WinEvaluator.Check(cartData.WinRule, state);
+            var winMessage = WinEvaluator.Check(cartShell.WinRule, state);
 
             if (winMessage is not null)
             {

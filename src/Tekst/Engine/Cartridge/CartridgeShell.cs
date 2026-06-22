@@ -4,14 +4,33 @@
 namespace Tekst.Cartridge;
 
 /// <summary>Root deserialization target for a <c>.cart</c> JSON file.</summary>
-public class CartridgeData
+public class CartridgeShell
 {
+    /// <summary></summary>
+    public GameDetail Detail { get; set; } = new GameDetail();
+    
     /// <summary>Gets or sets the title data displayed at startup.</summary>
     public TitleData Title { get; set; } = new();
 
-    /// <summary>Gets or sets the game title shown in the banner.</summary>
-    public string GameTitle { get; set; } = string.Empty;
 
+
+
+
+    /// <summary>Gets or sets the rule that determines when the game is won.</summary>
+    public WinRuleData WinRule { get; set; } = new();
+
+    /// <summary>Gets or sets the identifier of the room where the player begins.</summary>
+    public string StartingRoomId { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the rooms defined in the cartridge.</summary>
+    public List<RoomData> Rooms { get; set; } = [];
+}
+
+public class GameDetail
+{
+    /// <summary>The game name.</summary>
+    public string GameName { get; set; } = string.Empty;
+    
     /// <summary>Gets or sets the author of the game.</summary>
     public string GameAuthor { get; set; } = "---";
 
@@ -41,16 +60,8 @@ public class CartridgeData
 
     /// <summary>Gets or sets the text game type.</summary>
     public string TextGameType { get; set; } = string.Empty;
-
-    /// <summary>Gets or sets the rule that determines when the game is won.</summary>
-    public WinRuleData WinRule { get; set; } = new();
-
-    /// <summary>Gets or sets the identifier of the room where the player begins.</summary>
-    public string StartingRoomId { get; set; } = string.Empty;
-
-    /// <summary>Gets or sets the rooms defined in the cartridge.</summary>
-    public List<RoomData> Rooms { get; set; } = [];
 }
+
 
 /// <summary>Defines the title screen content for the game.</summary>
 public class TitleData
