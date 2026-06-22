@@ -1,23 +1,23 @@
 {
-  "detail": {
-    "gameTitle": "The Abandoned Keep",
-    "gameAuthor": "---",
-    "gameVersion": "1.0",
-    "gameDescription": "Recover the Crown of the Keep and escape from an ancient, ruined fortress.",
-    "gameType": "Interactive text-based adventure",
-    "gameTypeVariation": "A",
-    "gameGenre": "Fantasy",
-    "gameDifficulty": "Easy"
-  },
+  "gameTitle": "The Abandoned Keep",
+  "gameAuthor": "---",
+  "gameVersion": "1.0",
+  "gameDescription": "Recover the Crown of the Keep and escape from an ancient, ruined fortress.",
+  "gameEngine": "Tekst",
+  "gameType": "Interactive text-based adventure",
+  "gameTypeVariation": "A",
+  "gameGenre": "Fantasy",
+  "gameDifficulty": "Easy",
+  "textGameType": "Interactive text-based adventure",
   "title": {
-    "bannerContents": [
+    "banner": [
       "╔══════════════════════════════════════════════════════╗",
       "║          T H E   A B A N D O N E D   K E E P         ║",
       "║               A Tekst Engine Adventure               ║",
       "╚══════════════════════════════════════════════════════╝"
     ],
-    "story": "Recover the Crown of the Keep and escape with your life.",
-    "instructions": "Type HELP for a list of commands."
+    "intro": "Recover the Crown of the Keep and escape with your life.",
+    "helpPrompt": "Type HELP for a list of commands."
   },
   "winRule": {
     "requiredItemId": "crown",

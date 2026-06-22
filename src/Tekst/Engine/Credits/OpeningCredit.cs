@@ -10,17 +10,17 @@ public static class OpeningCredit
 {
     /// <summary>Displays the game title and introductory information from the cartridge data.</summary>
     /// <param name="cartData">The cartridge data containing the title and introductory information.</param>
-    public static void GameTitle(CartridgeData cartData)
+    public static void GameTitle(CartridgeShell cartData)
     {
         Console.Clear();
 
-        SetColorScheme(cartData.GameColorScheme);
+        SetColorScheme(cartData.Detail.GameColorScheme);
 
-        DisplayBanner(cartData.Title.Banner);
+        DisplayBanner(cartData.Title.BannerContents);
 
         Console.WriteLine();
-        Console.WriteLine(cartData.Title.Intro);
-        Console.WriteLine(cartData.Title.HelpPrompt);
+        Console.WriteLine(cartData.Title.Story);
+        Console.WriteLine(cartData.Title.Instructions);
         Console.WriteLine();
     }
 

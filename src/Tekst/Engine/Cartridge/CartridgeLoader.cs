@@ -27,17 +27,17 @@ public static class CartridgeLoader
     /// <param name="cartName">The file name of the cartridge to load.</param>
     /// <returns>
     /// A tuple containing the constructed <see cref="GameWorld"/>, <see cref="GameState"/>,
-    /// <see cref="CommandProcessor"/>, and <see cref="CartridgeData"/>.
+    /// <see cref="CommandProcessor"/>, and <see cref="CartridgeShell"/>.
     /// </returns>
     /// <exception cref="FileNotFoundException">Thrown when the .cart file does not exist.</exception>
     /// <exception cref="InvalidOperationException">Thrown when the file cannot be deserialized or the starting room is missing.</exception>
-    public static (GameWorld World, GameState State, CommandProcessor Processor, CartridgeData Data) Load(string cartName)
+    public static (GameWorld World, GameState State, CommandProcessor Processor, CartridgeShell Data) Load(string cartName)
     {
         var cartPath = Path.Combine(AppContext.BaseDirectory, "GameCartridges", cartName);
 
         ValidateCartridge(cartPath);
 
-        CartridgeData cartridgeData = Deserialize(cartPath);
+        CartridgeShell cartridgeData = Deserialize(cartPath);
 
         List<Room> rooms = cartridgeData.Rooms.ConvertAll(Room.MapRoom);
         GameWorld world  = new GameWorld(rooms, cartridgeData.StartingRoomId);
@@ -64,15 +64,15 @@ public static class CartridgeLoader
         }
     }
 
-    /// <summary>Reads the cartridge file from the specified path and deserializes it into a <see cref="CartridgeData"/> object.</summary>
+    /// <summary>Reads the cartridge file from the specified path and deserializes it into a <see cref="CartridgeShell"/> object.</summary>
     /// <param name="cartPath">The path to the cartridge file.</param>
-    /// <returns>The deserialized <see cref="CartridgeData"/> object.</returns>
+    /// <returns>The deserialized <see cref="CartridgeShell"/> object.</returns>
     /// <exception cref="InvalidOperationException">Thrown when the file cannot be deserialized.</exception>
-    private static CartridgeData Deserialize(string cartPath)
+    private static CartridgeShell Deserialize(string cartPath)
     {
         var json = File.ReadAllText(cartPath);
 
-        return JsonSerializer.Deserialize<CartridgeData>(json, JsonOptions)
+        return JsonSerializer.Deserialize<CartridgeShell>(json, JsonOptions)
             ?? throw new InvalidOperationException(msg_Cartridge.DeserializationFailed(cartPath));
     }
 }

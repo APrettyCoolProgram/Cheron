@@ -32,7 +32,7 @@ public class GameState
     /// <param name="state">The current game state.</param>
     /// <param name="processor">The command processor responsible for handling player input.</param>
     /// <param name="cartData">The cartridge data containing game rules and content.</param>
-    public static void MainGameLoop(GameState state, CommandProcessor processor, CartridgeData cartData)
+    public static void MainGameLoop(GameState state, CommandProcessor processor, CartridgeShell cartData)
     {
         while (!state.IsGameOver)
         {

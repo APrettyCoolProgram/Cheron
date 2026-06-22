@@ -4,15 +4,20 @@
 
 </div>
 
-* Tekst Engine
-  * --help command for listing available commands and options
-  * Add support for rich text formatting
-  * Optimize performance for large text blocks
-  * List carts
-  * Compress carts for distribution
-  * Unformatted JSON-carts for size (Studio shows formatted, or can export as formatted)
-  * End game message in cart
-  * Tekst GameType Variations
+## Tekst Engine
+
+- [ ] If the banner == null or empty, the game title from <c>GameDetailData</c> will display the GameDetailData.GameTitle instead.
+- [ ] If Story is null or empty, GameDetailData.GameDescription is used.
+- [ ] Different fonts?
+- [ ] pre-built themes?
+- [X] --help command for listing available commands and options
+- [ ] Add support for rich text formatting
+- [ ] Optimize performance for large text blocks
+- [ ] List carts
+- [ ] Compress carts for distribution
+- [ ] Unformatted JSON-carts for size (Studio shows formatted, or can export as formatted)
+- [ ] End game message in cart
+- [ ] Tekst GameType Variations
     * TekstGameTypeVariationA
       * 80-column width
       * No header

@@ -1,14 +1,28 @@
-// 260619_code
-// 260619_documentation
+// 260622_code
+// 260622_documentation
 
 namespace Tekst.Cartridge;
 
 /// <summary>Root deserialization target for a <c>.cart</c> JSON file.</summary>
-public class CartridgeData
+public class CartridgeShell
 {
-    /// <summary>Gets or sets the title data displayed at startup.</summary>
-    public TitleData Title { get; set; } = new();
+    public GameDetailData Detail { get; set; } = new();
 
+    /// <summary>Gets or sets the title data displayed at startup.</summary>
+    public OpeningCreditData Title { get; set; } = new();
+
+    /// <summary>Gets or sets the rule that determines when the game is won.</summary>
+    public WinRuleData WinRule { get; set; } = new();
+
+    /// <summary>Gets or sets the identifier of the room where the player begins.</summary>
+    public string StartingRoomId { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the rooms defined in the cartridge.</summary>
+    public List<RoomData> Rooms { get; set; } = [];
+}
+
+public class GameDetailData
+{
     /// <summary>Gets or sets the game title shown in the banner.</summary>
     public string GameTitle { get; set; } = string.Empty;
 
@@ -21,14 +35,11 @@ public class CartridgeData
     /// <summary>Gets or sets a short description of the game.</summary>
     public string GameDescription { get; set; } = string.Empty;
 
-    /// <summary>Gets or sets the engine used to run the game.</summary>
-    public string GameEngine { get; set; } = string.Empty;
-
     /// <summary>Gets or sets the type of game.</summary>
     public string GameType { get; set; } = string.Empty;
 
     /// <summary>Gets or sets the single-character variation of the game type.</summary>
-    public string GameTypeVariation { get; set; } = "A";
+    public string GameVariation { get; set; } = "A";
 
     /// <summary>Gets or sets the foreground,background color scheme.</summary>
     public string GameColorScheme { get; set; } = "B,W";
@@ -39,30 +50,30 @@ public class CartridgeData
     /// <summary>Gets or sets the difficulty level of the game.</summary>
     public string GameDifficulty { get; set; } = string.Empty;
 
-    /// <summary>Gets or sets the text game type.</summary>
-    public string TextGameType { get; set; } = string.Empty;
-
-    /// <summary>Gets or sets the rule that determines when the game is won.</summary>
-    public WinRuleData WinRule { get; set; } = new();
-
-    /// <summary>Gets or sets the identifier of the room where the player begins.</summary>
-    public string StartingRoomId { get; set; } = string.Empty;
-
-    /// <summary>Gets or sets the rooms defined in the cartridge.</summary>
-    public List<RoomData> Rooms { get; set; } = [];
 }
 
+
 /// <summary>Defines the title screen content for the game.</summary>
-public class TitleData
+public class OpeningCreditData
 {
-    /// <summary>Gets or sets the banner lines shown on the title screen.</summary>
-    public List<string> Banner { get; set; } = [];
+    /// <summary>The game banner that is displayed on the title screen.</summary>
+    /// <remarks>
+    /// Each string in the list represents a line of the banner.<br/>
+    /// <br/>
+    /// If the banner == null or empty, GameDetailData.GameTitle is used.<br/>
+    /// </remarks>
+    public List<string> BannerContents { get; set; } = [];
+
+    public string BannerColor { get; set; } = "C";
 
     /// <summary>Gets or sets the introductory text displayed when the game starts.</summary>
-    public string Intro { get; set; } = string.Empty;
+    /// <remarks>
+    /// If Story is null or empty, GameDetailData.GameDescription is used.<br/>
+    /// </remarks>
+    public string Story { get; set; } = string.Empty;
 
-    /// <summary>Gets or sets the help prompt shown to the player.</summary>
-    public string HelpPrompt { get; set; } = string.Empty;
+    /// <summary>Gets or sets the instructions shown to the player.</summary>
+    public string Instructions { get; set; } = string.Empty;
 }
 
 /// <summary>Defines the victory requirements for the game.</summary>
