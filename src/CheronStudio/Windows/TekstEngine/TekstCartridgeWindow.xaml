@@ -5,17 +5,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:CheronStudio.TekstEngine"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="TekstCartridgeWindow"
-    Width="800"
-    Height="450"
+    Title="Tekst Engine" Height="400" Width="600"
     mc:Ignorable="d">
     <Grid>
-        <Button
-            x:Name="btnCloseWindow"
-            Margin="147,80,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Content="Close" />
-
     </Grid>
 </Window>
