@@ -14,8 +14,8 @@ public partial class MainWindow : Window
 
     private void btnTekstEngine_Click()
     {
-        Background                = Brushes.DarkGray;
-        btnTekstEngine.Background = Brushes.LightGray;
+        Background                = System.Windows.Media.Brushes.DarkGray;
+        btnTekstEngine.Background = System.Windows.Media.Brushes.LightGray;
 
         var tekstEngineWindow = new TekstEngineWindow();
         tekstEngineWindow.Show();
