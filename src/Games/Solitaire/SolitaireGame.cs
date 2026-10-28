@@ -107,9 +107,10 @@ public sealed partial class SolitaireGame : IGameModule
         StartNewGame();
     }
 
-    /// <summary>Creates the drawing resources and cached card-table artwork owned by this module.</summary>
+    /// <summary>Creates owned drawing resources, card-table artwork, and optional synthesized sounds.</summary>
     /// <remarks>
     /// Call once on the graphics thread after the device becomes available and before drawing.
+    /// Audio-device failures are reported in diagnostics and on the board; visual feedback remains available.
     /// The module releases these resources in <see cref="Dispose"/>; it does not own the graphics device.
     /// </remarks>
     /// <param name="graphicsDevice">The borrowed, host-owned graphics device.</param>
@@ -119,14 +120,16 @@ public sealed partial class SolitaireGame : IGameModule
         _pixelTexture = new Texture2D(graphicsDevice, 1, 1);
         _pixelTexture.SetData([Color.White]);
         _artwork = new SolitaireArtwork(graphicsDevice);
+        LoadFeedbackSounds();
     }
 
-    /// <summary>Updates statistics, animations, toolbar shortcuts, clicks, double-clicks, and card dragging.</summary>
+    /// <summary>Updates statistics, animations, feedback, toolbar shortcuts, clicks, and card dragging.</summary>
     /// <param name="gameTime">The host-supplied timing information used for statistics, gestures, and animations.</param>
     public void Update(GameTime gameTime)
     {
         UpdateControls(gameTime.ElapsedGameTime);
         UpdateAnimations(gameTime.ElapsedGameTime);
+        UpdateFeedback(gameTime.ElapsedGameTime);
         var keyboardState = Keyboard.GetState();
 
         if (keyboardState.IsKeyDown(Keys.R) && !_previousKeyboardState.IsKeyDown(Keys.R))
@@ -220,13 +223,17 @@ public sealed partial class SolitaireGame : IGameModule
 
         DrawInteractionFeedback();
         DrawCardTransitions();
+        DrawInvalidFeedback();
+        DrawWinCelebration();
 
         Fill(new Rectangle(0, 728, 1100, 72), new Color(12, 31, 37, 230));
         Fill(new Rectangle(0, 728, 1100, 1), new Color(67, 102, 102));
-        DrawText(_hintTimeRemaining > TimeSpan.Zero ? _hintMessage : "BUILD DOWN IN ALTERNATING COLORS",
-            32, 747, 1, new Color(207, 220, 207));
+        var footerMessage = _invalidTimeRemaining > TimeSpan.Zero
+            ? "MOVE NOT ALLOWED  TRY ANOTHER TARGET OR USE HINT"
+            : _hintTimeRemaining > TimeSpan.Zero ? _hintMessage : "BUILD DOWN IN ALTERNATING COLORS";
+        DrawText(footerMessage, 32, 747, 1, new Color(207, 220, 207));
         DrawText("DRAG OR CLICK TO MOVE  DOUBLE CLICK TO BUILD", 32, 767, 1, new Color(153, 183, 176));
-        DrawText("ACES TO KINGS", 883, 747, 1, new Color(235, 205, 143));
+        DrawText(_audioUnavailable ? "SOUND UNAVAILABLE" : "ACES TO KINGS", 883, 747, 1, new Color(235, 205, 143));
         DrawText("ESC  EXIT", 907, 767, 1, new Color(153, 183, 176));
 
         if (_hasWon && _cardTransitions.Count == 0)
@@ -238,9 +245,10 @@ public sealed partial class SolitaireGame : IGameModule
         _spriteBatch.End();
     }
 
-    /// <summary>Releases the module-owned drawing resources without disposing the borrowed graphics device.</summary>
+    /// <summary>Releases owned drawing and audio resources without disposing the borrowed graphics device.</summary>
     public void Dispose()
     {
+        DisposeFeedbackSounds();
         _artwork?.Dispose();
         _pixelTexture?.Dispose();
         _spriteBatch?.Dispose();
@@ -256,6 +264,7 @@ public sealed partial class SolitaireGame : IGameModule
         ClearSelection();
         ResetPointerGesture();
         ResetControls();
+        ResetFeedback();
         _hasWon = false;
 
         var deck = new List<Card>(52);
@@ -336,9 +345,17 @@ public sealed partial class SolitaireGame : IGameModule
                 continue;
             }
 
-            if (_selectedPile is not null && TryMoveToFoundation(foundationIndex))
+            if (_selectedPile is not null)
             {
-                return;
+                if (TryMoveToFoundation(foundationIndex))
+                {
+                    return;
+                }
+
+                if (!ReferenceEquals(_selectedPile, _foundations[foundationIndex]))
+                {
+                    ShowInvalidMove(clickPosition);
+                }
             }
 
             SelectTop(_foundations[foundationIndex]);
@@ -353,9 +370,14 @@ public sealed partial class SolitaireGame : IGameModule
                 continue;
             }
 
-            if (_selectedPile is not null && TryMoveToTableau(columnIndex))
+            if (_selectedPile is not null)
             {
-                return;
+                if (TryMoveToTableau(columnIndex))
+                {
+                    return;
+                }
+
+                ShowInvalidMove(clickPosition);
             }
 
             var clickedCardIndex = GetTableauCardIndex(columnIndex, clickPosition.Y);
@@ -388,6 +410,7 @@ public sealed partial class SolitaireGame : IGameModule
             drawnCard.FaceUp = true;
             _waste.Add(drawnCard);
             AnimateChanges(before);
+            PlayFeedbackSound(FeedbackSound.Move);
 
             return;
         }
@@ -404,6 +427,7 @@ public sealed partial class SolitaireGame : IGameModule
 
             _waste.Clear();
             AnimateChanges(before);
+            PlayFeedbackSound(FeedbackSound.Move);
         }
     }
 
@@ -474,6 +498,10 @@ public sealed partial class SolitaireGame : IGameModule
         ClearSelection();
         _hasWon = _foundations.All(foundationPile => foundationPile.Count == 13);
         AnimateChanges(before);
+        if (!_hasWon)
+        {
+            PlayFeedbackSound(_foundations.Contains(destinationPile) ? FeedbackSound.Foundation : FeedbackSound.Move);
+        }
     }
 
     /// <summary>Selects the top card of a pile, or clears the selection when the pile is empty.</summary>

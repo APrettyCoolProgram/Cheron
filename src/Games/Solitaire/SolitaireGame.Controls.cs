@@ -79,6 +79,7 @@ public sealed partial class SolitaireGame
         _moveCount++;
         _timerStarted = true;
         ClearHint();
+        ResetFeedback();
     }
 
     /// <summary>Restores the last action, including automatic flips, without rewinding elapsed playing time.</summary>
@@ -107,7 +108,9 @@ public sealed partial class SolitaireGame
         ClearSelection();
         ResetPointerGesture();
         ClearHint();
+        ResetFeedback();
         AnimateChanges(before);
+        PlayFeedbackSound(FeedbackSound.Move);
     }
 
     /// <summary>Resets history, statistics, and hint feedback for a new deal.</summary>
@@ -132,10 +135,15 @@ public sealed partial class SolitaireGame
         _hintTimeRemaining = elapsed >= _hintTimeRemaining ? TimeSpan.Zero : _hintTimeRemaining - elapsed;
     }
 
-    /// <summary>Handles edge-triggered keyboard shortcuts when the board is not animating or dragging.</summary>
+    /// <summary>Handles shortcut edges, allowing sound toggling even during animations or dragging.</summary>
     /// <param name="keyboardState">The current keyboard state.</param>
     private void HandleControlKeys(KeyboardState keyboardState)
     {
+        if (keyboardState.IsKeyDown(Keys.M) && !_previousKeyboardState.IsKeyDown(Keys.M))
+        {
+            ToggleSound();
+        }
+
         if (_cardTransitions.Count > 0 || _isDragging)
         {
             return;
@@ -174,6 +182,12 @@ public sealed partial class SolitaireGame
             return true;
         }
 
+        if (SoundButtonBounds.Contains(position))
+        {
+            ToggleSound();
+            return true;
+        }
+
         return false;
     }
 
@@ -184,8 +198,10 @@ public sealed partial class SolitaireGame
         DrawToolbarButton(NewGameButtonBounds, "NEW GAME", true);
         DrawToolbarButton(UndoButtonBounds, "UNDO", canUseBoard && _undoHistory.Count > 0);
         DrawToolbarButton(HintButtonBounds, "HINT", canUseBoard && !_hasWon);
+        DrawToolbarButton(SoundButtonBounds, _audioUnavailable ? "NA" : _soundEnabled ? "SND" : "OFF",
+            !_audioUnavailable);
         DrawText("SOLITAIRE", 440, 26, 2, new Color(246, 239, 218));
-        DrawText("R NEW GAME  U UNDO  H HINT", 440, 51, 1, new Color(153, 183, 176));
+        DrawText("R NEW GAME  U UNDO  H HINT  M SOUND", 440, 51, 1, new Color(153, 183, 176));
         DrawText("MOVES", 760, 24, 1, new Color(153, 183, 176));
         DrawText(_moveCount.ToString(), 760, 42, 2, new Color(246, 239, 218));
         DrawText("TIME", 920, 24, 1, new Color(153, 183, 176));
@@ -228,6 +244,7 @@ public sealed partial class SolitaireGame
             return;
         }
 
+        _invalidTimeRemaining = TimeSpan.Zero;
         var originalPile = _selectedPile;
         var originalIndex = _selectedCardIndex;
         try

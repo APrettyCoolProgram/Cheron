@@ -59,6 +59,10 @@ public sealed partial class SolitaireGame
             {
                 StartNewGame();
             }
+            else if (isDown && !_pointerWasDown && SoundButtonBounds.Contains(position))
+            {
+                ToggleSound();
+            }
 
             _pressedPile = null;
             _isDragging = false;
@@ -140,12 +144,19 @@ public sealed partial class SolitaireGame
                 clickDistance < DragThreshold * DragThreshold)
             {
                 Select(pile, cardIndex);
+                var movedToFoundation = false;
                 for (var foundationIndex = 0; foundationIndex < _foundations.Count; foundationIndex++)
                 {
                     if (TryMoveToFoundation(foundationIndex))
                     {
+                        movedToFoundation = true;
                         break;
                     }
+                }
+
+                if (!movedToFoundation)
+                {
+                    ShowInvalidMove(position);
                 }
 
                 _lastClickedCard = null;
@@ -196,6 +207,8 @@ public sealed partial class SolitaireGame
                 return;
             }
         }
+
+        ShowInvalidMove(position);
     }
 
     /// <summary>Checks tableau legality without changing selection or card state.</summary>
