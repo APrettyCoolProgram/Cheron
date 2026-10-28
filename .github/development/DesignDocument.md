@@ -7,9 +7,3 @@
 </div>
 
 The design document.
-
-***
-
-<br>
-
-<sub>Last updated: 260815</sub>
