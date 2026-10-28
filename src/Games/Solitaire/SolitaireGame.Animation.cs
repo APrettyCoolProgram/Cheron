@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Cheron.Games.Solitaire;
 
@@ -165,12 +164,11 @@ public sealed partial class SolitaireGame
             var widthScale = Math.Max(0.02f, Math.Abs(1 - 2 * progress));
             var centerX = bounds.Center.X;
             _spriteBatch.End();
-            _spriteBatch.Begin(samplerState: SamplerState.LinearClamp,
-                transformMatrix: Matrix.CreateTranslation(-centerX, 0, 0) *
-                    Matrix.CreateScale(widthScale, 1, 1) * Matrix.CreateTranslation(centerX, 0, 0));
+            BeginBoardDrawing(Matrix.CreateTranslation(-centerX, 0, 0) *
+                Matrix.CreateScale(widthScale, 1, 1) * Matrix.CreateTranslation(centerX, 0, 0));
             DrawCardArtwork(entry.Key, bounds, false, !faceUp);
             _spriteBatch.End();
-            _spriteBatch.Begin(samplerState: SamplerState.LinearClamp);
+            BeginBoardDrawing();
         }
     }
 }

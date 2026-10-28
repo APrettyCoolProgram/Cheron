@@ -13,6 +13,23 @@ Animations use elapsed time rather than frame counts and do not change game rule
 Board input briefly pauses during transitions; **New Game**, sound toggling, **R**, and **Escape** remain available.
 All visual assets and rendering remain inside `Games\Solitaire`.
 
+## Window layout
+
+Resize or maximize the window to scale the entire 1100-by-800 logical card table proportionally.
+Cards, controls, text, highlights, animations, and celebrations retain their relative positions and aspect ratio.
+Wide or tall windows use centered dark margins rather than stretching or cropping the board.
+The toolbar and tableau do not reflow; very small windows therefore make the whole game smaller.
+
+The engine's `GameViewport` measures both the client area and drawable back buffer, allowing different DPI scales.
+Solitaire draws directly into the drawable surface with a shared transform, not into a low-resolution intermediate image.
+Existing card textures and bitmap lettering are retained; this does not add vector artwork or scalable fonts.
+The original glyphs are cached in a padded texture atlas so fractional scaling filters thin strokes rather than dropping them.
+Pointer coordinates are mapped through the same viewport before hit testing, so controls, dragging, and double-clicks
+stay aligned at different window sizes and DPI scales. Margin clicks do not activate the board, and dragged cards
+are clipped out of the margins. Gesture distances use logical board units and scale with the board.
+Resizing cancels a held pointer gesture and returns any dragged stack without moving cards; a fresh press is required.
+Ordinary selections, hints, history, statistics, and active deal/move animations survive resizing.
+
 ## Feedback
 
 Quiet synthesized tones acknowledge draws, recycling, moves, and undo; foundation advances use a rising pair of tones.
@@ -37,11 +54,14 @@ Sounds are generated once during content loading and disposed with the module; n
 These are folder/namespace boundaries within the existing project, not separate assemblies yet.
 The host owns the MonoGame window, graphics-device lifecycle, global exit controls, and active module.
 It initializes the module, loads its resources once a graphics device is available, and forwards update/draw calls.
+It enables native window resizing and sends `SetViewport` notifications before using changed client or drawable dimensions.
+Zero-sized minimized surfaces are skipped until usable dimensions return.
 On shutdown it disposes the module before MonoGame disposes the graphics device.
 The module borrows the graphics device and owns/disposes the textures, sprite batches, sounds, and playback instances it creates.
 
-To add a game, implement `IGameModule` under its own `Games` folder, supply its title and preferred window size,
-and select it in `Program.cs`. A launcher or dynamic plugin system is not required.
+To add a game, implement `IGameModule` under its own `Games` folder, supply its title and logical canvas size through
+`PreferredWindowSize`, handle `SetViewport` for drawing and input mapping, and select it in `Program.cs`.
+The preferred size also requests the initial window dimensions. A launcher or dynamic plugin system is not required.
 Keep game-specific rules and drawing in that module; put genuinely shared helpers in `Engine` as needs emerge.
 The existing Solitaire drawing helpers remain local until another game demonstrates a shared requirement.
 
@@ -63,7 +83,7 @@ dotnet run --project Cheron.csproj
 - Click the stock to draw one card to the waste. Click the empty stock to recycle the waste.
 - Click a face-up card to select it; click a valid tableau pile or foundation to move it.
 - Alternatively, drag a face-up card or tableau stack and release over a valid pile. Invalid drops leave cards in place.
-- A drag begins after six pixels of movement; a shorter press/release is a click.
+- A drag begins after six logical board units of movement; a shorter press/release is a click.
 - Double-click the same card within 350 milliseconds to send an eligible top card to a foundation.
 - Pale outlines mark the hovered card; mint outlines identify legal destinations for the selection or dragged stack.
 - Tableau stacks build downward in alternating colors, with Kings on empty columns.
@@ -105,3 +125,9 @@ proof that the deal can be won; they do not recommend foundation reversals or wh
 - Hold **M**; confirm it toggles only once per press. Start a new game and confirm the mute preference is retained.
 - Complete a game; confirm the celebration starts after the last slide, ends after three seconds, and does not repeat.
 - Undo or restart during the celebration; confirm particles and the chime stop immediately.
+- Resize to small, wide, and tall windows; confirm the full board stays centered and unstretched, including the footer.
+- At each size, try toolbar buttons, clicks, double-clicks, and dragging; confirm targets align and margins are inactive.
+- Resize while holding a card or stock press; release and confirm no unintended action occurs, then try a fresh press.
+- Resize during a deal or flip; confirm transitions remain aligned with their destinations and finish normally.
+- Minimize and restore, then maximize and restore; confirm the current deal is retained.
+- On a high-DPI display, or when moving between displays with different scaling, verify drawing and pointer alignment.

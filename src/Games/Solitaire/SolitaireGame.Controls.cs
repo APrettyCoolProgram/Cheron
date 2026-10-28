@@ -12,10 +12,10 @@ public sealed partial class SolitaireGame
     /// <summary>The new-game button bounds shared by drawing and pointer handling.</summary>
     private static readonly Rectangle NewGameButtonBounds = new(32, 20, 132, 44);
 
-    /// <summary>The undo button bounds in window coordinates.</summary>
+    /// <summary>The undo button bounds in logical board coordinates.</summary>
     private static readonly Rectangle UndoButtonBounds = new(180, 20, 104, 44);
 
-    /// <summary>The hint button bounds in window coordinates.</summary>
+    /// <summary>The hint button bounds in logical board coordinates.</summary>
     private static readonly Rectangle HintButtonBounds = new(300, 20, 104, 44);
 
     /// <summary>The board states saved before successful actions, newest first.</summary>
@@ -160,7 +160,7 @@ public sealed partial class SolitaireGame
     }
 
     /// <summary>Handles toolbar clicks without allowing them to become board gestures.</summary>
-    /// <param name="position">The click position in window coordinates.</param>
+    /// <param name="position">The click position in logical board coordinates.</param>
     /// <returns>Whether a toolbar button occupies the position, including a disabled button.</returns>
     private bool HandleToolbarClick(Point position)
     {

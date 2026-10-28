@@ -17,11 +17,18 @@ public interface IGameModule : IDisposable
     /// <summary>Gets the title displayed in the application window.</summary>
     string Title { get; }
 
-    /// <summary>Gets the initial client size requested by the game, in pixels.</summary>
+    /// <summary>Gets the logical canvas size, also used to request the initial client size.</summary>
     Point PreferredWindowSize { get; }
 
     /// <summary>Initializes game state before graphics resources are loaded.</summary>
     void Initialize();
+
+    /// <summary>Receives the initial viewport and subsequent window or drawable-size changes.</summary>
+    /// <remarks>
+    /// Called on the game thread before input or drawing uses the new dimensions.
+    /// </remarks>
+    /// <param name="viewport">The host-computed drawing transform and mouse-coordinate mapping.</param>
+    void SetViewport(GameViewport viewport);
 
     /// <summary>Creates the module's graphics resources after the device becomes available.</summary>
     /// <param name="graphicsDevice">The host-owned graphics device, which the module must not dispose.</param>

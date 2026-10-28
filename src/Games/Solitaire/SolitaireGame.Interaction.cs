@@ -7,13 +7,13 @@ namespace Cheron.Games.Solitaire;
 /// <summary>Provides pointer gestures and destination feedback for the Solitaire board.</summary>
 public sealed partial class SolitaireGame
 {
-    /// <summary>The minimum pointer movement in pixels required to start dragging.</summary>
+    /// <summary>The minimum pointer movement in logical board units required to start dragging.</summary>
     private const int DragThreshold = 6;
 
     /// <summary>The maximum interval between two clicks on the same card.</summary>
     private static readonly TimeSpan DoubleClickInterval = TimeSpan.FromMilliseconds(350);
 
-    /// <summary>The current pointer position in window coordinates.</summary>
+    /// <summary>The current pointer position in logical board coordinates.</summary>
     private Point _pointerPosition;
 
     /// <summary>The pointer position at the start of the current press.</summary>
@@ -47,7 +47,7 @@ public sealed partial class SolitaireGame
     private TimeSpan _lastClickTime;
 
     /// <summary>Processes press, movement, and release transitions without modifying piles during a drag.</summary>
-    /// <param name="position">The current pointer position in window coordinates.</param>
+    /// <param name="position">The current pointer position in logical board coordinates.</param>
     /// <param name="isDown">Whether the left mouse button is down.</param>
     /// <param name="time">The monotonically increasing game time used to recognize double-clicks.</param>
     private void UpdatePointer(Point position, bool isDown, TimeSpan time)

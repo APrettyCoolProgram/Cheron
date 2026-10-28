@@ -14,25 +14,25 @@ namespace Cheron.Games.Solitaire;
 /// <summary>Implements Klondike rules, state, interaction, and rendering independently of the application host.</summary>
 public sealed partial class SolitaireGame : IGameModule
 {
-    /// <summary>The width of a card or empty pile slot, in pixels.</summary>
+    /// <summary>The width of a card or empty pile slot, in logical board units.</summary>
     private const int CardWidth = 78;
 
-    /// <summary>The height of a card or empty pile slot, in pixels.</summary>
+    /// <summary>The height of a card or empty pile slot, in logical board units.</summary>
     private const int CardHeight = 108;
 
-    /// <summary>The horizontal space between adjacent foundation slots, in pixels.</summary>
+    /// <summary>The horizontal space between adjacent foundation slots, in logical board units.</summary>
     private const int CardGap = 18;
 
-    /// <summary>The vertical position of the first card in every tableau column, in pixels.</summary>
+    /// <summary>The vertical position of the first card in every tableau column, in logical board units.</summary>
     private const int TableauTop = 218;
 
     /// <summary>The vertical offset between consecutive tableau cards when the preceding card is face up.</summary>
     private const int TableauStep = 29;
 
-    /// <summary>The horizontal position of the first tableau column, in pixels.</summary>
+    /// <summary>The horizontal position of the first tableau column, in logical board units.</summary>
     private const int FirstColumnX = 32;
 
-    /// <summary>The horizontal offset between consecutive tableau columns, in pixels.</summary>
+    /// <summary>The horizontal offset between consecutive tableau columns, in logical board units.</summary>
     private const int ColumnStep = 148;
 
     /// <summary>Stores seven five-bit bitmap rows for each uppercase letter followed by each decimal digit.</summary>
@@ -77,8 +77,11 @@ public sealed partial class SolitaireGame : IGameModule
     /// <summary>The module-owned sprite batch, created during content loading and released during disposal.</summary>
     private SpriteBatch _spriteBatch = null!;
 
-    /// <summary>The module-owned white pixel used to draw solid rectangles and bitmap lettering.</summary>
+    /// <summary>The module-owned white pixel used to draw solid rectangles.</summary>
     private Texture2D _pixelTexture = null!;
+
+    /// <summary>The module-owned padded bitmap glyph atlas, filtered when the viewport uses a fractional scale.</summary>
+    private Texture2D _glyphTexture = null!;
 
     /// <summary>The module-owned cached textures used for the table, cards, buttons, and pile slots.</summary>
     private SolitaireArtwork _artwork = null!;
@@ -98,7 +101,7 @@ public sealed partial class SolitaireGame : IGameModule
     /// <summary>Gets the Solitaire window title.</summary>
     public string Title => "Cheron Solitaire";
 
-    /// <summary>Gets the initial window size used by the board layout, in pixels.</summary>
+    /// <summary>Gets the logical card-table size, also used to request the initial window size.</summary>
     public Point PreferredWindowSize => new(1100, 800);
 
     /// <summary>Deals a shuffled game before graphics resources are loaded.</summary>
@@ -119,7 +122,9 @@ public sealed partial class SolitaireGame : IGameModule
         _spriteBatch = new SpriteBatch(graphicsDevice);
         _pixelTexture = new Texture2D(graphicsDevice, 1, 1);
         _pixelTexture.SetData([Color.White]);
+        _glyphTexture = CreateGlyphTexture(graphicsDevice);
         _artwork = new SolitaireArtwork(graphicsDevice);
+        _boardRasterizerState = new RasterizerState { ScissorTestEnable = true };
         LoadFeedbackSounds();
     }
 
@@ -143,23 +148,27 @@ public sealed partial class SolitaireGame : IGameModule
 
         var mouseState = Mouse.GetState();
 
-        UpdatePointer(new Point(mouseState.X, mouseState.Y),
+        UpdateClientPointer(new Point(mouseState.X, mouseState.Y),
             mouseState.LeftButton == ButtonState.Pressed, gameTime.TotalGameTime);
 
         _previousKeyboardState = keyboardState;
     }
 
-    /// <summary>Draws the board, cards, controls, and win message.</summary>
+    /// <summary>Draws the proportionally scaled board, cards, controls, and win message.</summary>
     /// <remarks>
-    /// Uses a fixed 1100-by-800 layout in window coordinates and requires loaded drawing resources.
+    /// Fits the 1100-by-800 logical canvas into the host viewport with centered margins.
+    /// Draws directly at drawable resolution and requires loaded drawing resources.
     /// </remarks>
     /// <param name="gameTime">The host-supplied timing information; animation progress is advanced during updates.</param>
     /// <param name="graphicsDevice">The borrowed, host-owned graphics device.</param>
     public void Draw(GameTime gameTime, GraphicsDevice graphicsDevice)
     {
         graphicsDevice.Clear(new Color(12, 34, 39));
+        var previousScissor = graphicsDevice.ScissorRectangle;
+        var previousRasterizer = graphicsDevice.RasterizerState;
+        graphicsDevice.ScissorRectangle = _viewport.ScissorBounds;
 
-        _spriteBatch.Begin(samplerState: SamplerState.LinearClamp);
+        BeginBoardDrawing();
         _spriteBatch.Draw(_artwork.Background, new Rectangle(0, 0, 1100, 800), Color.White);
 
         Fill(new Rectangle(0, 0, 1100, 72), new Color(12, 31, 37, 220));
@@ -243,13 +252,17 @@ public sealed partial class SolitaireGame : IGameModule
         }
 
         _spriteBatch.End();
+        graphicsDevice.ScissorRectangle = previousScissor;
+        graphicsDevice.RasterizerState = previousRasterizer;
     }
 
     /// <summary>Releases owned drawing and audio resources without disposing the borrowed graphics device.</summary>
     public void Dispose()
     {
         DisposeFeedbackSounds();
+        _boardRasterizerState?.Dispose();
         _artwork?.Dispose();
+        _glyphTexture?.Dispose();
         _pixelTexture?.Dispose();
         _spriteBatch?.Dispose();
     }
@@ -311,7 +324,7 @@ public sealed partial class SolitaireGame : IGameModule
     }
 
     /// <summary>Routes a board click to restart, draw, select, or move cards.</summary>
-    /// <param name="clickPosition">The mouse position in window coordinates.</param>
+    /// <param name="clickPosition">The mouse position in logical board coordinates.</param>
     private void HandleClick(Point clickPosition)
     {
         if (HandleToolbarClick(clickPosition))
@@ -552,7 +565,7 @@ public sealed partial class SolitaireGame : IGameModule
     /// The caller checks horizontal bounds and excludes the toolbar and footer.
     /// </remarks>
     /// <param name="columnIndex">The zero-based index of the tableau column.</param>
-    /// <param name="mouseY">The mouse's vertical position in window coordinates.</param>
+    /// <param name="mouseY">The mouse's vertical position in logical board coordinates.</param>
     /// <returns>The matching card index, or <c>-1</c> when no exposed strip contains the position.</returns>
     private int GetTableauCardIndex(int columnIndex, int mouseY)
     {
@@ -576,7 +589,7 @@ public sealed partial class SolitaireGame : IGameModule
         return -1;
     }
 
-    /// <summary>Calculates a foundation slot's bounds in window coordinates.</summary>
+    /// <summary>Calculates a foundation slot's bounds in logical board coordinates.</summary>
     /// <param name="foundationIndex">The zero-based index of the foundation slot.</param>
     /// <returns>The rectangle used to draw and hit-test the foundation.</returns>
     private Rectangle GetFoundationBounds(int foundationIndex) =>
@@ -584,7 +597,7 @@ public sealed partial class SolitaireGame : IGameModule
 
     /// <summary>Draws a pile's top non-dragged card, or an outlined slot when no card remains visible.</summary>
     /// <param name="pile">The pile to draw.</param>
-    /// <param name="bounds">The card or slot bounds in window coordinates.</param>
+    /// <param name="bounds">The card or slot bounds in logical board coordinates.</param>
     /// <param name="faceDown">Whether to show the card back regardless of its face-up state.</param>
     private void DrawPile(List<Card> pile, Rectangle bounds, bool faceDown = false)
     {
@@ -611,7 +624,7 @@ public sealed partial class SolitaireGame : IGameModule
 
     /// <summary>Draws a rounded card, soft shadow, suit artwork, and optional selection highlight.</summary>
     /// <param name="card">The card whose rank, suit, and visibility determine its appearance.</param>
-    /// <param name="bounds">The card bounds in window coordinates.</param>
+    /// <param name="bounds">The card bounds in logical board coordinates.</param>
     /// <param name="isSelected">Whether the face-up card should receive a selection border.</param>
     /// <param name="faceDown">Whether to show the card back regardless of its face-up state.</param>
     private void DrawCard(Card card, Rectangle bounds, bool isSelected, bool faceDown = false)
@@ -668,15 +681,44 @@ public sealed partial class SolitaireGame : IGameModule
     }
 
     /// <summary>Fills a rectangle using the module's single-pixel texture.</summary>
-    /// <param name="bounds">The rectangle to fill in window coordinates.</param>
+    /// <param name="bounds">The rectangle to fill in logical board coordinates.</param>
     /// <param name="color">The fill color.</param>
     private void Fill(Rectangle bounds, Color color) => _spriteBatch.Draw(_pixelTexture, bounds, color);
 
+    /// <summary>Builds a padded atlas of the existing five-by-seven glyphs for smoothly scaled lettering.</summary>
+    /// <param name="graphicsDevice">The borrowed device that creates the owned texture.</param>
+    /// <returns>The glyph atlas, which the module must dispose.</returns>
+    private static Texture2D CreateGlyphTexture(GraphicsDevice graphicsDevice)
+    {
+        const int atlasWidth = 37 * 7;
+        var pixels = new Color[atlasWidth * 9];
+        for (var glyphIndex = 0; glyphIndex < 37; glyphIndex++)
+        {
+            for (var glyphRow = 0; glyphRow < 7; glyphRow++)
+            {
+                var rowBits = glyphIndex == 36
+                    ? (glyphRow < 5 || glyphRow == 6 ? 4 : 0)
+                    : Glyphs[glyphIndex, glyphRow];
+                for (var glyphColumn = 0; glyphColumn < 5; glyphColumn++)
+                {
+                    if ((rowBits & (1 << (4 - glyphColumn))) != 0)
+                    {
+                        pixels[(glyphRow + 1) * atlasWidth + glyphIndex * 7 + glyphColumn + 1] = Color.White;
+                    }
+                }
+            }
+        }
+
+        var texture = new Texture2D(graphicsDevice, atlasWidth, 9);
+        texture.SetData(pixels);
+        return texture;
+    }
+
     /// <summary>Draws uppercase bitmap text, leaving blank character widths for unsupported characters.</summary>
     /// <param name="text">The text to draw; letters, digits, spaces, and exclamation marks are supported.</param>
-    /// <param name="textX">The starting horizontal position in window coordinates.</param>
-    /// <param name="textY">The starting vertical position in window coordinates.</param>
-    /// <param name="scale">The size of each glyph pixel in screen pixels.</param>
+    /// <param name="textX">The starting horizontal position in logical board coordinates.</param>
+    /// <param name="textY">The starting vertical position in logical board coordinates.</param>
+    /// <param name="scale">The size of each glyph pixel in logical board units.</param>
     /// <param name="color">The text color.</param>
     private void DrawText(string text, int textX, int textY, int scale, Color color)
     {
@@ -698,24 +740,8 @@ public sealed partial class SolitaireGame : IGameModule
 
             if (glyphIndex >= 0)
             {
-                for (var glyphRow = 0; glyphRow < 7; glyphRow++)
-                {
-                    var rowBits = glyphIndex == 36
-                        ? (glyphRow < 5 || glyphRow == 6 ? 4 : 0)
-                        : Glyphs[glyphIndex, glyphRow];
-
-                    for (var glyphColumn = 0; glyphColumn < 5; glyphColumn++)
-                    {
-                        var pixelMask = 1 << (4 - glyphColumn);
-
-                        if ((rowBits & pixelMask) != 0)
-                        {
-                            var pixelBounds = new Rectangle(
-                                textX + glyphColumn * scale, textY + glyphRow * scale, scale, scale);
-                            Fill(pixelBounds, color);
-                        }
-                    }
-                }
+                _spriteBatch.Draw(_glyphTexture, new Rectangle(textX, textY, 5 * scale, 7 * scale),
+                    new Rectangle(glyphIndex * 7 + 1, 1, 5, 7), color);
             }
 
             textX += 6 * scale;
