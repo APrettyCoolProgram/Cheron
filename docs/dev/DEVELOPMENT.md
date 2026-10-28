@@ -2,7 +2,7 @@
 
 <div align="center">
 
-  <h1>%RepositoryName%: Development</h1>
+  <h1>Cheron Development</h1>
 
 </div>
 
