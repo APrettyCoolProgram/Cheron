@@ -11,7 +11,9 @@ namespace Cheron.Engine;
 public sealed class GameHost : Game
 {
     private readonly GraphicsDeviceManager _graphicsDeviceManager;
+
     private readonly IGameModule _gameModule;
+
     private bool _isGameModuleDisposed;
 
     /// <summary>Creates a host for the supplied game module.</summary>
@@ -29,8 +31,8 @@ public sealed class GameHost : Game
         };
 
         Content.RootDirectory = "Content";
-        IsMouseVisible = true;
-        Window.Title = gameModule.Title;
+        IsMouseVisible        = true;
+        Window.Title          = gameModule.Title;
     }
 
     /// <summary>Initializes module state before MonoGame loads graphics resources.</summary>

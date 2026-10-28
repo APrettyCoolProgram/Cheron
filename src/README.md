@@ -2,6 +2,14 @@
 
 A simple Klondike solitaire game built with MonoGame. It uses no external game assets or font packages.
 
+## Appearance
+
+Solitaire uses a shaded teal table, ivory rounded cards, soft shadows, geometric suit symbols,
+patterned card backs, gold selection outlines, and a hover-highlighted new-game button.
+Artwork is generated once during content loading and disposed with the game module.
+The compact bitmap lettering remains asset-free; this refresh does not add drag-and-drop or animations.
+All visual assets and rendering remain inside `Games\Solitaire`.
+
 ## Organization
 
 - `Engine`: game-neutral host and `IGameModule` lifecycle contract. Engine code must not depend on game namespaces.

@@ -14,14 +14,32 @@ namespace Cheron.Games.Solitaire;
 /// <summary>Implements Klondike rules, state, interaction, and rendering independently of the application host.</summary>
 public sealed class SolitaireGame : IGameModule
 {
+    /// <summary>The width of a card or empty pile slot, in pixels.</summary>
     private const int CardWidth = 78;
+
+    /// <summary>The height of a card or empty pile slot, in pixels.</summary>
     private const int CardHeight = 108;
+
+    /// <summary>The horizontal space between adjacent foundation slots, in pixels.</summary>
     private const int CardGap = 18;
+
+    /// <summary>The vertical position of the first card in every tableau column, in pixels.</summary>
     private const int TableauTop = 218;
+
+    /// <summary>The vertical offset between consecutive tableau cards when the preceding card is face up.</summary>
     private const int TableauStep = 29;
+
+    /// <summary>The horizontal position of the first tableau column, in pixels.</summary>
     private const int FirstColumnX = 32;
+
+    /// <summary>The horizontal offset between consecutive tableau columns, in pixels.</summary>
     private const int ColumnStep = 148;
 
+    /// <summary>Stores seven five-bit bitmap rows for each uppercase letter followed by each decimal digit.</summary>
+    /// <remarks>
+    /// The first dimension selects A through Z, then 0 through 9. The second selects a glyph row.
+    /// Bits four through zero represent pixels from left to right; exclamation marks are generated separately.
+    /// </remarks>
     private static readonly int[,] Glyphs =
     {
         { 14, 17, 17, 31, 17, 17, 17 }, { 30, 17, 17, 30, 17, 17, 30 },
@@ -44,16 +62,40 @@ public sealed class SolitaireGame : IGameModule
         { 14, 17, 17, 14, 17, 17, 14 }, { 14, 17, 17, 15, 1, 1, 14 }
     };
 
+    /// <summary>The face-down draw pile, with the next card at the end of the list.</summary>
     private readonly List<Card> _stock = new();
+
+    /// <summary>The face-up drawn cards, with the available top card at the end of the list.</summary>
     private readonly List<Card> _waste = new();
+
+    /// <summary>The seven tableau columns, each ordered from its bottom card to its exposed top card.</summary>
     private readonly List<List<Card>> _tableau = new();
+
+    /// <summary>The four foundation piles, each built from Ace to King in a suit determined by its first card.</summary>
     private readonly List<List<Card>> _foundations = new();
+
+    /// <summary>The module-owned sprite batch, created during content loading and released during disposal.</summary>
     private SpriteBatch _spriteBatch = null!;
+
+    /// <summary>The module-owned white pixel used to draw solid rectangles and bitmap lettering.</summary>
     private Texture2D _pixelTexture = null!;
+
+    /// <summary>The module-owned cached textures used for the table, cards, buttons, and pile slots.</summary>
+    private SolitaireArtwork _artwork = null!;
+
+    /// <summary>The last processed mouse state, used to detect new clicks and draw button hover feedback.</summary>
     private MouseState _previousMouseState;
+
+    /// <summary>The last processed keyboard state, used to restart only on a new R key press.</summary>
     private KeyboardState _previousKeyboardState;
+
+    /// <summary>The source pile for a pending move, or <see langword="null"/> when no cards are selected.</summary>
     private List<Card> _selectedPile = null!;
+
+    /// <summary>The index of the first selected card; subsequent cards in the same pile move with it.</summary>
     private int _selectedCardIndex;
+
+    /// <summary>Whether the last completed move left all four foundations with thirteen cards each.</summary>
     private bool _hasWon;
 
     /// <summary>Gets the Solitaire window title.</summary>
@@ -68,26 +110,33 @@ public sealed class SolitaireGame : IGameModule
         StartNewGame();
     }
 
-    /// <summary>Creates the sprite batch and single-pixel texture owned by this module.</summary>
+    /// <summary>Creates the drawing resources and cached card-table artwork owned by this module.</summary>
+    /// <remarks>
+    /// Call once on the graphics thread after the device becomes available and before drawing.
+    /// The module releases these resources in <see cref="Dispose"/>; it does not own the graphics device.
+    /// </remarks>
     /// <param name="graphicsDevice">The borrowed, host-owned graphics device.</param>
     public void LoadContent(GraphicsDevice graphicsDevice)
     {
         _spriteBatch = new SpriteBatch(graphicsDevice);
         _pixelTexture = new Texture2D(graphicsDevice, 1, 1);
-        _pixelTexture.SetData(new[] { Color.White });
+        _pixelTexture.SetData([Color.White]);
+        _artwork = new SolitaireArtwork(graphicsDevice);
     }
 
     /// <summary>Handles restart key presses and new left mouse clicks.</summary>
-    /// <param name="gameTime">The timing information supplied by MonoGame.</param>
+    /// <param name="gameTime">The host-supplied timing information; this input-driven game does not use it.</param>
     public void Update(GameTime gameTime)
     {
         var keyboardState = Keyboard.GetState();
+
         if (keyboardState.IsKeyDown(Keys.R) && !_previousKeyboardState.IsKeyDown(Keys.R))
         {
             StartNewGame();
         }
 
         var mouseState = Mouse.GetState();
+
         if (mouseState.LeftButton == ButtonState.Pressed && _previousMouseState.LeftButton == ButtonState.Released)
         {
             HandleClick(new Point(mouseState.X, mouseState.Y));
@@ -98,43 +147,88 @@ public sealed class SolitaireGame : IGameModule
     }
 
     /// <summary>Draws the board, cards, controls, and win message.</summary>
-    /// <param name="gameTime">The timing information supplied by MonoGame.</param>
+    /// <remarks>
+    /// Uses a fixed 1100-by-800 layout in window coordinates and requires loaded drawing resources.
+    /// </remarks>
+    /// <param name="gameTime">The host-supplied timing information; rendering is not time-dependent.</param>
     /// <param name="graphicsDevice">The borrowed, host-owned graphics device.</param>
     public void Draw(GameTime gameTime, GraphicsDevice graphicsDevice)
     {
-        graphicsDevice.Clear(new Color(24, 105, 66));
-        _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+        graphicsDevice.Clear(new Color(12, 34, 39));
 
+        _spriteBatch.Begin(samplerState: SamplerState.LinearClamp);
+        _spriteBatch.Draw(_artwork.Background, new Rectangle(0, 0, 1100, 800), Color.White);
+
+        Fill(new Rectangle(0, 0, 1100, 72), new Color(12, 31, 37, 220));
+        Fill(new Rectangle(0, 71, 1100, 1), new Color(67, 102, 102));
+        DrawText("SOLITAIRE", 210, 24, 3, new Color(246, 239, 218));
+        DrawText("KLONDIKE", 212, 51, 1, new Color(153, 183, 176));
+        DrawText("DRAW ONE", 870, 29, 1, new Color(183, 204, 194));
+        DrawText("R  NEW GAME", 870, 48, 1, new Color(153, 183, 176));
         DrawNewGameButton();
-        DrawPile(_stock, new Rectangle(32, 82, CardWidth, CardHeight), faceDown: true);
+
+        var stockBounds = new Rectangle(32, 82, CardWidth, CardHeight);
+
+        DrawPile(_stock, stockBounds, faceDown: true);
+
+        if (_stock.Count == 0)
+        {
+            DrawText("DEAL", 47, 122, 1, new Color(156, 186, 178));
+            DrawText("AGAIN", 44, 138, 1, new Color(156, 186, 178));
+        }
+
         DrawPile(_waste, new Rectangle(128, 82, CardWidth, CardHeight));
+        DrawText("STOCK", 40, 199, 1, new Color(157, 184, 176));
+        DrawText("WASTE", 136, 199, 1, new Color(157, 184, 176));
 
         for (var foundationIndex = 0; foundationIndex < _foundations.Count; foundationIndex++)
         {
-            DrawPile(_foundations[foundationIndex], GetFoundationBounds(foundationIndex));
+            var foundationBounds = GetFoundationBounds(foundationIndex);
+
+            DrawPile(_foundations[foundationIndex], foundationBounds);
+
+            if (_foundations[foundationIndex].Count == 0)
+            {
+                DrawText("A", foundationBounds.X + 33, foundationBounds.Y + 24, 2, new Color(119, 153, 145));
+                DrawText("TO KING", foundationBounds.X + 19, foundationBounds.Y + 65, 1, new Color(119, 153, 145));
+            }
         }
+
+        DrawText("FOUNDATIONS", 796, 199, 1, new Color(157, 184, 176));
 
         for (var columnIndex = 0; columnIndex < _tableau.Count; columnIndex++)
         {
             var tableauPile = _tableau[columnIndex];
             var cardY = TableauTop;
+
+            if (tableauPile.Count == 0)
+            {
+                var slotBounds = new Rectangle(FirstColumnX + columnIndex * ColumnStep, cardY, CardWidth, CardHeight);
+                _spriteBatch.Draw(_artwork.Slot, slotBounds, Color.White);
+                DrawText("K", slotBounds.X + 33, slotBounds.Y + 46, 2, new Color(119, 153, 145));
+            }
+
             for (var cardIndex = 0; cardIndex < tableauPile.Count; cardIndex++)
             {
                 var card = tableauPile[cardIndex];
-                var cardBounds = new Rectangle(
-                    FirstColumnX + columnIndex * ColumnStep, cardY, CardWidth, CardHeight);
+                var cardBounds = new Rectangle(FirstColumnX + columnIndex * ColumnStep, cardY, CardWidth, CardHeight);
 
                 DrawCard(card, cardBounds, IsSelected(tableauPile, cardIndex));
                 cardY += card.FaceUp ? TableauStep : 22;
             }
         }
 
-        DrawText("CLICK STOCK TO DRAW", 32, 198, 1, Color.White);
-        DrawText("BUILD DOWN IN ALTERNATING COLORS", 32, 744, 1, Color.White);
-        DrawText("R RESTART", 32, 762, 1, Color.White);
+        Fill(new Rectangle(0, 728, 1100, 72), new Color(12, 31, 37, 230));
+        Fill(new Rectangle(0, 728, 1100, 1), new Color(67, 102, 102));
+        DrawText("BUILD DOWN IN ALTERNATING COLORS", 32, 747, 1, new Color(207, 220, 207));
+        DrawText("CLICK A CARD THEN ITS DESTINATION", 32, 767, 1, new Color(153, 183, 176));
+        DrawText("ACES TO KINGS", 883, 747, 1, new Color(235, 205, 143));
+        DrawText("ESC  EXIT", 907, 767, 1, new Color(153, 183, 176));
+
         if (_hasWon)
         {
-            DrawText("YOU WIN!", 490, 170, 3, Color.Gold);
+            _spriteBatch.Draw(_artwork.Banner, new Rectangle(370, 376, 360, 56), Color.White);
+            DrawText("YOU WIN!", 483, 394, 3, new Color(251, 219, 148));
         }
 
         _spriteBatch.End();
@@ -143,6 +237,7 @@ public sealed class SolitaireGame : IGameModule
     /// <summary>Releases the module-owned drawing resources without disposing the borrowed graphics device.</summary>
     public void Dispose()
     {
+        _artwork?.Dispose();
         _pixelTexture?.Dispose();
         _spriteBatch?.Dispose();
     }
@@ -158,6 +253,7 @@ public sealed class SolitaireGame : IGameModule
         _hasWon = false;
 
         var deck = new List<Card>(52);
+
         foreach (var suit in Enum.GetValues<Suit>())
         {
             for (var rank = 1; rank <= 13; rank++)
@@ -167,6 +263,7 @@ public sealed class SolitaireGame : IGameModule
         }
 
         var random = new Random();
+
         for (var cardIndex = deck.Count - 1; cardIndex > 0; cardIndex--)
         {
             var swapIndex = random.Next(cardIndex + 1);
@@ -176,6 +273,7 @@ public sealed class SolitaireGame : IGameModule
         for (var columnIndex = 0; columnIndex < 7; columnIndex++)
         {
             var tableauPile = new List<Card>();
+
             for (var cardIndex = 0; cardIndex <= columnIndex; cardIndex++)
             {
                 var card = deck[^1];
@@ -188,6 +286,7 @@ public sealed class SolitaireGame : IGameModule
         }
 
         _stock.AddRange(deck);
+
         for (var foundationIndex = 0; foundationIndex < 4; foundationIndex++)
         {
             _foundations.Add(new List<Card>());
@@ -201,20 +300,25 @@ public sealed class SolitaireGame : IGameModule
         if (new Rectangle(32, 20, 132, 44).Contains(clickPosition))
         {
             StartNewGame();
+
             return;
         }
 
         var stockBounds = new Rectangle(32, 82, CardWidth, CardHeight);
+
         if (stockBounds.Contains(clickPosition))
         {
             DrawFromStock();
+
             return;
         }
 
         var wasteBounds = new Rectangle(128, 82, CardWidth, CardHeight);
+
         if (wasteBounds.Contains(clickPosition))
         {
             SelectTop(_waste);
+
             return;
         }
 
@@ -231,18 +335,22 @@ public sealed class SolitaireGame : IGameModule
             }
 
             SelectTop(_foundations[foundationIndex]);
+
             return;
         }
 
         var columnIndex = (clickPosition.X - FirstColumnX) / ColumnStep;
+
         if (clickPosition.X < FirstColumnX || columnIndex < 0 || columnIndex >= _tableau.Count ||
             clickPosition.X >= FirstColumnX + columnIndex * ColumnStep + CardWidth)
         {
             ClearSelection();
+
             return;
         }
 
         var clickedCardIndex = GetTableauCardIndex(columnIndex, clickPosition.Y);
+
         if (_selectedPile is not null && TryMoveToTableau(columnIndex))
         {
             return;
@@ -262,12 +370,14 @@ public sealed class SolitaireGame : IGameModule
     private void DrawFromStock()
     {
         ClearSelection();
+
         if (_stock.Count > 0)
         {
             var drawnCard = _stock[^1];
             _stock.RemoveAt(_stock.Count - 1);
             drawnCard.FaceUp = true;
             _waste.Add(drawnCard);
+
             return;
         }
 
@@ -295,14 +405,17 @@ public sealed class SolitaireGame : IGameModule
         }
 
         var destinationPile = _tableau[destinationColumnIndex];
+
         if (ReferenceEquals(_selectedPile, destinationPile))
         {
             ClearSelection();
+
             return true;
         }
 
         var movingCard = _selectedPile[_selectedCardIndex];
         if (destinationPile.Count == 0)
+
         {
             if (movingCard.Rank != 13)
             {
@@ -312,6 +425,7 @@ public sealed class SolitaireGame : IGameModule
         else
         {
             var targetCard = destinationPile[^1];
+
             if (!targetCard.FaceUp || targetCard.Rank != movingCard.Rank + 1 || targetCard.IsRed == movingCard.IsRed)
             {
                 return false;
@@ -319,6 +433,7 @@ public sealed class SolitaireGame : IGameModule
         }
 
         MoveSelectedCards(destinationPile);
+
         return true;
     }
 
@@ -334,6 +449,7 @@ public sealed class SolitaireGame : IGameModule
 
         var destinationPile = _foundations[foundationIndex];
         var movingCard = _selectedPile[_selectedCardIndex];
+
         if (destinationPile.Count == 0)
         {
             if (movingCard.Rank != 1)
@@ -344,6 +460,7 @@ public sealed class SolitaireGame : IGameModule
         else
         {
             var targetCard = destinationPile[^1];
+
             if (targetCard.Suit != movingCard.Suit || targetCard.Rank + 1 != movingCard.Rank)
             {
                 return false;
@@ -355,11 +472,16 @@ public sealed class SolitaireGame : IGameModule
     }
 
     /// <summary>Transfers a validated selection, reveals any newly exposed tableau card, and checks for a win.</summary>
+    /// <remarks>
+    /// Requires a nonempty selection and a distinct destination already validated by the caller.
+    /// Card order is preserved and the selection is cleared after the transfer.
+    /// </remarks>
     /// <param name="destinationPile">The pile that receives the selected card and all cards above it.</param>
     private void MoveSelectedCards(List<Card> destinationPile)
     {
         var sourcePile = _selectedPile!;
         var selectedCardCount = sourcePile.Count - _selectedCardIndex;
+
         destinationPile.AddRange(sourcePile.GetRange(_selectedCardIndex, selectedCardCount));
         sourcePile.RemoveRange(_selectedCardIndex, selectedCardCount);
 
@@ -379,6 +501,7 @@ public sealed class SolitaireGame : IGameModule
         if (pile.Count == 0)
         {
             ClearSelection();
+
             return;
         }
 
@@ -416,10 +539,12 @@ public sealed class SolitaireGame : IGameModule
     {
         var cardY = TableauTop;
         var tableauPile = _tableau[columnIndex];
+
         for (var cardIndex = 0; cardIndex < tableauPile.Count; cardIndex++)
         {
             var card = tableauPile[cardIndex];
             var cardBottom = cardY + (card.FaceUp ? CardHeight : 22);
+
             if (mouseY >= cardY && mouseY < cardBottom)
             {
                 return cardIndex;
@@ -437,13 +562,14 @@ public sealed class SolitaireGame : IGameModule
     private Rectangle GetFoundationBounds(int foundationIndex) =>
         new(1100 - 32 - (4 - foundationIndex) * (CardWidth + CardGap), 82, CardWidth, CardHeight);
 
-    /// <summary>Draws the new-game button and its label.</summary>
+    /// <summary>Draws the rounded new-game button with a hover highlight.</summary>
     private void DrawNewGameButton()
     {
         var buttonBounds = new Rectangle(32, 20, 132, 44);
-        Fill(buttonBounds, new Color(232, 224, 193));
-        DrawBorder(buttonBounds, new Color(20, 57, 43), 2);
-        DrawText("NEW GAME", 43, 35, 2, new Color(20, 57, 43));
+        var isHovered = buttonBounds.Contains(_previousMouseState.X, _previousMouseState.Y);
+
+        _spriteBatch.Draw(isHovered ? _artwork.ButtonHover : _artwork.Button, buttonBounds, Color.White);
+        DrawText("NEW GAME", 43, 35, 2, new Color(31, 56, 59));
     }
 
     /// <summary>Draws a pile's top card, or an outlined slot for an empty pile.</summary>
@@ -458,30 +584,35 @@ public sealed class SolitaireGame : IGameModule
         }
         else
         {
-            DrawBorder(bounds, new Color(177, 211, 186), 2);
+            _spriteBatch.Draw(_artwork.Slot, bounds, Color.White);
         }
     }
 
-    /// <summary>Draws a card face or back, highlighting the selection when the face is visible.</summary>
+    /// <summary>Draws a rounded card, soft shadow, suit artwork, and optional selection highlight.</summary>
     /// <param name="card">The card whose rank, suit, and visibility determine its appearance.</param>
     /// <param name="bounds">The card bounds in window coordinates.</param>
     /// <param name="isSelected">Whether the face-up card should receive a selection border.</param>
     /// <param name="faceDown">Whether to show the card back regardless of its face-up state.</param>
     private void DrawCard(Card card, Rectangle bounds, bool isSelected, bool faceDown = false)
     {
+        var shadowBounds = new Rectangle(bounds.X - 6, bounds.Y - 4, bounds.Width + 16, bounds.Height + 16);
+
+        _spriteBatch.Draw(_artwork.CardShadow, shadowBounds, Color.White);
+
+        if (isSelected && card.FaceUp && !faceDown)
+        {
+            _spriteBatch.Draw(_artwork.Selection,
+                new Rectangle(bounds.X - 3, bounds.Y - 3, bounds.Width + 6, bounds.Height + 6), Color.White);
+        }
+
+        _spriteBatch.Draw(faceDown || !card.FaceUp ? _artwork.CardBack : _artwork.CardFace, bounds, Color.White);
+
         if (faceDown || !card.FaceUp)
         {
-            Fill(bounds, new Color(32, 74, 139));
-            DrawBorder(bounds, Color.White, 2);
-            var insetBounds = new Rectangle(bounds.X + 5, bounds.Y + 5, bounds.Width - 10, bounds.Height - 10);
-            DrawBorder(insetBounds, new Color(175, 198, 229), 1);
             return;
         }
 
-        Fill(bounds, new Color(249, 247, 235));
-        DrawBorder(bounds, isSelected ? Color.Gold : new Color(35, 43, 39), isSelected ? 4 : 2);
-
-        var suitColor = card.IsRed ? new Color(190, 38, 48) : new Color(30, 39, 43);
+        var suitColor = card.IsRed ? new Color(180, 51, 65) : new Color(36, 57, 66);
         var rankLabel = card.Rank switch
         {
             1 => "A",
@@ -490,29 +621,20 @@ public sealed class SolitaireGame : IGameModule
             13 => "K",
             _ => card.Rank.ToString()
         };
-        var suitLabel = card.Suit.ToString()[..1];
 
-        DrawText(rankLabel, bounds.X + 7, bounds.Y + 7, 2, suitColor);
-        DrawText(suitLabel, bounds.X + 7, bounds.Y + 27, 2, suitColor);
-        DrawText(suitLabel, bounds.X + bounds.Width - 19, bounds.Y + bounds.Height - 22, 2, suitColor);
+        var suitTexture = _artwork.Suits[(int)card.Suit];
+
+        DrawText(rankLabel, bounds.X + 8, bounds.Y + 8, 2, suitColor);
+        _spriteBatch.Draw(suitTexture, new Rectangle(bounds.Right - 26, bounds.Y + 5, 20, 20), suitColor);
+        _spriteBatch.Draw(suitTexture, new Rectangle(bounds.X + 19, bounds.Y + 35, 40, 40), suitColor);
+        _spriteBatch.Draw(suitTexture, new Rectangle(bounds.X + 7, bounds.Bottom - 25, 18, 18), suitColor);
+        DrawText(rankLabel, bounds.Right - (rankLabel.Length * 12) - 7, bounds.Bottom - 22, 2, suitColor);
     }
 
     /// <summary>Fills a rectangle using the module's single-pixel texture.</summary>
     /// <param name="bounds">The rectangle to fill in window coordinates.</param>
     /// <param name="color">The fill color.</param>
     private void Fill(Rectangle bounds, Color color) => _spriteBatch.Draw(_pixelTexture, bounds, color);
-
-    /// <summary>Draws the four edges of a rectangular border.</summary>
-    /// <param name="bounds">The outer border bounds in window coordinates.</param>
-    /// <param name="color">The border color.</param>
-    /// <param name="thickness">The thickness of each edge in pixels.</param>
-    private void DrawBorder(Rectangle bounds, Color color, int thickness)
-    {
-        Fill(new Rectangle(bounds.X, bounds.Y, bounds.Width, thickness), color);
-        Fill(new Rectangle(bounds.X, bounds.Bottom - thickness, bounds.Width, thickness), color);
-        Fill(new Rectangle(bounds.X, bounds.Y, thickness, bounds.Height), color);
-        Fill(new Rectangle(bounds.Right - thickness, bounds.Y, thickness, bounds.Height), color);
-    }
 
     /// <summary>Draws uppercase bitmap text, leaving blank character widths for unsupported characters.</summary>
     /// <param name="text">The text to draw; letters, digits, spaces, and exclamation marks are supported.</param>
@@ -549,6 +671,7 @@ public sealed class SolitaireGame : IGameModule
                     for (var glyphColumn = 0; glyphColumn < 5; glyphColumn++)
                     {
                         var pixelMask = 1 << (4 - glyphColumn);
+
                         if ((rowBits & pixelMask) != 0)
                         {
                             var pixelBounds = new Rectangle(
