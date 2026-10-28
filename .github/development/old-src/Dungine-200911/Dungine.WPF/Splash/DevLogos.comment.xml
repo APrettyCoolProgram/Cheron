@@ -1,0 +1,70 @@
+﻿<!--
+    This file contains external XML comments for:
+        * Dungine.WPF.Splash.DevLogos.xaml.cs
+-->
+<class>
+    <member name="DevLogos">
+        <summary>
+            Gathers and displays all development logos when a Dungine game is launched.
+        </summary>
+        <param name="gameLogoFileNames">A list of logo filename (i.e. "my-logo.png").</param>
+    </member>
+    <member name="GetAllDevLogos">
+        <summary>
+            Gathers all of the development logos.
+        </summary>
+        <param name="gameLogoFileNames">A list of logo filename (i.e. "my-logo.png").</param>
+        <remarks>
+            This calls the following methods:
+            <list type="bullet">
+                <item>
+                    <term>GetStandardDevLogos()</term>
+                    <description>Get the standard development logos.</description>
+                </item>
+                <item>
+                    <term>GetGameDevLogos()</term>
+                    <description>Get the game-specific development logos.</description>
+                </item>
+            </list>
+        </remarks>
+        <returns>All of the development logos as a BitmapImage list.</returns>
+    </member>
+    <member name="GetStandardDevLogos">
+        <summary>
+            Gathers all of the standard development logos that are included with every Dungine game.
+        </summary>
+        <remarks>
+            <para>
+                These logos let players know that your game uses the Dungine engine. Please do not remove or modify these logos.
+            </para>
+            <para>
+                These logos are located here: <c>../application-data/dungine/asset/image/logo</c>
+            </para>
+        </remarks>
+        <returns>All of the standard development logos as a BitmapImage list.</returns>
+    </member>
+        <member name="GetGameDevLogos">
+        <summary>
+            Gathers all of the standard development logos that are included with every Dungine game.
+        </summary>
+        <param name="gameLogoFileNames">A list of logo filename (i.e. "my-logo.png").</param>
+        <remarks>
+            <para>
+                These are your logos for your game.
+            </para>
+            <para>
+                These logos are located here: <c>../application-data//asset/image/included/logo</c>
+            </para>
+        </remarks>
+        <returns>All of the standard development logos as a BitmapImage list.</returns>
+    </member>
+    <member name="DisplayDevLogos">
+        <summary>
+            Shows all development logos on a splash screen.
+        </summary>
+        <param name="devLogos">All of the development logos as a BitmapImage list.</param>
+        <remarks>
+            There will probably be a few animation options at some point.
+        </remarks>
+    </member>
+</class>

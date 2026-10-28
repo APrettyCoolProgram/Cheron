@@ -1,0 +1,283 @@
+﻿<Window
+    x:Class="DungineStudio.GameType.TextBased.TextBasedWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:DungineStudio.GameType.TextBased"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="TextBasedWindow"
+    Width="1200"
+    Height="600"
+    ResizeMode="NoResize"
+    mc:Ignorable="d">
+    <Window.Resources>
+        <Style x:Key="RoundedButtonStyle" TargetType="Button">
+            <Setter Property="BorderBrush" Value="Black" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="2" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="5"
+                            SnapsToDevicePixels="True">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                RecognizesAccessKey="True" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid>
+
+        <TabControl Margin="10,74,10,10">
+            <TabItem Header="World Settings">
+                <StackPanel Margin="10">
+                    <Label Content="Genre:" FontWeight="Bold" />
+                    <ComboBox
+                        x:Name="cmbGenre"
+                        Height="25"
+                        Margin="0,5,0,10">
+                        <ComboBoxItem Content="Adventure" />
+                        <ComboBoxItem Content="Horror" />
+                        <ComboBoxItem Content="Mystery" />
+                        <ComboBoxItem Content="Sci-Fi" />
+                        <ComboBoxItem Content="Fantasy" />
+                    </ComboBox>
+
+                    <Label Content="Start Location ID:" FontWeight="Bold" />
+                    <TextBox
+                        x:Name="txtStartLocationId"
+                        Height="25"
+                        Margin="0,5,0,10" />
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Header="Locations">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="200" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel
+                        Grid.Row="0"
+                        Margin="0,0,0,10"
+                        Orientation="Horizontal">
+                        <Button
+                            x:Name="btnAddLocation"
+                            Width="100"
+                            Height="25"
+                            Margin="0,0,10,0"
+                            Background="FloralWhite"
+                            Content="Add Location"
+                            Style="{StaticResource RoundedButtonStyle}" />
+                        <Button
+                            x:Name="btnRemoveLocation"
+                            Width="120"
+                            Height="25"
+                            Background="FloralWhite"
+                            Content="Remove Location"
+                            Style="{StaticResource RoundedButtonStyle}" />
+                    </StackPanel>
+
+                    <ListBox
+                        x:Name="lstLocations"
+                        Grid.Row="1"
+                        Margin="0,0,0,10" />
+
+                    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                        <StackPanel x:Name="pnlLocationEditor">
+                            <Label Content="Location ID:" FontWeight="Bold" />
+                            <TextBox
+                                x:Name="txtLocationId"
+                                Height="25"
+                                Margin="0,5,0,10" />
+
+                            <Label Content="Location Name:" FontWeight="Bold" />
+                            <TextBox
+                                x:Name="txtLocationName"
+                                Height="25"
+                                Margin="0,5,0,10" />
+
+                            <Label Content="Description:" FontWeight="Bold" />
+                            <TextBox
+                                x:Name="txtLocationDescription"
+                                Height="60"
+                                Margin="0,5,0,10"
+                                AcceptsReturn="True"
+                                TextWrapping="Wrap" />
+
+                            <Label Content="Exits (direction:locationId, one per line):" FontWeight="Bold" />
+                            <TextBox
+                                x:Name="txtLocationExits"
+                                Height="80"
+                                Margin="0,5,0,10"
+                                AcceptsReturn="True"
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Items">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="150" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel
+                        Grid.Row="0"
+                        Margin="0,0,0,10"
+                        Orientation="Horizontal">
+                        <Label
+                            VerticalAlignment="Center"
+                            Content="Items for selected location:"
+                            FontWeight="Bold" />
+                        <Button
+                            x:Name="btnAddItem"
+                            Width="80"
+                            Height="25"
+                            Margin="10,0,10,0"
+                            Background="FloralWhite"
+                            Content="Add Item"
+                            Style="{StaticResource RoundedButtonStyle}" />
+                        <Button
+                            x:Name="btnRemoveItem"
+                            Width="100"
+                            Height="25"
+                            Background="FloralWhite"
+                            Content="Remove Item"
+                            Style="{StaticResource RoundedButtonStyle}" />
+                    </StackPanel>
+
+                    <ListBox
+                        x:Name="lstItems"
+                        Grid.Row="1"
+                        Margin="0,0,0,10" />
+
+                    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                        <StackPanel x:Name="pnlItemEditor">
+                            <Label Content="Item ID:" FontWeight="Bold" />
+                            <TextBox
+                                x:Name="txtItemId"
+                                Height="25"
+                                Margin="0,5,0,10" />
+
+                            <Label Content="Item Name:" FontWeight="Bold" />
+                            <TextBox
+                                x:Name="txtItemName"
+                                Height="25"
+                                Margin="0,5,0,10" />
+
+                            <Label Content="Description:" FontWeight="Bold" />
+                            <TextBox
+                                x:Name="txtItemDescription"
+                                Height="60"
+                                Margin="0,5,0,10"
+                                AcceptsReturn="True"
+                                TextWrapping="Wrap" />
+
+                            <CheckBox
+                                x:Name="chkIsPortable"
+                                Margin="0,5,0,5"
+                                Content="Is Portable" />
+                            <CheckBox
+                                x:Name="chkIsContainer"
+                                Margin="0,5,0,10"
+                                Content="Is Container" />
+
+                            <Label Content="Aliases (comma separated):" FontWeight="Bold" />
+                            <TextBox
+                                x:Name="txtItemAliases"
+                                Height="25"
+                                Margin="0,5,0,10" />
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Export">
+                <StackPanel Margin="10">
+                    <Border
+                        x:Name="brdrCartridge"
+                        Grid.Column="0"
+                        Width="220"
+                        Height="240"
+                        Margin="0,20,0,0"
+                        VerticalAlignment="Top"
+                        Background="FloralWhite"
+                        BorderBrush="Black"
+                        BorderThickness="1"
+                        ClipToBounds="True"
+                        CornerRadius="8">
+                        <Image
+                            x:Name="imgCartridge"
+                            Source="/AppData/Artwork/Box/VcsCartridge.png"
+                            Stretch="Uniform" />
+                    </Border>
+                    <DockPanel Width="214">
+                        <Button
+                            x:Name="btnChooseBoxart"
+                            Width="90"
+                            Height="22"
+                            Margin="10,5"
+                            Background="FloralWhite"
+                            Click="btnChooseBoxart_Click"
+                            Content="Choose boxart"
+                            FontSize="10"
+                            Style="{StaticResource RoundedButtonStyle}" />
+                        <Button
+                            x:Name="btnChooseLabel"
+                            Width="90"
+                            Height="22"
+                            Background="FloralWhite"
+                            Click="btnChooseLabel_Click"
+                            Content="Choose label"
+                            FontSize="10"
+                            Style="{StaticResource RoundedButtonStyle}" />
+                    </DockPanel>
+                    <Border
+                        x:Name="brdrLabel"
+                        Grid.Column="0"
+                        Width="220"
+                        Height="61"
+                        Margin="0,0"
+                        Background="FloralWhite"
+                        BorderBrush="Black"
+                        BorderThickness="1"
+                        ClipToBounds="True"
+                        CornerRadius="8">
+                        <Image
+                            x:Name="imgLabel"
+                            Source="/AppData/Artwork/Label/VcsLabel.png"
+                            Stretch="Uniform" />
+                    </Border>
+                    <TextBox
+                        x:Name="txbxGameName"
+                        Width="216"
+                        Margin="0,20,0,0"
+                        Text="Game name" />
+                    <Button
+                        x:Name="btnExportWorld"
+                        Width="150"
+                        Height="30"
+                        Margin="0,10,0,0"
+                        Background="FloralWhite"
+                        Click="btnExportWorld_Click"
+                        Content="Save world.json"
+                        Style="{StaticResource RoundedButtonStyle}" />
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

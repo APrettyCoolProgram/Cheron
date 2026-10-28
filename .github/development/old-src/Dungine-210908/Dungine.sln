@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31624.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dungine", "Dungine.csproj", "{C7D647E8-D3E5-4CFC-83E4-0D456C1B59A6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dungeon.Core", "Dungeon.Core\Dungeon.Core.csproj", "{A2EC93E5-F837-4909-8AF2-3D0863E4AD57}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dungine.WPF", "Dungine.WPF\Dungine.WPF.csproj", "{77A8A692-A2A3-4F28-A4A4-F49D14E9C31B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C7D647E8-D3E5-4CFC-83E4-0D456C1B59A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7D647E8-D3E5-4CFC-83E4-0D456C1B59A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7D647E8-D3E5-4CFC-83E4-0D456C1B59A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7D647E8-D3E5-4CFC-83E4-0D456C1B59A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2EC93E5-F837-4909-8AF2-3D0863E4AD57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2EC93E5-F837-4909-8AF2-3D0863E4AD57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2EC93E5-F837-4909-8AF2-3D0863E4AD57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2EC93E5-F837-4909-8AF2-3D0863E4AD57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77A8A692-A2A3-4F28-A4A4-F49D14E9C31B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77A8A692-A2A3-4F28-A4A4-F49D14E9C31B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77A8A692-A2A3-4F28-A4A4-F49D14E9C31B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77A8A692-A2A3-4F28-A4A4-F49D14E9C31B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A0DF8BC1-1307-458C-8EC2-498BF7AEE2D1}
+	EndGlobalSection
+EndGlobal

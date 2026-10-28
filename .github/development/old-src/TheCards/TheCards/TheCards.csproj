@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3D80033A-FD26-48F6-8997-8D0676F22597}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TheCards</RootNamespace>
+    <AssemblyName>TheCards</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Card.cs" />
+    <Compile Include="DoDictionary.cs" />
+    <Compile Include="DoFile.cs" />
+    <Compile Include="DoList.cs" />
+    <Compile Include="frmCardViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmCardViewer.Designer.cs">
+      <DependentUpon>frmCardViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmTheCardsMainMenu.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmTheCardsMainMenu.Designer.cs">
+      <DependentUpon>frmTheCardsMainMenu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DoString.cs" />
+    <Compile Include="DoCommon.cs" />
+    <EmbeddedResource Include="frmCardViewer.resx">
+      <DependentUpon>frmCardViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmTheCardsMainMenu.resx">
+      <DependentUpon>frmTheCardsMainMenu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Embedded\Documentation\Changelog.txt" />
+    <EmbeddedResource Include="Embedded\Documentation\README.txt" />
+    <EmbeddedResource Include="Embedded\Documentation\Roadmap.txt" />
+    <EmbeddedResource Include="Embedded\Documentation\Scratchpad.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Embedded\Font\" />
+    <Folder Include="Embedded\Image\Background\" />
+    <Folder Include="Embedded\Image\Card-Back\" />
+    <Folder Include="Embedded\Image\Card-Border\" />
+    <Folder Include="Embedded\Image\Card-Front\" />
+    <Folder Include="Embedded\Image\Playmat\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\borderBlack.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\borderBlue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\borderBrown.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\borderGold.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\borderGreen.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\borderPurple.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\borderRed.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\borderSilver.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\borderWhite.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\borderYellow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\backTheCards.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\iconFavorite_16px.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\iconNotFavorite_16px.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

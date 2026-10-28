@@ -1,0 +1,22 @@
+﻿extensions: designer.cs generated.cs
+extensions: .xaml
+<!--
+    ====================================================================================================================
+        FILE: %FileName%
+     PROJECT: %Project% (https://github.com/aprettycoolprogram/%Project%)
+     UPDATED: %CurrentMonth%-%CurrentDay%-%CurrentYear%-%CurrentTime%
+     AUTHORS: development@aprettycoolprogram.com
+     LICENSE: Apache v2 (https://apache.org/licenses/LICENSE-2.0)
+              © 2021 A Pretty Cool Program. All rights reserved.
+     ===================================================================================================================
+-->
+
+extensions: .cs
+// =====================================================================================================================
+//    FILE: %Namespace%.%FileName%
+// PROJECT: %Project% (https://github.com/aprettycoolprogram/%Project%)
+// UPDATED: %CurrentMonth%-%CurrentDay%-%CurrentYear%-%CurrentTime%
+// AUTHORS: development@aprettycoolprogram.com
+// LICENSE: Apache v2 (https://apache.org/licenses/LICENSE-2.0)
+//          © 2021 A Pretty Cool Program. All rights reserved.
+// =====================================================================================================================

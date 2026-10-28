@@ -1,0 +1,91 @@
+<Window x:Class="Ubiquitous.GameInterface.TextGameUI.BasicUI.TextGameWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Ubiquitous - Text Adventure" Height="600" Width="800"
+        Background="White">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Game Output Area -->
+        <Border Grid.Row="0" 
+                BorderBrush="Black" BorderThickness="2" 
+                Padding="10" 
+                Background="White">
+            <ScrollViewer x:Name="OutputScrollViewer" 
+                          VerticalScrollBarVisibility="Auto">
+                <TextBlock x:Name="GameOutputText" 
+                           TextWrapping="Wrap"
+                           Foreground="Black"
+                           FontFamily="Consolas"
+                           FontSize="14"
+                           LineHeight="20"/>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Command History -->
+        <Border Grid.Row="1"
+                BorderBrush="Black" BorderThickness="2" 
+                Padding="5" 
+                Background="White" 
+                Margin="0,10,0,5">
+            <ScrollViewer x:Name="HistoryScrollViewer" 
+                          VerticalScrollBarVisibility="Auto">
+                <TextBlock x:Name="CommandHistoryText" 
+                           TextWrapping="Wrap"
+                           Foreground="Black"
+                           FontFamily="Consolas"
+                           FontSize="12"/>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Command Input Area -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" Text=">" 
+                       VerticalAlignment="Center" 
+                       Foreground="Black"
+                       FontFamily="Consolas"
+                       FontSize="16" 
+                       FontWeight="Bold"
+                       Margin="0,0,10,0"/>
+
+            <TextBox x:Name="CommandInput" 
+                     Grid.Column="1"
+                     Background="White"
+                     Foreground="Black"
+                     BorderBrush="Black"
+                     BorderThickness="2"
+                     FontFamily="Consolas"
+                     FontSize="14"
+                     Padding="5"
+                     VerticalAlignment="Center"
+                     KeyDown="CommandInput_KeyDown"/>
+
+            <Button x:Name="SendButton" 
+                    Grid.Column="2"
+                    Content="SEND" 
+                    Background="Black"
+                    Foreground="White"
+                    BorderThickness="1"
+                    BorderBrush="Black"
+                    Padding="20,8"
+                    Margin="10,0,0,0"
+                    FontWeight="Bold"
+                    FontFamily="Consolas"
+                    Cursor="Hand"
+                    Click="SendButton_Click"/>
+        </Grid>
+    </Grid>
+</Window>

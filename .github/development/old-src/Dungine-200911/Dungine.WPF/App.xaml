@@ -1,0 +1,22 @@
+﻿<!--
+    PROJECT: Dungine.WPF (https://github.com/calistadalanegames/Dungine.WPF)
+    FILE: App.xaml
+    UPDATED: 11-9-2020-4:38 PM
+    LICENSE: Apache v2 (https://apache.org/licenses/LICENSE-2.0)
+    Copyright 2020 A Pretty Cool Program & Calistadalane Games
+    All rights reserved
+-->
+
+<!--
+    Main entry point for Dungine.WPF. Currently not used.
+    
+    Please see Dungine.WPF.App.xaml.cs for more information.
+-->
+
+<Application x:Class="Dungine.WPF.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Dungine.WPF"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources />
+</Application>
