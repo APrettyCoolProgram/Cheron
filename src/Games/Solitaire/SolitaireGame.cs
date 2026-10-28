@@ -137,13 +137,17 @@ public sealed partial class SolitaireGame : IGameModule
         UpdateFeedback(gameTime.ElapsedGameTime);
         var keyboardState = Keyboard.GetState();
 
-        if (keyboardState.IsKeyDown(Keys.R) && !_previousKeyboardState.IsKeyDown(Keys.R))
+        if (!HandleAccessibilityKeys(keyboardState))
         {
-            StartNewGame();
-        }
-        else
-        {
-            HandleControlKeys(keyboardState);
+            if (IsNewKey(keyboardState, Keys.R))
+            {
+                StartNewGame();
+            }
+            else
+            {
+                HandleControlKeys(keyboardState);
+                HandleBoardKeyboard(keyboardState);
+            }
         }
 
         var mouseState = Mouse.GetState();
@@ -169,9 +173,16 @@ public sealed partial class SolitaireGame : IGameModule
         graphicsDevice.ScissorRectangle = _viewport.ScissorBounds;
 
         BeginBoardDrawing();
-        _spriteBatch.Draw(_artwork.Background, new Rectangle(0, 0, 1100, 800), Color.White);
+        if (_highContrast)
+        {
+            Fill(new Rectangle(0, 0, 1100, 800), Color.Black);
+        }
+        else
+        {
+            _spriteBatch.Draw(_artwork.Background, new Rectangle(0, 0, 1100, 800), Color.White);
+        }
 
-        Fill(new Rectangle(0, 0, 1100, 72), new Color(12, 31, 37, 220));
+        Fill(new Rectangle(0, 0, 1100, 72), _highContrast ? Color.Black : new Color(12, 31, 37, 220));
         Fill(new Rectangle(0, 71, 1100, 1), new Color(67, 102, 102));
         DrawToolbar();
 
@@ -181,13 +192,13 @@ public sealed partial class SolitaireGame : IGameModule
 
         if (_stock.Count == 0)
         {
-            DrawText("DEAL", 47, 122, 1, new Color(156, 186, 178));
-            DrawText("AGAIN", 44, 138, 1, new Color(156, 186, 178));
+            DrawText("DEAL", _largeText ? 35 : 47, 122, SmallTextScale, new Color(156, 186, 178));
+            DrawText("AGAIN", _largeText ? 38 : 44, _largeText ? 142 : 138, SmallTextScale, new Color(156, 186, 178));
         }
 
         DrawPile(_waste, new Rectangle(128, 82, CardWidth, CardHeight));
-        DrawText("STOCK", 40, 199, 1, new Color(157, 184, 176));
-        DrawText("WASTE", 136, 199, 1, new Color(157, 184, 176));
+        DrawText("STOCK", _largeText ? 36 : 40, 199, SmallTextScale, new Color(157, 184, 176));
+        DrawText("WASTE", _largeText ? 132 : 136, 199, SmallTextScale, new Color(157, 184, 176));
 
         for (var foundationIndex = 0; foundationIndex < _foundations.Count; foundationIndex++)
         {
@@ -198,11 +209,12 @@ public sealed partial class SolitaireGame : IGameModule
             if (_foundations[foundationIndex].Count == 0)
             {
                 DrawText("A", foundationBounds.X + 33, foundationBounds.Y + 24, 2, new Color(119, 153, 145));
-                DrawText("TO KING", foundationBounds.X + 19, foundationBounds.Y + 65, 1, new Color(119, 153, 145));
+                DrawText(_largeText ? "TO K" : "TO KING", foundationBounds.X + 19, foundationBounds.Y + 65,
+                    SmallTextScale, new Color(119, 153, 145));
             }
         }
 
-        DrawText("FOUNDATIONS", 796, 199, 1, new Color(157, 184, 176));
+        DrawText("FOUNDATIONS", _largeText ? 802 : 796, 199, SmallTextScale, new Color(157, 184, 176));
 
         for (var columnIndex = 0; columnIndex < _tableau.Count; columnIndex++)
         {
@@ -212,7 +224,7 @@ public sealed partial class SolitaireGame : IGameModule
             if (tableauPile.Count == 0)
             {
                 var slotBounds = new Rectangle(FirstColumnX + columnIndex * ColumnStep, cardY, CardWidth, CardHeight);
-                _spriteBatch.Draw(_artwork.Slot, slotBounds, Color.White);
+                DrawSlot(slotBounds);
                 DrawText("K", slotBounds.X + 33, slotBounds.Y + 46, 2, new Color(119, 153, 145));
             }
 
@@ -235,20 +247,24 @@ public sealed partial class SolitaireGame : IGameModule
         DrawInvalidFeedback();
         DrawWinCelebration();
 
-        Fill(new Rectangle(0, 728, 1100, 72), new Color(12, 31, 37, 230));
+        Fill(new Rectangle(0, 728, 1100, 72), _highContrast ? Color.Black : new Color(12, 31, 37, 230));
         Fill(new Rectangle(0, 728, 1100, 1), new Color(67, 102, 102));
-        var footerMessage = _invalidTimeRemaining > TimeSpan.Zero
-            ? "MOVE NOT ALLOWED  TRY ANOTHER TARGET OR USE HINT"
-            : _hintTimeRemaining > TimeSpan.Zero ? _hintMessage : "BUILD DOWN IN ALTERNATING COLORS";
-        DrawText(footerMessage, 32, 747, 1, new Color(207, 220, 207));
-        DrawText("DRAG OR CLICK TO MOVE  DOUBLE CLICK TO BUILD", 32, 767, 1, new Color(153, 183, 176));
-        DrawText(_audioUnavailable ? "SOUND UNAVAILABLE" : "ACES TO KINGS", 883, 747, 1, new Color(235, 205, 143));
-        DrawText("ESC  EXIT", 907, 767, 1, new Color(153, 183, 176));
+        DrawAccessibleFooter();
 
         if (_hasWon && _cardTransitions.Count == 0)
         {
             _spriteBatch.Draw(_artwork.Banner, new Rectangle(370, 376, 360, 56), Color.White);
             DrawText("YOU WIN!", 483, 394, 3, new Color(251, 219, 148));
+        }
+
+        if (_keyboardFocusVisible && !_optionsOpen)
+        {
+            DrawFocusCorners(GetKeyboardBounds());
+        }
+
+        if (_optionsOpen)
+        {
+            DrawAccessibilityOptions();
         }
 
         _spriteBatch.End();
@@ -618,7 +634,7 @@ public sealed partial class SolitaireGame : IGameModule
         }
         else
         {
-            _spriteBatch.Draw(_artwork.Slot, bounds, Color.White);
+            DrawSlot(bounds);
         }
     }
 
@@ -648,20 +664,33 @@ public sealed partial class SolitaireGame : IGameModule
 
         if (isSelected && !faceDown)
         {
-            var highlightOpacity = Math.Clamp(_selectionElapsed / 0.12f, 0, 1);
+            var highlightOpacity = _reducedMotion ? 1 : Math.Clamp(_selectionElapsed / 0.12f, 0, 1);
             _spriteBatch.Draw(_artwork.Selection,
                 new Rectangle(bounds.X - 3, bounds.Y - 3, bounds.Width + 6, bounds.Height + 6),
                 Color.White * highlightOpacity);
         }
 
-        _spriteBatch.Draw(faceDown ? _artwork.CardBack : _artwork.CardFace, bounds, Color.White);
+        if (_highContrast)
+        {
+            Fill(bounds, faceDown ? Color.Black : Color.White);
+            DrawTargetOutline(bounds, isSelected && !faceDown ? Color.Yellow : Color.White);
+            if (faceDown)
+            {
+                DrawText("BACK", bounds.X + 16, bounds.Y + 46, 2, Color.White);
+            }
+        }
+        else
+        {
+            _spriteBatch.Draw(faceDown ? _artwork.CardBack : _artwork.CardFace, bounds, Color.White);
+        }
 
         if (faceDown)
         {
             return;
         }
 
-        var suitColor = card.IsRed ? new Color(180, 51, 65) : new Color(36, 57, 66);
+        var suitColor = _highContrast ? (card.IsRed ? new Color(145, 0, 20) : Color.Black)
+            : card.IsRed ? new Color(180, 51, 65) : new Color(36, 57, 66);
         var rankLabel = card.Rank switch
         {
             1 => "A",
@@ -673,11 +702,13 @@ public sealed partial class SolitaireGame : IGameModule
 
         var suitTexture = _artwork.Suits[(int)card.Suit];
 
-        DrawText(rankLabel, bounds.X + 8, bounds.Y + 8, 2, suitColor);
+        var rankScale = _largeText ? 3 : 2;
+        DrawText(rankLabel, bounds.X + 8, bounds.Y + (_largeText ? 5 : 8), rankScale, suitColor, preserveColor: true);
         _spriteBatch.Draw(suitTexture, new Rectangle(bounds.Right - 26, bounds.Y + 5, 20, 20), suitColor);
         _spriteBatch.Draw(suitTexture, new Rectangle(bounds.X + 19, bounds.Y + 35, 40, 40), suitColor);
         _spriteBatch.Draw(suitTexture, new Rectangle(bounds.X + 7, bounds.Bottom - 25, 18, 18), suitColor);
-        DrawText(rankLabel, bounds.Right - (rankLabel.Length * 12) - 7, bounds.Bottom - 22, 2, suitColor);
+        DrawText(rankLabel, bounds.Right - (rankLabel.Length * 6 * rankScale) - 7,
+            bounds.Bottom - (7 * rankScale) - 8, rankScale, suitColor, preserveColor: true);
     }
 
     /// <summary>Fills a rectangle using the module's single-pixel texture.</summary>
@@ -719,9 +750,15 @@ public sealed partial class SolitaireGame : IGameModule
     /// <param name="textX">The starting horizontal position in logical board coordinates.</param>
     /// <param name="textY">The starting vertical position in logical board coordinates.</param>
     /// <param name="scale">The size of each glyph pixel in logical board units.</param>
-    /// <param name="color">The text color.</param>
-    private void DrawText(string text, int textX, int textY, int scale, Color color)
+    /// <param name="color">The normal-theme text color.</param>
+    /// <param name="preserveColor">Whether to retain contrasting card or button ink in high-contrast mode.</param>
+    private void DrawText(string text, int textX, int textY, int scale, Color color, bool preserveColor = false)
     {
+        if (_highContrast && !preserveColor)
+        {
+            color = Color.White;
+        }
+
         foreach (var character in text.ToUpperInvariant())
         {
             if (character == ' ')

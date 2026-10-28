@@ -53,6 +53,17 @@ public sealed partial class SolitaireGame
     private void UpdatePointer(Point position, bool isDown, TimeSpan time)
     {
         _pointerPosition = position;
+        if (_optionsOpen)
+        {
+            UpdateOptionsPointer(position, isDown);
+            return;
+        }
+
+        if (isDown && !_pointerWasDown)
+        {
+            _keyboardFocusVisible = false;
+        }
+
         if (_cardTransitions.Count > 0)
         {
             if (isDown && !_pointerWasDown && NewGameButtonBounds.Contains(position))
@@ -62,6 +73,10 @@ public sealed partial class SolitaireGame
             else if (isDown && !_pointerWasDown && SoundButtonBounds.Contains(position))
             {
                 ToggleSound();
+            }
+            else if (isDown && !_pointerWasDown && OptionsButtonBounds.Contains(position))
+            {
+                ToggleOptions();
             }
 
             _pressedPile = null;

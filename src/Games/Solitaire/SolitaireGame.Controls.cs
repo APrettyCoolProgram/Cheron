@@ -188,6 +188,12 @@ public sealed partial class SolitaireGame
             return true;
         }
 
+        if (OptionsButtonBounds.Contains(position))
+        {
+            ToggleOptions();
+            return true;
+        }
+
         return false;
     }
 
@@ -201,12 +207,14 @@ public sealed partial class SolitaireGame
         DrawToolbarButton(SoundButtonBounds, _audioUnavailable ? "NA" : _soundEnabled ? "SND" : "OFF",
             !_audioUnavailable);
         DrawText("SOLITAIRE", 440, 26, 2, new Color(246, 239, 218));
-        DrawText("R NEW GAME  U UNDO  H HINT  M SOUND", 440, 51, 1, new Color(153, 183, 176));
-        DrawText("MOVES", 760, 24, 1, new Color(153, 183, 176));
-        DrawText(_moveCount.ToString(), 760, 42, 2, new Color(246, 239, 218));
-        DrawText("TIME", 920, 24, 1, new Color(153, 183, 176));
+        DrawText(_largeText ? "F1 OPTIONS" : "R NEW GAME  U UNDO  H HINT  M SOUND", 440, 51,
+            SmallTextScale, new Color(153, 183, 176));
+        DrawText("MOVES", 740, 24, SmallTextScale, new Color(153, 183, 176));
+        DrawText(_moveCount.ToString(), 740, 44, 2, new Color(246, 239, 218));
+        DrawText("TIME", 850, 24, SmallTextScale, new Color(153, 183, 176));
         var totalSeconds = (long)_playingTime.TotalSeconds;
-        DrawText($"{totalSeconds / 60:00}M {totalSeconds % 60:00}S", 920, 43, 1, new Color(246, 239, 218));
+        DrawText($"{totalSeconds / 60:00}M {totalSeconds % 60:00}S", 850, 44,
+            SmallTextScale, new Color(246, 239, 218));
     }
 
     /// <summary>Draws one themed button with hover feedback only while enabled.</summary>
@@ -217,9 +225,20 @@ public sealed partial class SolitaireGame
     {
         var isHovered = enabled && bounds.Contains(_pointerPosition);
         var texture = isHovered ? _artwork.ButtonHover : _artwork.Button;
-        _spriteBatch.Draw(texture, bounds, enabled ? Color.White : new Color(104, 115, 113));
+        if (_highContrast)
+        {
+            Fill(bounds, enabled ? Color.White : new Color(48, 48, 48));
+            DrawTargetOutline(bounds, Color.White);
+        }
+        else
+        {
+            _spriteBatch.Draw(texture, bounds, enabled ? Color.White : new Color(104, 115, 113));
+        }
+
+        var ink = _highContrast ? (enabled ? Color.Black : Color.White)
+            : enabled ? new Color(31, 56, 59) : new Color(44, 62, 63);
         DrawText(label, bounds.X + (bounds.Width - label.Length * 12 + 2) / 2, bounds.Y + 15,
-            2, enabled ? new Color(31, 56, 59) : new Color(44, 62, 63));
+            2, ink, preserveColor: true);
     }
 
     /// <summary>Clears the current hint without modifying selection, history, or board state.</summary>

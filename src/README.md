@@ -10,8 +10,52 @@ Artwork is generated once during content loading and disposed with the game modu
 The compact bitmap lettering remains asset-free. Cards slide and flip over 220 milliseconds, with a short
 staggered deal and a 120-millisecond selection fade. Invalid drags glide back to their source.
 Animations use elapsed time rather than frame counts and do not change game rules or card ownership.
-Board input briefly pauses during transitions; **New Game**, sound toggling, **R**, and **Escape** remain available.
+Board input briefly pauses during transitions; **New Game**, sound toggling, **Options**, **R**, and **Escape** remain available.
 All visual assets and rendering remain inside `Games\Solitaire`.
+
+## Accessibility
+
+Click **Options F1** or press **F1** to open or close accessibility settings. Use the mouse, or **Tab/Shift+Tab**
+and **Up/Down** to choose a row, then **Enter/Space** to toggle it. **F2**, **F3**, and **F4** also toggle the
+corresponding settings directly, including during animations. Options consumes board clicks and shortcuts while open;
+the timer and existing transitions continue. Opening it cancels any held pointer gesture without moving cards.
+**Escape** retains its existing meaning of exiting the application, not dismissing settings.
+
+- **F2 - Larger text:** doubles small interface labels from 7 to 14 logical units high and enlarges card ranks
+  from 14 to 21. Button labels remain at their already larger 14-unit size. Statistics and footer text have dedicated
+  placements to avoid overlap; the compact shortcut line becomes an Options reminder. Window scaling still applies,
+  so maximizing the window can help further. This is not a zoom or reflow mode.
+- **F3 - High contrast:** uses solid black board/slot surfaces, white interface text, white card faces, black or
+  dark-red rank/suit ink, and a yellow selection outline. The solid text/background color pairs exceed 4.5:1 contrast
+  before antialiasing. Suit silhouettes and written rank/suit descriptions avoid relying solely on color.
+- **F4 - Reduced motion:** immediately settles active transitions and skips subsequent dealing, slides, flips,
+  return animations, selection fades, invalid-outline fading, and win particles. Logical moves, undo, static
+  highlights, instructions, the win banner, and optional sounds still work. Turning motion back on does not replay
+  completed effects. Sound can be disabled separately with **M**.
+
+Settings default to off, survive New Game, and last until the application closes; nothing is written to disk.
+These are visual and input accommodations, not screen-reader integration or OS accessibility-setting detection.
+There is no spoken card narration or native accessibility tree in this pass.
+
+### Keyboard play
+
+- **Tab / Shift+Tab:** cycle New Game, Undo, Hint, Sound, Options, stock, waste, four foundations, and seven tableau columns.
+- **Left / Right:** cycle the board piles, wrapping at either end. From a toolbar control, either arrow enters the stock.
+- **Up / Down:** choose a face-up card within the focused tableau column; hidden cards cannot be selected.
+  Entering a column focuses its top card; move upward to select a longer stack.
+- **Enter / Space:** activate a control or stock, select the focused card and cards above it, or move an existing
+  selection to the focused legal tableau/foundation. Activating the same selected card again clears selection.
+  An invalid destination keeps the source selected and reports the rejection; focusing waste allows a new source selection.
+- **F:** send the current selection, or the focused card when nothing is selected, to its first legal foundation.
+- **Backspace:** clear selection and hint feedback. **R**, **U**, **H**, and **M** retain their existing shortcuts.
+
+For example, focus a tableau column, use Up to choose a stack, press Enter, navigate to its destination, and press Enter again.
+White corner marks show keyboard focus, separate from the continuous selected-card and legal-destination outlines.
+The footer names the focused pile, card rank/suit, and selected-card count. It also labels legal/invalid destinations
+for the current selection in words. Empty/disabled targets are described explicitly.
+Disabled Undo/Hint controls remain in the traversal order but cannot execute unavailable actions.
+Board activation is blocked during card transitions; Tab traversal, New Game, Sound, and Options remain available.
+A real mouse press hides keyboard focus; merely resting or moving the mouse does not disrupt keyboard play.
 
 ## Window layout
 
@@ -79,6 +123,8 @@ dotnet run --project Cheron.csproj
 - Click **Undo** or press **U** to reverse the last successful action, including any automatic card flip.
 - Click **Hint** or press **H** for four seconds of gold source/destination highlights and footer instructions.
 - Click **SND/OFF** or press **M** to toggle sound; **NA** indicates unavailable audio hardware.
+- Click **Options F1** or press **F1** for accessibility settings; **F2/F3/F4** toggle text, contrast, and motion.
+- Use **Tab**, arrows, and **Enter/Space** for keyboard play; see the keyboard instructions above.
 - Undo and Hint are disabled during animations and dragging; Undo is also disabled when history is empty.
 - Click the stock to draw one card to the waste. Click the empty stock to recycle the waste.
 - Click a face-up card to select it; click a valid tableau pile or foundation to move it.
@@ -131,3 +177,9 @@ proof that the deal can be won; they do not recommend foundation reversals or wh
 - Resize during a deal or flip; confirm transitions remain aligned with their destinations and finish normally.
 - Minimize and restore, then maximize and restore; confirm the current deal is retained.
 - On a high-DPI display, or when moving between displays with different scaling, verify drawing and pointer alignment.
+- Toggle larger text and contrast separately and together; verify two-digit card ranks, toolbar, footer, and settings fit.
+- Open Options while dragging or dealing; confirm no click reaches a card behind the panel and held releases are ignored.
+- Play using only Tab, arrows, Enter/Space, F, and Backspace; try stack moves, foundations, recycling, hints, and undo.
+- Toggle reduced motion during a deal or move; confirm cards settle immediately without changing card count or history.
+- Win with reduced motion enabled; confirm the static banner appears without particles, then undo and play again.
+- Restart with all accessibility settings enabled; confirm preferences remain enabled and keyboard focus stays valid.

@@ -104,6 +104,12 @@ public sealed partial class SolitaireGame
     /// <param name="before">The presentation captured before the operation.</param>
     private void AnimateChanges(Dictionary<Card, CardPresentation> before)
     {
+        if (_reducedMotion)
+        {
+            _cardTransitions.Clear();
+            return;
+        }
+
         var wasDragging = _isDragging;
         _isDragging = false;
         var after = CaptureCardPresentation();
@@ -124,6 +130,11 @@ public sealed partial class SolitaireGame
     {
         _cardTransitions.Clear();
         _animationElapsed = 0;
+        if (_reducedMotion)
+        {
+            return;
+        }
+
         var dealIndex = 0;
         for (var columnIndex = 0; columnIndex < _tableau.Count; columnIndex++)
         {

@@ -235,20 +235,22 @@ public sealed partial class SolitaireGame
         }
     }
 
-    /// <summary>Draws a fading coral outline independently of card transitions and selection highlights.</summary>
+    /// <summary>Draws a theme-aware rejected-move outline, kept static when reduced motion is enabled.</summary>
     private void DrawInvalidFeedback()
     {
         if (_invalidTimeRemaining > TimeSpan.Zero && _invalidBounds != Rectangle.Empty)
         {
-            var opacity = (float)(_invalidTimeRemaining.TotalSeconds / InvalidFeedbackDuration.TotalSeconds);
-            DrawTargetOutline(_invalidBounds, new Color(241, 150, 131) * Math.Min(1, opacity * 2));
+            var opacity = _reducedMotion ? 1
+                : (float)(_invalidTimeRemaining.TotalSeconds / InvalidFeedbackDuration.TotalSeconds);
+            var color = _highContrast ? Color.White : new Color(241, 150, 131);
+            DrawTargetOutline(_invalidBounds, color * Math.Min(1, opacity * 2));
         }
     }
 
     /// <summary>Draws a small, finite gold-and-mint burst without obscuring controls or changing card ownership.</summary>
     private void DrawWinCelebration()
     {
-        if (!_hasWon || !_winFeedbackShown || _celebrationElapsed >= CelebrationDuration)
+        if (_reducedMotion || !_hasWon || !_winFeedbackShown || _celebrationElapsed >= CelebrationDuration)
         {
             return;
         }
