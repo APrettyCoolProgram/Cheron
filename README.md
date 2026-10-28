@@ -1,6 +1,6 @@
 <div align="center">
 
-  <img src="../../.github/logo/RepositoryTemplate-336x220.png" alt="Repository-Template">
+  <img src="./.github/logo/Cheron-Logo-256x256.png" alt="Cheron">
 
   ![RELEASE](https://img.shields.io/badge/release-26.10-teal)&nbsp;
   ![STAGE](https://img.shields.io/badge/ALPHA-red)&nbsp; <!-- Alpha = Red, Beta = Yellow, Stable = Green -->
