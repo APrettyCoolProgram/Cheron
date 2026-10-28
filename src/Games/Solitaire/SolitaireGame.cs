@@ -12,7 +12,7 @@ using Microsoft.Xna.Framework.Input;
 namespace Cheron.Games.Solitaire;
 
 /// <summary>Implements Klondike rules, state, interaction, and rendering independently of the application host.</summary>
-public sealed class SolitaireGame : IGameModule
+public sealed partial class SolitaireGame : IGameModule
 {
     /// <summary>The width of a card or empty pile slot, in pixels.</summary>
     private const int CardWidth = 78;
@@ -83,7 +83,7 @@ public sealed class SolitaireGame : IGameModule
     /// <summary>The module-owned cached textures used for the table, cards, buttons, and pile slots.</summary>
     private SolitaireArtwork _artwork = null!;
 
-    /// <summary>The last processed mouse state, used to detect new clicks and draw button hover feedback.</summary>
+    /// <summary>The last processed mouse state, used to draw button hover feedback.</summary>
     private MouseState _previousMouseState;
 
     /// <summary>The last processed keyboard state, used to restart only on a new R key press.</summary>
@@ -124,8 +124,8 @@ public sealed class SolitaireGame : IGameModule
         _artwork = new SolitaireArtwork(graphicsDevice);
     }
 
-    /// <summary>Handles restart key presses and new left mouse clicks.</summary>
-    /// <param name="gameTime">The host-supplied timing information; this input-driven game does not use it.</param>
+    /// <summary>Handles restart key presses, clicks, double-clicks, and card dragging.</summary>
+    /// <param name="gameTime">The host-supplied timing information used to detect double-clicks.</param>
     public void Update(GameTime gameTime)
     {
         var keyboardState = Keyboard.GetState();
@@ -137,10 +137,8 @@ public sealed class SolitaireGame : IGameModule
 
         var mouseState = Mouse.GetState();
 
-        if (mouseState.LeftButton == ButtonState.Pressed && _previousMouseState.LeftButton == ButtonState.Released)
-        {
-            HandleClick(new Point(mouseState.X, mouseState.Y));
-        }
+        UpdatePointer(new Point(mouseState.X, mouseState.Y),
+            mouseState.LeftButton == ButtonState.Pressed, gameTime.TotalGameTime);
 
         _previousMouseState = mouseState;
         _previousKeyboardState = keyboardState;
@@ -213,15 +211,21 @@ public sealed class SolitaireGame : IGameModule
                 var card = tableauPile[cardIndex];
                 var cardBounds = new Rectangle(FirstColumnX + columnIndex * ColumnStep, cardY, CardWidth, CardHeight);
 
-                DrawCard(card, cardBounds, IsSelected(tableauPile, cardIndex));
+                if (!IsDraggedCard(tableauPile, cardIndex))
+                {
+                    DrawCard(card, cardBounds, IsSelected(tableauPile, cardIndex));
+                }
+
                 cardY += card.FaceUp ? TableauStep : 22;
             }
         }
 
+        DrawInteractionFeedback();
+
         Fill(new Rectangle(0, 728, 1100, 72), new Color(12, 31, 37, 230));
         Fill(new Rectangle(0, 728, 1100, 1), new Color(67, 102, 102));
         DrawText("BUILD DOWN IN ALTERNATING COLORS", 32, 747, 1, new Color(207, 220, 207));
-        DrawText("CLICK A CARD THEN ITS DESTINATION", 32, 767, 1, new Color(153, 183, 176));
+        DrawText("DRAG OR CLICK TO MOVE  DOUBLE CLICK TO BUILD", 32, 767, 1, new Color(153, 183, 176));
         DrawText("ACES TO KINGS", 883, 747, 1, new Color(235, 205, 143));
         DrawText("ESC  EXIT", 907, 767, 1, new Color(153, 183, 176));
 
@@ -249,7 +253,8 @@ public sealed class SolitaireGame : IGameModule
         _waste.Clear();
         _tableau.Clear();
         _foundations.Clear();
-        _selectedPile = null;
+        ClearSelection();
+        ResetPointerGesture();
         _hasWon = false;
 
         var deck = new List<Card>(52);
@@ -339,31 +344,32 @@ public sealed class SolitaireGame : IGameModule
             return;
         }
 
-        var columnIndex = (clickPosition.X - FirstColumnX) / ColumnStep;
-
-        if (clickPosition.X < FirstColumnX || columnIndex < 0 || columnIndex >= _tableau.Count ||
-            clickPosition.X >= FirstColumnX + columnIndex * ColumnStep + CardWidth)
+        for (var columnIndex = 0; columnIndex < _tableau.Count; columnIndex++)
         {
-            ClearSelection();
+            if (!GetTableauBounds(columnIndex).Contains(clickPosition))
+            {
+                continue;
+            }
+
+            if (_selectedPile is not null && TryMoveToTableau(columnIndex))
+            {
+                return;
+            }
+
+            var clickedCardIndex = GetTableauCardIndex(columnIndex, clickPosition.Y);
+            if (clickedCardIndex >= 0 && _tableau[columnIndex][clickedCardIndex].FaceUp)
+            {
+                Select(_tableau[columnIndex], clickedCardIndex);
+            }
+            else
+            {
+                ClearSelection();
+            }
 
             return;
         }
 
-        var clickedCardIndex = GetTableauCardIndex(columnIndex, clickPosition.Y);
-
-        if (_selectedPile is not null && TryMoveToTableau(columnIndex))
-        {
-            return;
-        }
-
-        if (clickedCardIndex >= 0 && _tableau[columnIndex][clickedCardIndex].FaceUp)
-        {
-            Select(_tableau[columnIndex], clickedCardIndex);
-        }
-        else
-        {
-            ClearSelection();
-        }
+        ClearSelection();
     }
 
     /// <summary>Draws one stock card or recycles the waste face down into an empty stock.</summary>
@@ -413,23 +419,9 @@ public sealed class SolitaireGame : IGameModule
             return true;
         }
 
-        var movingCard = _selectedPile[_selectedCardIndex];
-        if (destinationPile.Count == 0)
-
+        if (!CanMoveToTableau(destinationColumnIndex))
         {
-            if (movingCard.Rank != 13)
-            {
-                return false;
-            }
-        }
-        else
-        {
-            var targetCard = destinationPile[^1];
-
-            if (!targetCard.FaceUp || targetCard.Rank != movingCard.Rank + 1 || targetCard.IsRed == movingCard.IsRed)
-            {
-                return false;
-            }
+            return false;
         }
 
         MoveSelectedCards(destinationPile);
@@ -442,32 +434,12 @@ public sealed class SolitaireGame : IGameModule
     /// <returns>Whether the selected card was moved to the foundation.</returns>
     private bool TryMoveToFoundation(int foundationIndex)
     {
-        if (_selectedPile is null || _selectedCardIndex != _selectedPile.Count - 1)
+        if (!CanMoveToFoundation(foundationIndex))
         {
             return false;
         }
 
-        var destinationPile = _foundations[foundationIndex];
-        var movingCard = _selectedPile[_selectedCardIndex];
-
-        if (destinationPile.Count == 0)
-        {
-            if (movingCard.Rank != 1)
-            {
-                return false;
-            }
-        }
-        else
-        {
-            var targetCard = destinationPile[^1];
-
-            if (targetCard.Suit != movingCard.Suit || targetCard.Rank + 1 != movingCard.Rank)
-            {
-                return false;
-            }
-        }
-
-        MoveSelectedCards(destinationPile);
+        MoveSelectedCards(_foundations[foundationIndex]);
         return true;
     }
 
@@ -531,10 +503,14 @@ public sealed class SolitaireGame : IGameModule
     private bool IsSelected(List<Card> pile, int cardIndex) =>
         ReferenceEquals(_selectedPile, pile) && _selectedCardIndex == cardIndex;
 
-    /// <summary>Finds the first card whose vertical hit area contains the mouse position.</summary>
+    /// <summary>Finds the card whose exposed vertical strip contains the mouse position.</summary>
+    /// <remarks>
+    /// Covered cards expose only their stacking offset; the top card exposes its full height.
+    /// The caller checks horizontal bounds and excludes the toolbar and footer.
+    /// </remarks>
     /// <param name="columnIndex">The zero-based index of the tableau column.</param>
     /// <param name="mouseY">The mouse's vertical position in window coordinates.</param>
-    /// <returns>The matching card index, or <c>-1</c> when no hit area contains the position.</returns>
+    /// <returns>The matching card index, or <c>-1</c> when no exposed strip contains the position.</returns>
     private int GetTableauCardIndex(int columnIndex, int mouseY)
     {
         var cardY = TableauTop;
@@ -543,7 +519,8 @@ public sealed class SolitaireGame : IGameModule
         for (var cardIndex = 0; cardIndex < tableauPile.Count; cardIndex++)
         {
             var card = tableauPile[cardIndex];
-            var cardBottom = cardY + (card.FaceUp ? CardHeight : 22);
+            var cardBottom = cardY + (cardIndex == tableauPile.Count - 1
+                ? CardHeight : card.FaceUp ? TableauStep : 22);
 
             if (mouseY >= cardY && mouseY < cardBottom)
             {
@@ -572,15 +549,21 @@ public sealed class SolitaireGame : IGameModule
         DrawText("NEW GAME", 43, 35, 2, new Color(31, 56, 59));
     }
 
-    /// <summary>Draws a pile's top card, or an outlined slot for an empty pile.</summary>
+    /// <summary>Draws a pile's top non-dragged card, or an outlined slot when no card remains visible.</summary>
     /// <param name="pile">The pile to draw.</param>
     /// <param name="bounds">The card or slot bounds in window coordinates.</param>
     /// <param name="faceDown">Whether to show the card back regardless of its face-up state.</param>
     private void DrawPile(List<Card> pile, Rectangle bounds, bool faceDown = false)
     {
-        if (pile.Count > 0)
+        var visibleCardIndex = pile.Count - 1;
+        if (visibleCardIndex >= 0 && IsDraggedCard(pile, visibleCardIndex))
         {
-            DrawCard(pile[^1], bounds, IsSelected(pile, pile.Count - 1), faceDown);
+            visibleCardIndex = _selectedCardIndex - 1;
+        }
+
+        if (visibleCardIndex >= 0)
+        {
+            DrawCard(pile[visibleCardIndex], bounds, IsSelected(pile, visibleCardIndex), faceDown);
         }
         else
         {
