@@ -7,7 +7,10 @@ A simple Klondike solitaire game built with MonoGame. It uses no external game a
 Solitaire uses a shaded teal table, ivory rounded cards, soft shadows, geometric suit symbols,
 patterned card backs, gold selection outlines, and a hover-highlighted new-game button.
 Artwork is generated once during content loading and disposed with the game module.
-The compact bitmap lettering remains asset-free. Cards support dragging, but movement and flips are not animated.
+The compact bitmap lettering remains asset-free. Cards slide and flip over 220 milliseconds, with a short
+staggered deal and a 120-millisecond selection fade. Invalid drags glide back to their source.
+Animations use elapsed time rather than frame counts and do not change game rules or card ownership.
+Board input briefly pauses during transitions; **New Game**, **R**, and **Escape** remain available.
 All visual assets and rendering remain inside `Games\Solitaire`.
 
 ## Organization
@@ -56,3 +59,7 @@ dotnet run --project Cheron.csproj
 - Click a card and then a destination without dragging; check that click-to-move still works.
 - Double-click an Ace, then its same-suit Two when available; confirm only eligible top cards enter foundations.
 - Restart while dragging; confirm the new deal has 52 cards and releasing the button does not move any of them.
+- Start a new game; confirm all seven columns are dealt in under one second without duplicate cards.
+- Draw and recycle the stock; confirm cards glide between piles and flip to the correct side.
+- Try clicking or holding the mouse during a move; confirm it cannot queue an unintended move after the animation.
+- Restart during a deal, move, or return animation; confirm only the new deal remains visible.

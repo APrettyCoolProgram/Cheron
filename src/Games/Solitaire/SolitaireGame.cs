@@ -125,9 +125,10 @@ public sealed partial class SolitaireGame : IGameModule
     }
 
     /// <summary>Handles restart key presses, clicks, double-clicks, and card dragging.</summary>
-    /// <param name="gameTime">The host-supplied timing information used to detect double-clicks.</param>
+    /// <param name="gameTime">The host-supplied timing information used for gestures and frame-rate-independent animation.</param>
     public void Update(GameTime gameTime)
     {
+        UpdateAnimations(gameTime.ElapsedGameTime);
         var keyboardState = Keyboard.GetState();
 
         if (keyboardState.IsKeyDown(Keys.R) && !_previousKeyboardState.IsKeyDown(Keys.R))
@@ -148,7 +149,7 @@ public sealed partial class SolitaireGame : IGameModule
     /// <remarks>
     /// Uses a fixed 1100-by-800 layout in window coordinates and requires loaded drawing resources.
     /// </remarks>
-    /// <param name="gameTime">The host-supplied timing information; rendering is not time-dependent.</param>
+    /// <param name="gameTime">The host-supplied timing information; animation progress is advanced during updates.</param>
     /// <param name="graphicsDevice">The borrowed, host-owned graphics device.</param>
     public void Draw(GameTime gameTime, GraphicsDevice graphicsDevice)
     {
@@ -221,6 +222,7 @@ public sealed partial class SolitaireGame : IGameModule
         }
 
         DrawInteractionFeedback();
+        DrawCardTransitions();
 
         Fill(new Rectangle(0, 728, 1100, 72), new Color(12, 31, 37, 230));
         Fill(new Rectangle(0, 728, 1100, 1), new Color(67, 102, 102));
@@ -229,7 +231,7 @@ public sealed partial class SolitaireGame : IGameModule
         DrawText("ACES TO KINGS", 883, 747, 1, new Color(235, 205, 143));
         DrawText("ESC  EXIT", 907, 767, 1, new Color(153, 183, 176));
 
-        if (_hasWon)
+        if (_hasWon && _cardTransitions.Count == 0)
         {
             _spriteBatch.Draw(_artwork.Banner, new Rectangle(370, 376, 360, 56), Color.White);
             DrawText("YOU WIN!", 483, 394, 3, new Color(251, 219, 148));
@@ -296,6 +298,8 @@ public sealed partial class SolitaireGame : IGameModule
         {
             _foundations.Add(new List<Card>());
         }
+
+        AnimateDeal();
     }
 
     /// <summary>Routes a board click to restart, draw, select, or move cards.</summary>
@@ -375,6 +379,7 @@ public sealed partial class SolitaireGame : IGameModule
     /// <summary>Draws one stock card or recycles the waste face down into an empty stock.</summary>
     private void DrawFromStock()
     {
+        var before = CaptureCardPresentation();
         ClearSelection();
 
         if (_stock.Count > 0)
@@ -383,6 +388,7 @@ public sealed partial class SolitaireGame : IGameModule
             _stock.RemoveAt(_stock.Count - 1);
             drawnCard.FaceUp = true;
             _waste.Add(drawnCard);
+            AnimateChanges(before);
 
             return;
         }
@@ -397,6 +403,7 @@ public sealed partial class SolitaireGame : IGameModule
             }
 
             _waste.Clear();
+            AnimateChanges(before);
         }
     }
 
@@ -451,6 +458,7 @@ public sealed partial class SolitaireGame : IGameModule
     /// <param name="destinationPile">The pile that receives the selected card and all cards above it.</param>
     private void MoveSelectedCards(List<Card> destinationPile)
     {
+        var before = CaptureCardPresentation();
         var sourcePile = _selectedPile!;
         var selectedCardCount = sourcePile.Count - _selectedCardIndex;
 
@@ -464,6 +472,7 @@ public sealed partial class SolitaireGame : IGameModule
 
         ClearSelection();
         _hasWon = _foundations.All(foundationPile => foundationPile.Count == 13);
+        AnimateChanges(before);
     }
 
     /// <summary>Selects the top card of a pile, or clears the selection when the pile is empty.</summary>
@@ -485,6 +494,11 @@ public sealed partial class SolitaireGame : IGameModule
     /// <param name="cardIndex">The zero-based index of the first selected card.</param>
     private void Select(List<Card> pile, int cardIndex)
     {
+        if (!ReferenceEquals(_selectedPile, pile) || _selectedCardIndex != cardIndex)
+        {
+            _selectionElapsed = 0;
+        }
+
         _selectedPile = pile;
         _selectedCardIndex = cardIndex;
     }
@@ -561,6 +575,11 @@ public sealed partial class SolitaireGame : IGameModule
             visibleCardIndex = _selectedCardIndex - 1;
         }
 
+        while (visibleCardIndex >= 0 && _cardTransitions.ContainsKey(pile[visibleCardIndex]))
+        {
+            visibleCardIndex--;
+        }
+
         if (visibleCardIndex >= 0)
         {
             DrawCard(pile[visibleCardIndex], bounds, IsSelected(pile, visibleCardIndex), faceDown);
@@ -578,19 +597,34 @@ public sealed partial class SolitaireGame : IGameModule
     /// <param name="faceDown">Whether to show the card back regardless of its face-up state.</param>
     private void DrawCard(Card card, Rectangle bounds, bool isSelected, bool faceDown = false)
     {
+        if (!_cardTransitions.ContainsKey(card))
+        {
+            DrawCardArtwork(card, bounds, isSelected, faceDown || !card.FaceUp);
+        }
+    }
+
+    /// <summary>Draws a complete card using an explicit presentation face state rather than its logical state.</summary>
+    /// <param name="card">The card whose rank and suit are drawn.</param>
+    /// <param name="bounds">The card rectangle in board coordinates.</param>
+    /// <param name="isSelected">Whether to fade in the selection outline.</param>
+    /// <param name="faceDown">Whether to draw the back instead of the face.</param>
+    private void DrawCardArtwork(Card card, Rectangle bounds, bool isSelected, bool faceDown)
+    {
         var shadowBounds = new Rectangle(bounds.X - 6, bounds.Y - 4, bounds.Width + 16, bounds.Height + 16);
 
         _spriteBatch.Draw(_artwork.CardShadow, shadowBounds, Color.White);
 
-        if (isSelected && card.FaceUp && !faceDown)
+        if (isSelected && !faceDown)
         {
+            var highlightOpacity = Math.Clamp(_selectionElapsed / 0.12f, 0, 1);
             _spriteBatch.Draw(_artwork.Selection,
-                new Rectangle(bounds.X - 3, bounds.Y - 3, bounds.Width + 6, bounds.Height + 6), Color.White);
+                new Rectangle(bounds.X - 3, bounds.Y - 3, bounds.Width + 6, bounds.Height + 6),
+                Color.White * highlightOpacity);
         }
 
-        _spriteBatch.Draw(faceDown || !card.FaceUp ? _artwork.CardBack : _artwork.CardFace, bounds, Color.White);
+        _spriteBatch.Draw(faceDown ? _artwork.CardBack : _artwork.CardFace, bounds, Color.White);
 
-        if (faceDown || !card.FaceUp)
+        if (faceDown)
         {
             return;
         }

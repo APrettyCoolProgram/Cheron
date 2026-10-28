@@ -53,6 +53,21 @@ public sealed partial class SolitaireGame
     private void UpdatePointer(Point position, bool isDown, TimeSpan time)
     {
         _pointerPosition = position;
+        if (_cardTransitions.Count > 0)
+        {
+            if (isDown && !_pointerWasDown && new Rectangle(32, 20, 132, 44).Contains(position))
+            {
+                StartNewGame();
+            }
+
+            _pressedPile = null;
+            _isDragging = false;
+            _lastClickedCard = null;
+            _ignoreUntilRelease = isDown;
+            _pointerWasDown = isDown;
+            return;
+        }
+
         if (_ignoreUntilRelease)
         {
             _ignoreUntilRelease = isDown;
@@ -85,7 +100,13 @@ public sealed partial class SolitaireGame
         {
             if (_isDragging)
             {
+                var before = CaptureCardPresentation();
                 DropSelectedCards(position);
+                if (_cardTransitions.Count == 0)
+                {
+                    AnimateChanges(before);
+                }
+
                 ClearSelection();
             }
             else if (!movedBeyondThreshold)
@@ -295,6 +316,11 @@ public sealed partial class SolitaireGame
     /// <summary>Draws legal destinations, hover feedback, and the floating stack in that order.</summary>
     private void DrawInteractionFeedback()
     {
+        if (_cardTransitions.Count > 0)
+        {
+            return;
+        }
+
         for (var foundationIndex = 0; foundationIndex < _foundations.Count; foundationIndex++)
         {
             if (CanMoveToFoundation(foundationIndex))
