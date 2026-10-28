@@ -83,10 +83,7 @@ public sealed partial class SolitaireGame : IGameModule
     /// <summary>The module-owned cached textures used for the table, cards, buttons, and pile slots.</summary>
     private SolitaireArtwork _artwork = null!;
 
-    /// <summary>The last processed mouse state, used to draw button hover feedback.</summary>
-    private MouseState _previousMouseState;
-
-    /// <summary>The last processed keyboard state, used to restart only on a new R key press.</summary>
+    /// <summary>The last processed keyboard state, used to detect new shortcut key presses.</summary>
     private KeyboardState _previousKeyboardState;
 
     /// <summary>The source pile for a pending move, or <see langword="null"/> when no cards are selected.</summary>
@@ -124,10 +121,11 @@ public sealed partial class SolitaireGame : IGameModule
         _artwork = new SolitaireArtwork(graphicsDevice);
     }
 
-    /// <summary>Handles restart key presses, clicks, double-clicks, and card dragging.</summary>
-    /// <param name="gameTime">The host-supplied timing information used for gestures and frame-rate-independent animation.</param>
+    /// <summary>Updates statistics, animations, toolbar shortcuts, clicks, double-clicks, and card dragging.</summary>
+    /// <param name="gameTime">The host-supplied timing information used for statistics, gestures, and animations.</param>
     public void Update(GameTime gameTime)
     {
+        UpdateControls(gameTime.ElapsedGameTime);
         UpdateAnimations(gameTime.ElapsedGameTime);
         var keyboardState = Keyboard.GetState();
 
@@ -135,13 +133,16 @@ public sealed partial class SolitaireGame : IGameModule
         {
             StartNewGame();
         }
+        else
+        {
+            HandleControlKeys(keyboardState);
+        }
 
         var mouseState = Mouse.GetState();
 
         UpdatePointer(new Point(mouseState.X, mouseState.Y),
             mouseState.LeftButton == ButtonState.Pressed, gameTime.TotalGameTime);
 
-        _previousMouseState = mouseState;
         _previousKeyboardState = keyboardState;
     }
 
@@ -160,11 +161,7 @@ public sealed partial class SolitaireGame : IGameModule
 
         Fill(new Rectangle(0, 0, 1100, 72), new Color(12, 31, 37, 220));
         Fill(new Rectangle(0, 71, 1100, 1), new Color(67, 102, 102));
-        DrawText("SOLITAIRE", 210, 24, 3, new Color(246, 239, 218));
-        DrawText("KLONDIKE", 212, 51, 1, new Color(153, 183, 176));
-        DrawText("DRAW ONE", 870, 29, 1, new Color(183, 204, 194));
-        DrawText("R  NEW GAME", 870, 48, 1, new Color(153, 183, 176));
-        DrawNewGameButton();
+        DrawToolbar();
 
         var stockBounds = new Rectangle(32, 82, CardWidth, CardHeight);
 
@@ -226,7 +223,8 @@ public sealed partial class SolitaireGame : IGameModule
 
         Fill(new Rectangle(0, 728, 1100, 72), new Color(12, 31, 37, 230));
         Fill(new Rectangle(0, 728, 1100, 1), new Color(67, 102, 102));
-        DrawText("BUILD DOWN IN ALTERNATING COLORS", 32, 747, 1, new Color(207, 220, 207));
+        DrawText(_hintTimeRemaining > TimeSpan.Zero ? _hintMessage : "BUILD DOWN IN ALTERNATING COLORS",
+            32, 747, 1, new Color(207, 220, 207));
         DrawText("DRAG OR CLICK TO MOVE  DOUBLE CLICK TO BUILD", 32, 767, 1, new Color(153, 183, 176));
         DrawText("ACES TO KINGS", 883, 747, 1, new Color(235, 205, 143));
         DrawText("ESC  EXIT", 907, 767, 1, new Color(153, 183, 176));
@@ -257,6 +255,7 @@ public sealed partial class SolitaireGame : IGameModule
         _foundations.Clear();
         ClearSelection();
         ResetPointerGesture();
+        ResetControls();
         _hasWon = false;
 
         var deck = new List<Card>(52);
@@ -306,13 +305,12 @@ public sealed partial class SolitaireGame : IGameModule
     /// <param name="clickPosition">The mouse position in window coordinates.</param>
     private void HandleClick(Point clickPosition)
     {
-        if (new Rectangle(32, 20, 132, 44).Contains(clickPosition))
+        if (HandleToolbarClick(clickPosition))
         {
-            StartNewGame();
-
             return;
         }
 
+        ClearHint();
         var stockBounds = new Rectangle(32, 82, CardWidth, CardHeight);
 
         if (stockBounds.Contains(clickPosition))
@@ -384,6 +382,7 @@ public sealed partial class SolitaireGame : IGameModule
 
         if (_stock.Count > 0)
         {
+            RecordAction();
             var drawnCard = _stock[^1];
             _stock.RemoveAt(_stock.Count - 1);
             drawnCard.FaceUp = true;
@@ -395,6 +394,7 @@ public sealed partial class SolitaireGame : IGameModule
 
         if (_waste.Count > 0)
         {
+            RecordAction();
             for (var cardIndex = _waste.Count - 1; cardIndex >= 0; cardIndex--)
             {
                 var recycledCard = _waste[cardIndex];
@@ -459,6 +459,7 @@ public sealed partial class SolitaireGame : IGameModule
     private void MoveSelectedCards(List<Card> destinationPile)
     {
         var before = CaptureCardPresentation();
+        RecordAction();
         var sourcePile = _selectedPile!;
         var selectedCardCount = sourcePile.Count - _selectedCardIndex;
 
@@ -552,16 +553,6 @@ public sealed partial class SolitaireGame : IGameModule
     /// <returns>The rectangle used to draw and hit-test the foundation.</returns>
     private Rectangle GetFoundationBounds(int foundationIndex) =>
         new(1100 - 32 - (4 - foundationIndex) * (CardWidth + CardGap), 82, CardWidth, CardHeight);
-
-    /// <summary>Draws the rounded new-game button with a hover highlight.</summary>
-    private void DrawNewGameButton()
-    {
-        var buttonBounds = new Rectangle(32, 20, 132, 44);
-        var isHovered = buttonBounds.Contains(_previousMouseState.X, _previousMouseState.Y);
-
-        _spriteBatch.Draw(isHovered ? _artwork.ButtonHover : _artwork.Button, buttonBounds, Color.White);
-        DrawText("NEW GAME", 43, 35, 2, new Color(31, 56, 59));
-    }
 
     /// <summary>Draws a pile's top non-dragged card, or an outlined slot when no card remains visible.</summary>
     /// <param name="pile">The pile to draw.</param>

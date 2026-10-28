@@ -55,7 +55,7 @@ public sealed partial class SolitaireGame
         _pointerPosition = position;
         if (_cardTransitions.Count > 0)
         {
-            if (isDown && !_pointerWasDown && new Rectangle(32, 20, 132, 44).Contains(position))
+            if (isDown && !_pointerWasDown && NewGameButtonBounds.Contains(position))
             {
                 StartNewGame();
             }
@@ -92,6 +92,7 @@ public sealed partial class SolitaireGame
         if (_pointerWasDown && _pressedPile is not null && !_isDragging && movedBeyondThreshold)
         {
             Select(_pressedPile, _pressedCardIndex);
+            ClearHint();
             _isDragging = true;
             _lastClickedCard = null;
         }
@@ -348,6 +349,8 @@ public sealed partial class SolitaireGame
 
             DrawTargetOutline(hoveredBounds, new Color(191, 215, 227));
         }
+
+        DrawHintFeedback();
 
         if (_isDragging && _selectedPile is not null)
         {

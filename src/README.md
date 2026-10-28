@@ -41,6 +41,9 @@ dotnet run --project Cheron.csproj
 ## Controls
 
 - Click **New Game** or press **R** to deal a shuffled game.
+- Click **Undo** or press **U** to reverse the last successful action, including any automatic card flip.
+- Click **Hint** or press **H** for four seconds of gold source/destination highlights and footer instructions.
+- Undo and Hint are disabled during animations and dragging; Undo is also disabled when history is empty.
 - Click the stock to draw one card to the waste. Click the empty stock to recycle the waste.
 - Click a face-up card to select it; click a valid tableau pile or foundation to move it.
 - Alternatively, drag a face-up card or tableau stack and release over a valid pile. Invalid drops leave cards in place.
@@ -50,6 +53,19 @@ dotnet run --project Cheron.csproj
 - Tableau stacks build downward in alternating colors, with Kings on empty columns.
 - Foundations build upward by suit, starting with Aces.
 - Press **Escape** to exit.
+
+## Statistics and hints
+
+Each successful card or stack move, stock draw, or waste recycle counts as one move and can be undone.
+Invalid moves, selections, and hints do not count. Undo restores the previous move count and exact pile order
+and face states; there is no redo. New Game clears the undo history and resets both statistics.
+The timer starts with the first successful action, continues during animations and undo, and stops on a win.
+Undoing a win resumes it without rewinding elapsed time. The display uses minutes and seconds.
+
+Hints prefer foundation moves, then tableau moves exposing hidden cards, then other tableau moves.
+When no such move is found, the hint suggests drawing or recycling if available, or reports no suggested move.
+Hints never execute a move or alter the current selection. They are one-step suggestions, not a solver or
+proof that the deal can be won; they do not recommend foundation reversals or whole-column King shuffles.
 
 ## Interaction verification
 
@@ -63,3 +79,8 @@ dotnet run --project Cheron.csproj
 - Draw and recycle the stock; confirm cards glide between piles and flip to the correct side.
 - Try clicking or holding the mouse during a move; confirm it cannot queue an unintended move after the animation.
 - Restart during a deal, move, or return animation; confirm only the new deal remains visible.
+- Undo a stack move revealing a hidden card; confirm the original stack order and face-down card are restored.
+- Draw several cards, recycle, then undo repeatedly; confirm waste/stock order and the move count are restored.
+- Request a hint with a card selected; confirm both selection and statistics are unchanged, then follow the gold outlines.
+- Wait before the first move; confirm the timer stays at zero, starts on a successful action, and resets on New Game.
+- Win a game and undo the last foundation move; confirm the win message clears and the timer resumes.
