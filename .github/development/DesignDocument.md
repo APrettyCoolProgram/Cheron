@@ -1,6 +1,6 @@
 <div align="center">
 
-  <img src="../logo/RepositoryTemplate-336x220.png" alt="Repository Template">
+  <img src="../logo/Cheron-Logo-512x512.png" alt="Repository Template">
 
   <h1>Design Document</h1>
 

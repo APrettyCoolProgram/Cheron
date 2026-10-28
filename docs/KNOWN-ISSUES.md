@@ -2,7 +2,7 @@
 
 <div align="center">
 
-  <img src="../.github/logo/RepositoryTemplate-336x220.png" alt="Repository Template">
+  <img src="../.github/logo/Cheron-Logo-512x512.png" alt="Repository Template">
 
   <h1>Known Issues</h1>
 
