@@ -6,6 +6,11 @@
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>false</TieredCompilation>
   </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Solitaire.Tests" />
+    <Compile Remove="Solitaire.Tests\**\*.cs" />
+    <Compile Remove="Solitaire.Tests\obj\**\*.cs" />
+  </ItemGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
@@ -21,6 +26,9 @@
     <EmbeddedResource Include="Icon.bmp">
       <LogicalName>Icon.bmp</LogicalName>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Solitaire.Tests\Solitaire.Tests.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.*" />

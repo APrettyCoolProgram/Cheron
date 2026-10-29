@@ -37,6 +37,17 @@ internal sealed partial class SolitaireGame
         internal void UpdatePointer(Point position, bool isDown, TimeSpan time)
         {
             _game._pointerPosition = position;
+            if (_game._smokePassOverlayOpen)
+            {
+                if (!isDown && _game._pointerWasDown)
+                {
+                    _game._smokePassOverlayOpen = false;
+                }
+
+                _game._pointerWasDown = isDown;
+                return;
+            }
+
             if (_game.IsNewGamePromptOpen)
             {
                 UpdateNewGamePromptPointer(position, isDown);
@@ -254,6 +265,25 @@ internal sealed partial class SolitaireGame
         /// <returns>Whether the keyboard update belongs to settings rather than the board.</returns>
         internal bool HandleAccessibilityKeys(KeyboardState keyboard)
         {
+            if (IsNewKey(keyboard, Keys.F9) && (keyboard.IsKeyDown(Keys.LeftShift) || keyboard.IsKeyDown(Keys.RightShift)))
+            {
+                _game._smokePassOverlayOpen = !_game._smokePassOverlayOpen;
+                _game._optionsOpen = false;
+                _game._newGamePromptOpen = false;
+                ResetPointerGesture();
+                return true;
+            }
+
+            if (_game._smokePassOverlayOpen)
+            {
+                if (IsNewKey(keyboard, Keys.Escape) || IsNewKey(keyboard, Keys.Back) || IsNewKey(keyboard, Keys.F9))
+                {
+                    _game._smokePassOverlayOpen = false;
+                }
+
+                return true;
+            }
+
             if (_game.IsNewGamePromptOpen)
             {
                 if (IsNewKey(keyboard, Keys.Left) || IsNewKey(keyboard, Keys.Right) ||

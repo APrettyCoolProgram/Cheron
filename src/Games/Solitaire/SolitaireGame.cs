@@ -108,6 +108,119 @@ internal sealed partial class SolitaireGame : IGameModule
         _newGamePromptOpen = true;
     }
 
+    /// <summary>Gets whether the new-game prompt is open for tests.</summary>
+    internal bool TestIsNewGamePromptOpen() => _newGamePromptOpen;
+
+    /// <summary>Gets whether the in-app manual smoke-pass overlay is open for tests.</summary>
+    internal bool TestIsSmokePassOverlayOpen() => _smokePassOverlayOpen;
+
+    /// <summary>Gets whether the options panel is open for tests.</summary>
+    internal bool TestIsOptionsOpen() => _optionsOpen;
+
+    /// <summary>Gets the active variant for tests.</summary>
+    internal SolitaireVariant TestGetVariant() => _variant;
+
+    /// <summary>Gets the prompt-selected variant for tests.</summary>
+    internal SolitaireVariant TestGetNewGamePromptVariant() => _newGamePromptVariant;
+
+    /// <summary>Sets the active variant for tests.</summary>
+    internal void TestSetVariant(SolitaireVariant variant)
+    {
+        _variant = variant;
+    }
+
+    /// <summary>Sets the prompt-selected variant for tests.</summary>
+    internal void TestSetPromptVariant(SolitaireVariant variant)
+    {
+        _newGamePromptVariant = variant;
+    }
+
+    /// <summary>Sets prompt visibility for tests.</summary>
+    internal void TestSetNewGamePromptOpen(bool isOpen)
+    {
+        _newGamePromptOpen = isOpen;
+    }
+
+    /// <summary>Opens the prompt for tests.</summary>
+    internal void TestOpenNewGamePrompt()
+    {
+        OpenNewGamePrompt();
+    }
+
+    /// <summary>Toggles prompt variant for tests.</summary>
+    internal void TestTogglePromptVariant()
+    {
+        _newGamePromptVariant = _newGamePromptVariant == SolitaireVariant.Klondike
+            ? SolitaireVariant.FreeCell
+            : SolitaireVariant.Klondike;
+    }
+
+    /// <summary>Confirms the prompt selection for tests.</summary>
+    internal void TestConfirmNewGamePromptSelection()
+    {
+        _variant = _newGamePromptVariant;
+        _newGamePromptOpen = false;
+    }
+
+    /// <summary>Cancels the prompt selection for tests.</summary>
+    internal void TestCancelNewGamePromptSelection()
+    {
+        _newGamePromptOpen = false;
+    }
+
+    /// <summary>Processes one accessibility keyboard frame for tests and advances key-edge state.</summary>
+    internal bool TestHandleAccessibilityKeys(KeyboardState keyboard)
+    {
+        var handled = HandleAccessibilityKeys(keyboard);
+        _previousKeyboardState = keyboard;
+        return handled;
+    }
+
+    /// <summary>Resets keyboard edge-detection state for tests.</summary>
+    internal void TestResetPreviousKeyboardState()
+    {
+        _previousKeyboardState = default;
+    }
+
+    /// <summary>Processes one pointer update for tests.</summary>
+    internal void TestUpdatePointer(Point position, bool isDown, TimeSpan time)
+    {
+        UpdatePointer(position, isDown, time);
+    }
+
+    /// <summary>Starts a new game for tests using the currently selected variant.</summary>
+    internal void TestStartNewGame()
+    {
+        StartNewGame();
+    }
+
+    /// <summary>Gets tableau column card counts for tests.</summary>
+    internal int[] TestGetTableauCounts()
+    {
+        return _tableau.Select(pile => pile.Count).ToArray();
+    }
+
+    /// <summary>Gets tableau column face-down card counts for tests.</summary>
+    internal int[] TestGetTableauFaceDownCounts()
+    {
+        return _tableau.Select(pile => pile.Count(card => !card.FaceUp)).ToArray();
+    }
+
+    /// <summary>Gets stock count for tests.</summary>
+    internal int TestGetStockCount() => _stock.Count;
+
+    /// <summary>Gets FreeCell slot counts for tests.</summary>
+    internal int[] TestGetFreeCellCounts()
+    {
+        return _freeCells.Select(cell => cell.Count).ToArray();
+    }
+
+    /// <summary>Gets foundation pile counts for tests.</summary>
+    internal int[] TestGetFoundationCounts()
+    {
+        return _foundations.Select(pile => pile.Count).ToArray();
+    }
+
     /// <summary>Creates owned drawing resources, card-table artwork, and optional synthesized sounds.</summary>
     /// <remarks>
     /// Call once on the graphics thread after the device becomes available and before drawing.
@@ -1077,6 +1190,9 @@ internal sealed partial class SolitaireGame : IGameModule
 
     /// <summary>Whether the modal accessibility settings panel is open.</summary>
     private bool _optionsOpen;
+
+    /// <summary>Whether the in-app manual smoke-pass checklist overlay is visible.</summary>
+    private bool _smokePassOverlayOpen;
 
     /// <summary>The focused settings row: larger text, high contrast, reduced motion, or close.</summary>
     private int _optionIndex;

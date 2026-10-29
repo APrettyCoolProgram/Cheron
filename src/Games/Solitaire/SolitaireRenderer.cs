@@ -185,6 +185,11 @@ internal sealed partial class SolitaireGame
                 DrawNewGameVariantPrompt();
             }
 
+            if (_game._smokePassOverlayOpen)
+            {
+                DrawSmokePassOverlay();
+            }
+
             _game._spriteBatch.End();
             graphicsDevice.ScissorRectangle = previousScissor;
             graphicsDevice.RasterizerState = previousRasterizer;
@@ -523,6 +528,23 @@ internal sealed partial class SolitaireGame
             DrawTargetOutline(cancelBounds, Color.White);
             DrawText(NewGameVariantConfirmLabel, confirmBounds.X + 6, confirmBounds.Y + 2, 2, Color.White);
             DrawText(NewGameVariantCancelLabel, cancelBounds.X + 6, cancelBounds.Y + 2, 2, Color.White);
+        }
+
+        /// <summary>Draws an in-app manual checklist for smoke-testing UX prompt behavior at runtime.</summary>
+        private void DrawSmokePassOverlay()
+        {
+            Fill(GetBoardBounds(), Color.Black * 0.75f);
+            var panelBounds = new Rectangle(120, 120, 860, 560);
+            Fill(panelBounds, Color.Black);
+            DrawTargetOutline(panelBounds, Color.White);
+
+            DrawText(SmokePassTitle, panelBounds.X + 170, panelBounds.Y + 24, 2, GoldHighlight);
+            DrawText(SmokePassStep1, panelBounds.X + 42, panelBounds.Y + 92, 2, Color.White);
+            DrawText(SmokePassStep2, panelBounds.X + 42, panelBounds.Y + 142, 2, Color.White);
+            DrawText(SmokePassStep3, panelBounds.X + 42, panelBounds.Y + 192, 2, Color.White);
+            DrawText(SmokePassStep4, panelBounds.X + 42, panelBounds.Y + 242, 2, Color.White);
+            DrawText(SmokePassStep5, panelBounds.X + 42, panelBounds.Y + 292, 2, Color.White);
+            DrawText(SmokePassFooter, panelBounds.X + 42, panelBounds.Bottom - 58, 2, Color.White);
         }
 
         /// <summary>Draws a pile's top non-dragged card, or an outlined slot when no card remains visible.</summary>

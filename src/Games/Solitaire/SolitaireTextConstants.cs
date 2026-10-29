@@ -60,6 +60,27 @@ internal static class SolitaireTextConstants
     /// <summary>The new-game variant prompt cancel label.</summary>
     internal const string NewGameVariantCancelLabel = "BACKSPACE  CANCEL";
 
+    /// <summary>The manual smoke-pass overlay title.</summary>
+    internal const string SmokePassTitle = "MANUAL UX SMOKE PASS";
+
+    /// <summary>The manual smoke-pass overlay step 1.</summary>
+    internal const string SmokePassStep1 = "1  OPEN NEW GAME PROMPT  (R OR NEW GAME BUTTON)";
+
+    /// <summary>The manual smoke-pass overlay step 2.</summary>
+    internal const string SmokePassStep2 = "2  VERIFY KLONDIKE AND FREECELL OPTIONS RENDER";
+
+    /// <summary>The manual smoke-pass overlay step 3.</summary>
+    internal const string SmokePassStep3 = "3  KEYBOARD  ARROWS TOGGLE   ENTER START   ESC CANCEL";
+
+    /// <summary>The manual smoke-pass overlay step 4.</summary>
+    internal const string SmokePassStep4 = "4  POINTER  CLICK VARIANT TO START   CLICK CANCEL";
+
+    /// <summary>The manual smoke-pass overlay step 5.</summary>
+    internal const string SmokePassStep5 = "5  CONFIRM PROMPT BLOCKS BOARD/OPTIONS INPUT";
+
+    /// <summary>The manual smoke-pass overlay footer.</summary>
+    internal const string SmokePassFooter = "SHIFT+F9 TO CLOSE";
+
     /// <summary>The close action label shown in the accessibility options list.</summary>
     internal const string AccessibilityCloseOptionsLabel = "F1  CLOSE OPTIONS";
 
