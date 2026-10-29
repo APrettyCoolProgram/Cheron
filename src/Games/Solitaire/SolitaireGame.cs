@@ -10,6 +10,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using static Cheron.Games.Solitaire.SolitaireAccessibilityOptions;
+using static Cheron.Games.Solitaire.SolitaireInteractionConstants;
 using static Cheron.Games.Solitaire.SolitaireLayout;
 using static Cheron.Games.Solitaire.SolitaireOptionsLayout;
 using static Cheron.Games.Solitaire.SolitaireTextConstants;
@@ -147,19 +149,19 @@ internal sealed class SolitaireGame : IGameModule
         Fill(new Rectangle(0, 71, BoardWidth, 1), new Color(67, 102, 102));
         DrawToolbar();
 
-        var stockBounds = new Rectangle(32, 82, CardWidth, CardHeight);
+        var stockBounds = GetStockBounds();
 
         DrawPile(_stock, stockBounds, faceDown: true);
 
         if (_stock.Count == 0)
         {
-            DrawText("DEAL", _largeText ? 35 : 47, 122, SmallTextScale, new Color(156, 186, 178));
-            DrawText("AGAIN", _largeText ? 38 : 44, _largeText ? 142 : 138, SmallTextScale, new Color(156, 186, 178));
+            DrawText(BoardDealLabel, _largeText ? 35 : 47, 122, SmallTextScale, new Color(156, 186, 178));
+            DrawText(BoardAgainLabel, _largeText ? 38 : 44, _largeText ? 142 : 138, SmallTextScale, new Color(156, 186, 178));
         }
 
-        DrawPile(_waste, new Rectangle(128, 82, CardWidth, CardHeight));
-        DrawText("STOCK", _largeText ? 36 : 40, 199, SmallTextScale, new Color(157, 184, 176));
-        DrawText("WASTE", _largeText ? 132 : 136, 199, SmallTextScale, new Color(157, 184, 176));
+        DrawPile(_waste, GetWasteBounds());
+        DrawText(BoardStockLabel, _largeText ? 36 : 40, 199, SmallTextScale, new Color(157, 184, 176));
+        DrawText(BoardWasteLabel, _largeText ? 132 : 136, 199, SmallTextScale, new Color(157, 184, 176));
 
         for (var foundationIndex = 0; foundationIndex < _foundations.Count; foundationIndex++)
         {
@@ -169,13 +171,14 @@ internal sealed class SolitaireGame : IGameModule
 
             if (_foundations[foundationIndex].Count == 0)
             {
-                DrawText("A", foundationBounds.X + 33, foundationBounds.Y + 24, 2, new Color(119, 153, 145));
-                DrawText(_largeText ? "TO K" : "TO KING", foundationBounds.X + 19, foundationBounds.Y + 65,
-                    SmallTextScale, new Color(119, 153, 145));
+                DrawText(BoardFoundationAceLabel, foundationBounds.X + 33, foundationBounds.Y + 24, 2,
+                    new Color(119, 153, 145));
+                DrawText(_largeText ? BoardFoundationToKingCompactLabel : BoardFoundationToKingLabel,
+                    foundationBounds.X + 19, foundationBounds.Y + 65, SmallTextScale, new Color(119, 153, 145));
             }
         }
 
-        DrawText("FOUNDATIONS", _largeText ? 802 : 796, 199, SmallTextScale, new Color(157, 184, 176));
+        DrawText(BoardFoundationsLabel, _largeText ? 802 : 796, 199, SmallTextScale, new Color(157, 184, 176));
 
         for (var columnIndex = 0; columnIndex < _tableau.Count; columnIndex++)
         {
@@ -186,7 +189,7 @@ internal sealed class SolitaireGame : IGameModule
             {
                 var slotBounds = new Rectangle(FirstColumnX + columnIndex * ColumnStep, cardY, CardWidth, CardHeight);
                 DrawSlot(slotBounds);
-                DrawText("K", slotBounds.X + 33, slotBounds.Y + 46, 2, new Color(119, 153, 145));
+                DrawText(BoardTableauKingLabel, slotBounds.X + 33, slotBounds.Y + 46, 2, new Color(119, 153, 145));
             }
 
             for (var cardIndex = 0; cardIndex < tableauPile.Count; cardIndex++)
@@ -524,8 +527,8 @@ internal sealed class SolitaireGame : IGameModule
     private Dictionary<Card, CardPresentation> CaptureCardPresentation()
     {
         var snapshot = new Dictionary<Card, CardPresentation>(52);
-        CapturePile(_stock, new Rectangle(32, 82, CardWidth, CardHeight), snapshot);
-        CapturePile(_waste, new Rectangle(128, 82, CardWidth, CardHeight), snapshot);
+        CapturePile(_stock, GetStockBounds(), snapshot);
+        CapturePile(_waste, GetWasteBounds(), snapshot);
         for (var foundationIndex = 0; foundationIndex < _foundations.Count; foundationIndex++)
         {
             CapturePile(_foundations[foundationIndex], GetFoundationBounds(foundationIndex), snapshot);
@@ -607,7 +610,7 @@ internal sealed class SolitaireGame : IGameModule
             for (var cardIndex = 0; cardIndex < _tableau[columnIndex].Count; cardIndex++)
             {
                 var card = _tableau[columnIndex][cardIndex];
-                var start = new CardPresentation(new Rectangle(32, 82, CardWidth, CardHeight), false);
+                var start = new CardPresentation(GetStockBounds(), false);
                 var end = new CardPresentation(GetTableauCardBounds(columnIndex, cardIndex), card.FaceUp);
                 _cardTransitions.Add(card, new CardTransition(start, end, dealIndex++ * 0.025f));
             }
@@ -828,12 +831,12 @@ internal sealed class SolitaireGame : IGameModule
         DrawToolbarButton(SoundButtonBounds,
             _audioUnavailable ? AudioUnavailableLabel : _soundEnabled ? SoundEnabledLabel : SoundDisabledLabel,
             !_audioUnavailable);
-        DrawText("SOLITAIRE", 440, 26, 2, new Color(246, 239, 218));
-        DrawText(_largeText ? "F1 OPTIONS" : "R NEW GAME  U UNDO  H HINT  M SOUND", 440, 51,
+        DrawText(ToolbarTitleLabel, 440, 26, 2, new Color(246, 239, 218));
+        DrawText(_largeText ? ToolbarShortcutsCompactLabel : ToolbarShortcutsLabel, 440, 51,
             SmallTextScale, new Color(153, 183, 176));
-        DrawText("MOVES", 740, 24, SmallTextScale, new Color(153, 183, 176));
+        DrawText(ToolbarMovesLabel, 740, 24, SmallTextScale, new Color(153, 183, 176));
         DrawText(_moveCount.ToString(), 740, 44, 2, new Color(246, 239, 218));
-        DrawText("TIME", 850, 24, SmallTextScale, new Color(153, 183, 176));
+        DrawText(ToolbarTimeLabel, 850, 24, SmallTextScale, new Color(153, 183, 176));
         var totalSeconds = (long)_playingTime.TotalSeconds;
         DrawText($"{totalSeconds / 60:00}M {totalSeconds % 60:00}S", 850, 44,
             SmallTextScale, new Color(246, 239, 218));
@@ -947,7 +950,7 @@ internal sealed class SolitaireGame : IGameModule
 
             if (_stock.Count > 0 || _waste.Count > 0)
             {
-                SetHint(new Rectangle(32, 82, CardWidth, CardHeight), Rectangle.Empty,
+                SetHint(GetStockBounds(), Rectangle.Empty,
                     _stock.Count > 0 ? HintDrawFromStockMessage : HintRecycleStockMessage);
             }
             else
@@ -981,7 +984,7 @@ internal sealed class SolitaireGame : IGameModule
     {
         if (ReferenceEquals(pile, _waste))
         {
-            return new Rectangle(128, 82, CardWidth, CardHeight);
+            return GetWasteBounds();
         }
 
         var bounds = GetTableauCardBounds(_tableau.IndexOf(pile), cardIndex);
@@ -1002,7 +1005,7 @@ internal sealed class SolitaireGame : IGameModule
         _hintSource = source;
         _hintDestination = destination;
         _hintMessage = message;
-        _hintTimeRemaining = TimeSpan.FromSeconds(4);
+        _hintTimeRemaining = HintDisplayDuration;
     }
 
     /// <summary>Draws gold outlines around the suggested source and destination while a hint is active.</summary>
@@ -1024,12 +1027,6 @@ internal sealed class SolitaireGame : IGameModule
             DrawTargetOutline(_hintDestination, color);
         }
     }
-
-    /// <summary>The minimum pointer movement in logical board units required to start dragging.</summary>
-    private const int DragThreshold = 6;
-
-    /// <summary>The maximum interval between two clicks on the same card.</summary>
-    private static readonly TimeSpan DoubleClickInterval = TimeSpan.FromMilliseconds(350);
 
     /// <summary>The current pointer position in logical board coordinates.</summary>
     private Point _pointerPosition;
@@ -1311,7 +1308,7 @@ internal sealed class SolitaireGame : IGameModule
     {
         pile = _waste;
         cardIndex = pile.Count - 1;
-        bounds = new Rectangle(128, 82, CardWidth, CardHeight);
+        bounds = GetWasteBounds();
         if (cardIndex >= 0 && bounds.Contains(position))
         {
             return true;
@@ -1506,7 +1503,7 @@ internal sealed class SolitaireGame : IGameModule
         {
             var navigateBackward = IsNewKey(keyboard, Keys.Up) || keyboard.IsKeyDown(Keys.LeftShift) ||
                 keyboard.IsKeyDown(Keys.RightShift);
-            _optionIndex = (_optionIndex + (navigateBackward ? 3 : 1)) % 4;
+            _optionIndex = (_optionIndex + (navigateBackward ? LastOptionIndex : 1)) % OptionCount;
         }
         else if (IsNewKey(keyboard, Keys.Enter) || IsNewKey(keyboard, Keys.Space))
         {
@@ -1568,7 +1565,7 @@ internal sealed class SolitaireGame : IGameModule
 
         if (!isDown && _pointerWasDown)
         {
-            for (var index = 0; index < 4; index++)
+            for (var index = 0; index < OptionCount; index++)
             {
                 var bounds = GetOptionBounds(index);
                 if (bounds.Contains(position) && bounds.Contains(_pressPosition))
@@ -1592,17 +1589,11 @@ internal sealed class SolitaireGame : IGameModule
         Fill(panelBounds, Color.Black);
         DrawTargetOutline(panelBounds, Color.White);
         DrawText(AccessibilityTitle, 196, 202, 3, Color.White);
-        for (var index = 0; index < 4; index++)
+        for (var index = 0; index < OptionCount; index++)
         {
             var bounds = GetOptionBounds(index);
             Fill(bounds, new Color(28, 43, 48));
-            var label = index switch
-            {
-                0 => $"F2  LARGER TEXT  {(_largeText ? "ON" : "OFF")}",
-                1 => $"F3  HIGH CONTRAST  {(_highContrast ? "ON" : "OFF")}",
-                2 => $"F4  REDUCED MOTION  {(_reducedMotion ? "ON" : "OFF")}",
-                _ => AccessibilityCloseOptionsLabel
-            };
+            var label = GetOptionLabel(index, _largeText, _highContrast, _reducedMotion);
             DrawText(label, bounds.X + 18, bounds.Y + 15, 2, Color.White);
             if (index == _optionIndex)
             {
@@ -1883,8 +1874,8 @@ internal sealed class SolitaireGame : IGameModule
             2 => HintButtonBounds,
             3 => SoundButtonBounds,
             4 => OptionsButtonBounds,
-            5 => new Rectangle(32, 82, CardWidth, CardHeight),
-            6 => new Rectangle(128, 82, CardWidth, CardHeight),
+            5 => GetStockBounds(),
+            6 => GetWasteBounds(),
             >= 7 and <= 10 => GetFoundationBounds(_keyboardFocus - 7),
             _ => Rectangle.Empty
         };
@@ -2039,7 +2030,7 @@ internal sealed class SolitaireGame : IGameModule
         }
 
         ClearHint();
-        var stockBounds = new Rectangle(32, 82, CardWidth, CardHeight);
+        var stockBounds = GetStockBounds();
 
         if (stockBounds.Contains(clickPosition))
         {
@@ -2048,7 +2039,7 @@ internal sealed class SolitaireGame : IGameModule
             return;
         }
 
-        var wasteBounds = new Rectangle(128, 82, CardWidth, CardHeight);
+        var wasteBounds = GetWasteBounds();
 
         if (wasteBounds.Contains(clickPosition))
         {

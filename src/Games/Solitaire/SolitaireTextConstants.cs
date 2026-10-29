@@ -142,4 +142,46 @@ internal static class SolitaireTextConstants
 
     /// <summary>Suffix suffix appended after the selected-card count.</summary>
     internal const string KeyboardDescriptionSelectedSuffix = "CARDS";
+
+    /// <summary>Label shown on an empty stock pile to indicate dealing.</summary>
+    internal const string BoardDealLabel = "DEAL";
+
+    /// <summary>Label shown below the deal prompt on an empty stock pile.</summary>
+    internal const string BoardAgainLabel = "AGAIN";
+
+    /// <summary>Heading label for the stock pile.</summary>
+    internal const string BoardStockLabel = "STOCK";
+
+    /// <summary>Heading label for the waste pile.</summary>
+    internal const string BoardWasteLabel = "WASTE";
+
+    /// <summary>Placeholder rank shown in an empty foundation slot.</summary>
+    internal const string BoardFoundationAceLabel = "A";
+
+    /// <summary>Compact foundation build instruction used in larger-text mode.</summary>
+    internal const string BoardFoundationToKingCompactLabel = "TO K";
+
+    /// <summary>Full foundation build instruction used in normal-text mode.</summary>
+    internal const string BoardFoundationToKingLabel = "TO KING";
+
+    /// <summary>Heading label for foundation piles.</summary>
+    internal const string BoardFoundationsLabel = "FOUNDATIONS";
+
+    /// <summary>Placeholder rank shown in an empty tableau slot.</summary>
+    internal const string BoardTableauKingLabel = "K";
+
+    /// <summary>Toolbar game title label.</summary>
+    internal const string ToolbarTitleLabel = "SOLITAIRE";
+
+    /// <summary>Toolbar shortcut legend shown in larger-text mode.</summary>
+    internal const string ToolbarShortcutsCompactLabel = "F1 OPTIONS";
+
+    /// <summary>Toolbar shortcut legend shown in normal-text mode.</summary>
+    internal const string ToolbarShortcutsLabel = "R NEW GAME  U UNDO  H HINT  M SOUND";
+
+    /// <summary>Toolbar label for move count.</summary>
+    internal const string ToolbarMovesLabel = "MOVES";
+
+    /// <summary>Toolbar label for elapsed time.</summary>
+    internal const string ToolbarTimeLabel = "TIME";
 }

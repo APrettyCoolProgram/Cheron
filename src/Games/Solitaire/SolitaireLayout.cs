@@ -35,6 +35,15 @@ internal static class SolitaireLayout
     /// <summary>The logical board height used for viewport fitting and layout math.</summary>
     internal const int BoardHeight = 800;
 
+    /// <summary>The horizontal position of the stock pile slot.</summary>
+    internal const int StockX = 32;
+
+    /// <summary>The horizontal position of the waste pile slot.</summary>
+    internal const int WasteX = 128;
+
+    /// <summary>The vertical position shared by stock and waste pile slots.</summary>
+    internal const int StockWasteY = 82;
+
     /// <summary>The new-game button bounds shared by drawing and pointer handling.</summary>
     internal static readonly Rectangle NewGameButtonBounds = new(32, 20, 132, 44);
 
@@ -50,9 +59,17 @@ internal static class SolitaireLayout
     /// <summary>The always-available settings button in logical board coordinates.</summary>
     internal static readonly Rectangle OptionsButtonBounds = new(882, 742, 186, 40);
 
+    /// <summary>Gets the stock pile bounds in logical board coordinates.</summary>
+    /// <returns>The stock pile rectangle.</returns>
+    internal static Rectangle GetStockBounds() => new(StockX, StockWasteY, CardWidth, CardHeight);
+
+    /// <summary>Gets the waste pile bounds in logical board coordinates.</summary>
+    /// <returns>The waste pile rectangle.</returns>
+    internal static Rectangle GetWasteBounds() => new(WasteX, StockWasteY, CardWidth, CardHeight);
+
     /// <summary>Calculates a foundation slot's bounds in logical board coordinates.</summary>
     /// <param name="foundationIndex">The zero-based index of the foundation slot.</param>
     /// <returns>The rectangle used to draw and hit-test the foundation.</returns>
     internal static Rectangle GetFoundationBounds(int foundationIndex) =>
-        new(BoardWidth - 32 - (4 - foundationIndex) * (CardWidth + CardGap), 82, CardWidth, CardHeight);
+        new(BoardWidth - 32 - (4 - foundationIndex) * (CardWidth + CardGap), StockWasteY, CardWidth, CardHeight);
 }
