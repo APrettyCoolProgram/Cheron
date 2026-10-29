@@ -11,7 +11,7 @@
 
 
 
-
+Currently, only the "Klondike" solitaire variant is available. Let's allow the user to also play the "FreeCell" variant.
 
 
 

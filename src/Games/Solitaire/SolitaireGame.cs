@@ -64,10 +64,14 @@ internal sealed partial class SolitaireGame : IGameModule
     /// <summary>The renderer responsible for drawing the board and UI.</summary>
     private readonly SolitaireRenderer _renderer;
 
-    /// <summary>Initializes rendering delegation state for this game module.</summary>
+    /// <summary>The interaction controller responsible for keyboard and pointer orchestration.</summary>
+    private readonly SolitaireInteractionController _interactionController;
+
+    /// <summary>Initializes rendering and interaction delegation state for this game module.</summary>
     public SolitaireGame()
     {
         _renderer = new SolitaireRenderer(this);
+        _interactionController = new SolitaireInteractionController(this);
     }
 
     /// <summary>Gets the Solitaire window title.</summary>
@@ -833,98 +837,7 @@ internal sealed partial class SolitaireGame : IGameModule
     /// <param name="time">The monotonically increasing game time used to recognize double-clicks.</param>
     private void UpdatePointer(Point position, bool isDown, TimeSpan time)
     {
-        _pointerPosition = position;
-        if (_optionsOpen)
-        {
-            UpdateOptionsPointer(position, isDown);
-            return;
-        }
-
-        if (isDown && !_pointerWasDown)
-        {
-            _keyboardFocusVisible = false;
-        }
-
-        if (_cardTransitions.Count > 0)
-        {
-            if (isDown && !_pointerWasDown && NewGameButtonBounds.Contains(position))
-            {
-                StartNewGame();
-            }
-            else if (isDown && !_pointerWasDown && SoundButtonBounds.Contains(position))
-            {
-                ToggleSound();
-            }
-            else if (isDown && !_pointerWasDown && OptionsButtonBounds.Contains(position))
-            {
-                ToggleOptions();
-            }
-
-            _pressedPile = null;
-            _isDragging = false;
-            _lastClickedCard = null;
-            _ignoreUntilRelease = isDown;
-            _pointerWasDown = isDown;
-            return;
-        }
-
-        if (_ignoreUntilRelease)
-        {
-            _ignoreUntilRelease = isDown;
-            _pointerWasDown = isDown;
-            return;
-        }
-
-        if (isDown && !_pointerWasDown)
-        {
-            _pressPosition = position;
-            _pressedPile = null;
-            if (TryGetCardAt(position, out var pile, out var cardIndex, out var bounds))
-            {
-                _pressedPile = pile;
-                _pressedCardIndex = cardIndex;
-                _dragOffset = position - bounds.Location;
-            }
-        }
-
-        var movement = position - _pressPosition;
-        var movedBeyondThreshold = movement.ToVector2().LengthSquared() >= DragThreshold * DragThreshold;
-        if (_pointerWasDown && _pressedPile is not null && !_isDragging && movedBeyondThreshold)
-        {
-            Select(_pressedPile, _pressedCardIndex);
-            ClearHint();
-            _isDragging = true;
-            _lastClickedCard = null;
-        }
-
-        if (!isDown && _pointerWasDown)
-        {
-            if (_isDragging)
-            {
-                var before = CaptureCardPresentation();
-                DropSelectedCards(position);
-                if (_cardTransitions.Count == 0)
-                {
-                    AnimateChanges(before);
-                }
-
-                ClearSelection();
-            }
-            else if (!movedBeyondThreshold)
-            {
-                HandleReleasedClick(position, time);
-            }
-            else
-            {
-                _lastClickedCard = null;
-            }
-
-            _pressedPile = null;
-            _isDragging = false;
-        }
-
-        _ignoreUntilRelease &= isDown;
-        _pointerWasDown = isDown;
+        _interactionController.UpdatePointer(position, isDown, time);
     }
 
     /// <summary>Handles a short click, using card identity, position, and time to recognize double-clicks.</summary>
@@ -932,79 +845,20 @@ internal sealed partial class SolitaireGame : IGameModule
     /// <param name="time">The current game time.</param>
     private void HandleReleasedClick(Point position, TimeSpan time)
     {
-        if (TryGetCardAt(position, out var pile, out var cardIndex, out _))
-        {
-            var card = pile[cardIndex];
-            var clickDistance = (position - _lastClickPosition).ToVector2().LengthSquared();
-            if (ReferenceEquals(card, _lastClickedCard) && time - _lastClickTime <= DoubleClickInterval &&
-                clickDistance < DragThreshold * DragThreshold)
-            {
-                Select(pile, cardIndex);
-                var movedToFoundation = false;
-                for (var foundationIndex = 0; foundationIndex < _foundations.Count; foundationIndex++)
-                {
-                    if (TryMoveToFoundation(foundationIndex))
-                    {
-                        movedToFoundation = true;
-                        break;
-                    }
-                }
-
-                if (!movedToFoundation)
-                {
-                    ShowInvalidMove(position);
-                }
-
-                _lastClickedCard = null;
-                return;
-            }
-
-            HandleClick(position);
-            _lastClickedCard = _selectedPile is not null && ReferenceEquals(_selectedPile, pile) &&
-                _selectedCardIndex == cardIndex ? card : null;
-        }
-        else
-        {
-            HandleClick(position);
-            _lastClickedCard = null;
-        }
-
-        _lastClickTime = time;
-        _lastClickPosition = position;
+        _interactionController.HandleReleasedClick(position, time);
     }
 
     /// <summary>Cancels pending dragging and double-click history when a new deal starts.</summary>
     private void ResetPointerGesture()
     {
-        _pressedPile = null;
-        _isDragging = false;
-        _lastClickedCard = null;
-        _ignoreUntilRelease = _pointerWasDown;
+        _interactionController.ResetPointerGesture();
     }
 
     /// <summary>Attempts to drop selected cards only onto an actual foundation or tableau hit area.</summary>
     /// <param name="position">The pointer position at release.</param>
     private void DropSelectedCards(Point position)
     {
-        for (var foundationIndex = 0; foundationIndex < _foundations.Count; foundationIndex++)
-        {
-            if (GetFoundationBounds(foundationIndex).Contains(position) && CanMoveToFoundation(foundationIndex))
-            {
-                TryMoveToFoundation(foundationIndex);
-                return;
-            }
-        }
-
-        for (var columnIndex = 0; columnIndex < _tableau.Count; columnIndex++)
-        {
-            if (GetTableauBounds(columnIndex).Contains(position) && CanMoveToTableau(columnIndex))
-            {
-                TryMoveToTableau(columnIndex);
-                return;
-            }
-        }
-
-        ShowInvalidMove(position);
+        _interactionController.DropSelectedCards(position);
     }
 
     /// <summary>Checks tableau legality without changing selection or card state.</summary>
@@ -1152,21 +1006,12 @@ internal sealed partial class SolitaireGame : IGameModule
     /// <param name="key">The key to inspect.</param>
     /// <returns>Whether the key transitioned from released to pressed.</returns>
     private bool IsNewKey(KeyboardState keyboard, Keys key) =>
-        keyboard.IsKeyDown(key) && !_previousKeyboardState.IsKeyDown(key);
+        _interactionController.IsNewKey(keyboard, key);
 
     /// <summary>Opens or closes settings while cancelling any pending pointer gesture without moving cards.</summary>
     private void ToggleOptions()
     {
-        var before = _isDragging ? CaptureCardPresentation() : null;
-        ResetPointerGesture();
-        if (before is not null)
-        {
-            ClearSelection();
-            AnimateChanges(before);
-        }
-
-        _optionsOpen = !_optionsOpen;
-        _optionIndex = 0;
+        _interactionController.ToggleOptions();
     }
 
     /// <summary>Handles settings shortcuts before ordinary board controls so the panel cannot activate the board.</summary>
@@ -1174,80 +1019,20 @@ internal sealed partial class SolitaireGame : IGameModule
     /// <returns>Whether the keyboard update belongs to settings rather than the board.</returns>
     private bool HandleAccessibilityKeys(KeyboardState keyboard)
     {
-        if (IsNewKey(keyboard, Keys.F1))
-        {
-            ToggleOptions();
-            return true;
-        }
-
-        if (IsNewKey(keyboard, Keys.F2))
-        {
-            _largeText = !_largeText;
-            return true;
-        }
-
-        if (IsNewKey(keyboard, Keys.F3))
-        {
-            _highContrast = !_highContrast;
-            return true;
-        }
-
-        if (IsNewKey(keyboard, Keys.F4))
-        {
-            ToggleReducedMotion();
-            return true;
-        }
-
-        if (!_optionsOpen)
-        {
-            return false;
-        }
-
-        if (IsNewKey(keyboard, Keys.Tab) || IsNewKey(keyboard, Keys.Down) || IsNewKey(keyboard, Keys.Up))
-        {
-            var navigateBackward = IsNewKey(keyboard, Keys.Up) || keyboard.IsKeyDown(Keys.LeftShift) ||
-                keyboard.IsKeyDown(Keys.RightShift);
-            _optionIndex = (_optionIndex + (navigateBackward ? LastOptionIndex : 1)) % OptionCount;
-        }
-        else if (IsNewKey(keyboard, Keys.Enter) || IsNewKey(keyboard, Keys.Space))
-        {
-            ActivateOption(_optionIndex);
-        }
-
-        return true;
+        return _interactionController.HandleAccessibilityKeys(keyboard);
     }
 
     /// <summary>Changes reduced motion immediately, settling existing transitions without changing their logical results.</summary>
     private void ToggleReducedMotion()
     {
-        _reducedMotion = !_reducedMotion;
-        if (_reducedMotion)
-        {
-            _cardTransitions.Clear();
-            _selectionElapsed = 1;
-            _celebrationElapsed = CelebrationDuration;
-        }
+        _interactionController.ToggleReducedMotion();
     }
 
     /// <summary>Activates one settings row without changing history, statistics, or the deal.</summary>
     /// <param name="index">The settings row index.</param>
     private void ActivateOption(int index)
     {
-        switch (index)
-        {
-            case 0:
-                _largeText = !_largeText;
-                break;
-            case 1:
-                _highContrast = !_highContrast;
-                break;
-            case 2:
-                ToggleReducedMotion();
-                break;
-            case 3:
-                ToggleOptions();
-                break;
-        }
+        _interactionController.ActivateOption(index);
     }
 
     /// <summary>Consumes settings pointer input, requiring press and release on the same row.</summary>
@@ -1255,330 +1040,63 @@ internal sealed partial class SolitaireGame : IGameModule
     /// <param name="isDown">Whether the left button is down.</param>
     private void UpdateOptionsPointer(Point position, bool isDown)
     {
-        if (_ignoreUntilRelease)
-        {
-            _ignoreUntilRelease = isDown;
-            _pointerWasDown = isDown;
-            return;
-        }
-
-        if (isDown && !_pointerWasDown)
-        {
-            _pressPosition = position;
-        }
-
-        if (!isDown && _pointerWasDown)
-        {
-            for (var index = 0; index < OptionCount; index++)
-            {
-                var bounds = GetOptionBounds(index);
-                if (bounds.Contains(position) && bounds.Contains(_pressPosition))
-                {
-                    _optionIndex = index;
-                    ActivateOption(index);
-                    break;
-                }
-            }
-        }
-
-        _ignoreUntilRelease &= isDown;
-        _pointerWasDown = isDown;
+        _interactionController.UpdateOptionsPointer(position, isDown);
     }
 
     /// <summary>Processes edge-triggered keyboard navigation without interfering with active pointer gestures.</summary>
     /// <param name="keyboard">The current keyboard state.</param>
     private void HandleBoardKeyboard(KeyboardState keyboard)
     {
-        if (_optionsOpen || _isDragging || _pointerWasDown)
-        {
-            return;
-        }
-
-        if (IsNewKey(keyboard, Keys.Tab))
-        {
-            var backwards = keyboard.IsKeyDown(Keys.LeftShift) || keyboard.IsKeyDown(Keys.RightShift);
-            var next = !_keyboardFocusVisible ? (backwards ? 17 : 0)
-                : (_keyboardFocus + (backwards ? 17 : 1)) % 18;
-            FocusKeyboardTarget(next);
-            return;
-        }
-
-        if (_cardTransitions.Count > 0)
-        {
-            if (_keyboardFocusVisible && (IsNewKey(keyboard, Keys.Enter) || IsNewKey(keyboard, Keys.Space)))
-            {
-                ActivateKeyboardControl();
-            }
-
-            return;
-        }
-
-        if (IsNewKey(keyboard, Keys.Back))
-        {
-            ClearSelection();
-            ClearHint();
-            return;
-        }
-
-        if (IsNewKey(keyboard, Keys.Left) || IsNewKey(keyboard, Keys.Right))
-        {
-            var next = !_keyboardFocusVisible || _keyboardFocus < 5 ? 5
-                : 5 + (_keyboardFocus - 5 + (IsNewKey(keyboard, Keys.Left) ? 12 : 1)) % 13;
-            FocusKeyboardTarget(next);
-            return;
-        }
-
-        if (IsNewKey(keyboard, Keys.Up) || IsNewKey(keyboard, Keys.Down))
-        {
-            if (!_keyboardFocusVisible)
-            {
-                FocusKeyboardTarget(11);
-            }
-            else if (_keyboardFocus >= 11)
-            {
-                _keyboardCardIndex += IsNewKey(keyboard, Keys.Up) ? -1 : 1;
-                NormalizeKeyboardCard();
-            }
-
-            return;
-        }
-
-        if (!_keyboardFocusVisible)
-        {
-            return;
-        }
-
-        if (IsNewKey(keyboard, Keys.F))
-        {
-            MoveKeyboardCardToFoundation();
-        }
-        else if (IsNewKey(keyboard, Keys.Enter) || IsNewKey(keyboard, Keys.Space))
-        {
-            ActivateKeyboardTarget();
-        }
+        _interactionController.HandleBoardKeyboard(keyboard);
     }
 
     /// <summary>Focuses a control or pile, choosing its top card without altering the current selection.</summary>
     /// <param name="index">The target index in keyboard traversal order.</param>
     private void FocusKeyboardTarget(int index)
     {
-        _keyboardFocus = index;
-        _keyboardFocusVisible = true;
-        _keyboardCardIndex = index >= 11 ? Math.Max(0, _tableau[index - 11].Count - 1) : 0;
-        NormalizeKeyboardCard();
+        _interactionController.FocusKeyboardTarget(index);
     }
 
     /// <summary>Keeps tableau focus on an exposed face-up card after moves, undo, or a new deal.</summary>
     private void NormalizeKeyboardCard()
     {
-        if (_keyboardFocus < 11)
-        {
-            return;
-        }
-
-        var pile = _tableau[_keyboardFocus - 11];
-        var firstFaceUp = pile.FindIndex(card => card.FaceUp);
-        _keyboardCardIndex = pile.Count == 0 ? 0
-            : Math.Clamp(_keyboardCardIndex, Math.Max(0, firstFaceUp), pile.Count - 1);
+        _interactionController.NormalizeKeyboardCard();
     }
 
     /// <summary>Gets the pile under keyboard focus, excluding controls and stock.</summary>
     /// <returns>The focused source or destination pile, or null for a control or stock.</returns>
-    private List<Card> GetKeyboardPile() => _keyboardFocus switch
-    {
-        6 => _waste,
-        >= 7 and <= 10 => _foundations[_keyboardFocus - 7],
-        >= 11 => _tableau[_keyboardFocus - 11],
-        _ => null
-    };
+    private List<Card> GetKeyboardPile() => _interactionController.GetKeyboardPile();
 
     /// <summary>Activates a focused toolbar control, retaining its existing availability checks.</summary>
     private void ActivateKeyboardControl()
     {
-        switch (_keyboardFocus)
-        {
-            case 0:
-                StartNewGame();
-                break;
-            case 1:
-                UndoLastAction();
-                break;
-            case 2:
-                ShowHint();
-                break;
-            case 3:
-                ToggleSound();
-                break;
-            case 4:
-                ToggleOptions();
-                break;
-        }
+        _interactionController.ActivateKeyboardControl();
     }
 
     /// <summary>Selects a focused card stack or moves the existing selection onto the focused legal destination.</summary>
     private void ActivateKeyboardTarget()
     {
-        if (_keyboardFocus < 5)
-        {
-            ActivateKeyboardControl();
-            return;
-        }
-
-        ClearHint();
-        if (_keyboardFocus == 5)
-        {
-            DrawFromStock();
-            return;
-        }
-
-        NormalizeKeyboardCard();
-        var pile = GetKeyboardPile();
-        var cardIndex = _keyboardFocus >= 11 ? _keyboardCardIndex : pile.Count - 1;
-        if (_selectedPile is not null && !ReferenceEquals(_selectedPile, pile) && _keyboardFocus != 6)
-        {
-            var canMove = _keyboardFocus >= 11 ? CanMoveToTableau(_keyboardFocus - 11)
-                : CanMoveToFoundation(_keyboardFocus - 7);
-            if (canMove)
-            {
-                MoveSelectedCards(pile);
-                NormalizeKeyboardCard();
-            }
-            else
-            {
-                ShowInvalidMove(GetKeyboardBounds().Center);
-            }
-
-            return;
-        }
-
-        if (cardIndex >= 0 && pile.Count > 0 && pile[cardIndex].FaceUp)
-        {
-            if (ReferenceEquals(_selectedPile, pile) && _selectedCardIndex == cardIndex)
-            {
-                ClearSelection();
-            }
-            else
-            {
-                Select(pile, cardIndex);
-            }
-        }
-        else
-        {
-            ShowInvalidMove(GetKeyboardBounds().Center);
-        }
+        _interactionController.ActivateKeyboardTarget();
     }
 
     /// <summary>Moves the selected stack, or focused card when nothing is selected, to its first legal foundation.</summary>
     private void MoveKeyboardCardToFoundation()
     {
-        if (_selectedPile is null)
-        {
-            NormalizeKeyboardCard();
-            var pile = GetKeyboardPile();
-            var cardIndex = _keyboardFocus >= 11 ? _keyboardCardIndex : (pile?.Count ?? 0) - 1;
-            if (pile is null || cardIndex < 0 || pile.Count == 0 || !pile[cardIndex].FaceUp)
-            {
-                ShowInvalidMove(GetKeyboardBounds().Center);
-                return;
-            }
-
-            Select(pile, cardIndex);
-        }
-
-        for (var foundationIndex = 0; foundationIndex < _foundations.Count; foundationIndex++)
-        {
-            if (TryMoveToFoundation(foundationIndex))
-            {
-                NormalizeKeyboardCard();
-                return;
-            }
-        }
-
-        ShowInvalidMove(GetKeyboardBounds().Center);
+        _interactionController.MoveKeyboardCardToFoundation();
     }
 
     /// <summary>Gets the visible bounds of the focused control, slot, or card strip.</summary>
     /// <returns>The focused logical rectangle.</returns>
     private Rectangle GetKeyboardBounds()
     {
-        NormalizeKeyboardCard();
-        if (_keyboardFocus >= 11)
-        {
-            var pile = _tableau[_keyboardFocus - 11];
-            var bounds = GetTableauCardBounds(_keyboardFocus - 11, _keyboardCardIndex);
-            if (_keyboardCardIndex < pile.Count - 1)
-            {
-                bounds.Height = TableauStep;
-            }
-
-            return bounds;
-        }
-
-        return _keyboardFocus switch
-        {
-            0 => NewGameButtonBounds,
-            1 => UndoButtonBounds,
-            2 => HintButtonBounds,
-            3 => SoundButtonBounds,
-            4 => OptionsButtonBounds,
-            5 => GetStockBounds(),
-            6 => GetWasteBounds(),
-            >= 7 and <= 10 => GetFoundationBounds(_keyboardFocus - 7),
-            _ => Rectangle.Empty
-        };
+        return _interactionController.GetKeyboardBounds();
     }
 
     /// <summary>Describes keyboard focus using rank, suit names, and selection state rather than color alone.</summary>
     /// <returns>The concise footer description.</returns>
     private string GetKeyboardDescription()
     {
-        NormalizeKeyboardCard();
-        var label = _keyboardFocus switch
-        {
-            0 => KeyboardDescriptionNewGame,
-            1 => _undoHistory.Count == 0 || _cardTransitions.Count > 0
-                ? KeyboardDescriptionUndoUnavailable : KeyboardDescriptionUndoAvailable,
-            2 => _hasWon || _cardTransitions.Count > 0
-                ? KeyboardDescriptionHintUnavailable : KeyboardDescriptionHintAvailable,
-            3 => _audioUnavailable
-                ? KeyboardDescriptionSoundUnavailable
-                : _soundEnabled ? KeyboardDescriptionSoundOn : KeyboardDescriptionSoundOff,
-            4 => KeyboardDescriptionOptions,
-            5 => _stock.Count > 0
-                ? $"{KeyboardDescriptionStockPrefix}  {_stock.Count} {KeyboardDescriptionStockDrawSuffix}"
-                : _waste.Count > 0 ? KeyboardDescriptionStockEmptyRecycle : KeyboardDescriptionStockAndWasteEmpty,
-            6 => KeyboardDescriptionWaste,
-            >= 7 and <= 10 => $"{KeyboardDescriptionFoundationPrefix} {_keyboardFocus - 6}",
-            _ => $"{KeyboardDescriptionTableauPrefix} {_keyboardFocus - 10}"
-        };
-        var pile = GetKeyboardPile();
-        if (pile is not null)
-        {
-            if (pile.Count == 0)
-            {
-                label += KeyboardDescriptionEmptySuffix;
-            }
-            else
-            {
-                var card = pile[_keyboardFocus >= 11 ? _keyboardCardIndex : pile.Count - 1];
-                var rank = SolitaireCardLabels.GetLongRankLabel(card.Rank);
-                label += card.FaceUp ? $"  {rank} OF {card.Suit}" : KeyboardDescriptionFaceDownSuffix;
-            }
-        }
-
-        if (_selectedPile is not null)
-        {
-            if (_keyboardFocus >= 7 && !ReferenceEquals(_selectedPile, pile))
-            {
-                var canMove = _keyboardFocus >= 11 ? CanMoveToTableau(_keyboardFocus - 11)
-                    : CanMoveToFoundation(_keyboardFocus - 7);
-                label += canMove ? KeyboardDescriptionLegalTargetSuffix : KeyboardDescriptionInvalidTargetSuffix;
-            }
-
-            label += $"{KeyboardDescriptionSelectedPrefix} {_selectedPile.Count - _selectedCardIndex} {KeyboardDescriptionSelectedSuffix}";
-        }
-
-        return label;
+        return _interactionController.GetKeyboardDescription();
     }
 
     /// <summary>Stores the current host-supplied viewport, initially matching the unscaled board.</summary>
@@ -1619,15 +1137,7 @@ internal sealed partial class SolitaireGame : IGameModule
     /// <param name="time">The monotonically increasing game time used for double-clicks.</param>
     private void UpdateClientPointer(Point clientPosition, bool isDown, TimeSpan time)
     {
-        UpdatePointer(_viewport.ToLogical(clientPosition), isDown, time);
-    }
-
-    /// <summary>Starts a clipped sprite batch, composing local animation transforms before viewport scaling.</summary>
-    /// <param name="localTransform">The optional board-space transform used for a card flip.</param>
-    private void BeginBoardDrawing(Matrix? localTransform = null)
-    {
-        _spriteBatch.Begin(samplerState: SamplerState.LinearClamp, rasterizerState: _boardRasterizerState,
-            transformMatrix: (localTransform ?? Matrix.Identity) * _viewport.Transform);
+        _interactionController.UpdateClientPointer(clientPosition, isDown, time);
     }
 
     /// <summary>Shuffles a standard deck and deals seven tableau columns, leaving the remaining cards in stock.</summary>
@@ -1916,24 +1426,6 @@ internal sealed partial class SolitaireGame : IGameModule
         }
 
         return -1;
-    }
-
-    /// <summary>Fills a rectangle using the module's single-pixel texture.</summary>
-    /// <param name="bounds">The rectangle to fill in logical board coordinates.</param>
-    /// <param name="color">The fill color.</param>
-    private void Fill(Rectangle bounds, Color color) => _spriteBatch.Draw(_pixelTexture, bounds, color);
-
-    /// <summary>Draws uppercase bitmap text, leaving blank character widths for unsupported characters.</summary>
-    /// <param name="text">The text to draw; letters, digits, spaces, and exclamation marks are supported.</param>
-    /// <param name="textX">The starting horizontal position in logical board coordinates.</param>
-    /// <param name="textY">The starting vertical position in logical board coordinates.</param>
-    /// <param name="scale">The size of each glyph pixel in logical board units.</param>
-    /// <param name="color">The normal-theme text color.</param>
-    /// <param name="preserveColor">Whether to retain contrasting card or button ink in high-contrast mode.</param>
-    private void DrawText(string text, int textX, int textY, int scale, Color color, bool preserveColor = false)
-    {
-        SolitaireBitmapFont.DrawText(_spriteBatch, _glyphTexture, _highContrast, text, textX, textY, scale, color,
-            preserveColor);
     }
 
     }

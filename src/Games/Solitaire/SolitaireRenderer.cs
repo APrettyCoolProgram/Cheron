@@ -22,6 +22,33 @@ internal sealed partial class SolitaireGame
     {
         private readonly SolitaireGame _game = game;
 
+        /// <summary>Fills a rectangle using the module's single-pixel texture.</summary>
+        /// <param name="bounds">The rectangle to fill in logical board coordinates.</param>
+        /// <param name="color">The fill color.</param>
+        private void Fill(Rectangle bounds, Color color) => _game._spriteBatch.Draw(_game._pixelTexture, bounds, color);
+
+        /// <summary>Draws uppercase bitmap text, leaving blank character widths for unsupported characters.</summary>
+        /// <param name="text">The text to draw; letters, digits, spaces, and exclamation marks are supported.</param>
+        /// <param name="textX">The starting horizontal position in logical board coordinates.</param>
+        /// <param name="textY">The starting vertical position in logical board coordinates.</param>
+        /// <param name="scale">The size of each glyph pixel in logical board units.</param>
+        /// <param name="color">The normal-theme text color.</param>
+        /// <param name="preserveColor">Whether to retain contrasting card or button ink in high-contrast mode.</param>
+        private void DrawText(string text, int textX, int textY, int scale, Color color, bool preserveColor = false)
+        {
+            SolitaireBitmapFont.DrawText(_game._spriteBatch, _game._glyphTexture, _game._highContrast,
+                text, textX, textY, scale, color, preserveColor);
+        }
+
+        /// <summary>Starts a clipped sprite batch, composing local animation transforms before viewport scaling.</summary>
+        /// <param name="localTransform">The optional board-space transform used for a card flip.</param>
+        private void BeginBoardDrawing(Matrix? localTransform = null)
+        {
+            _game._spriteBatch.Begin(samplerState: SamplerState.LinearClamp,
+                rasterizerState: _game._boardRasterizerState,
+                transformMatrix: (localTransform ?? Matrix.Identity) * _game._viewport.Transform);
+        }
+
         /// <summary>Draws the proportionally scaled board, cards, controls, and win message.</summary>
         /// <param name="gameTime">The host-supplied timing information; animation progress is advanced during updates.</param>
         /// <param name="graphicsDevice">The borrowed, host-owned graphics device.</param>
@@ -32,18 +59,18 @@ internal sealed partial class SolitaireGame
             var previousRasterizer = graphicsDevice.RasterizerState;
             graphicsDevice.ScissorRectangle = _game._viewport.ScissorBounds;
 
-            _game.BeginBoardDrawing();
+            BeginBoardDrawing();
             if (_game._highContrast)
             {
-                _game.Fill(GetBoardBounds(), Color.Black);
+                Fill(GetBoardBounds(), Color.Black);
             }
             else
             {
                 _game._spriteBatch.Draw(_game._artwork.Background, GetBoardBounds(), Color.White);
             }
 
-            _game.Fill(GetTopBarBounds(), _game._highContrast ? Color.Black : TopBarTint);
-            _game.Fill(GetTopBarDividerBounds(), BoardSeparatorLine);
+            Fill(GetTopBarBounds(), _game._highContrast ? Color.Black : TopBarTint);
+            Fill(GetTopBarDividerBounds(), BoardSeparatorLine);
             DrawToolbar();
 
             var stockBounds = GetStockBounds();
@@ -52,16 +79,16 @@ internal sealed partial class SolitaireGame
 
             if (_game._stock.Count == 0)
             {
-                _game.DrawText(BoardDealLabel, _game._largeText ? DealLabelLargeTextX : DealLabelX, DealLabelY,
+                DrawText(BoardDealLabel, _game._largeText ? DealLabelLargeTextX : DealLabelX, DealLabelY,
                     _game.SmallTextScale, BoardDealPromptText);
-                _game.DrawText(BoardAgainLabel, _game._largeText ? AgainLabelLargeTextX : AgainLabelX,
+                DrawText(BoardAgainLabel, _game._largeText ? AgainLabelLargeTextX : AgainLabelX,
                     _game._largeText ? AgainLabelLargeTextY : AgainLabelY, _game.SmallTextScale, BoardDealPromptText);
             }
 
             DrawPile(_game._waste, GetWasteBounds());
-            _game.DrawText(BoardStockLabel, _game._largeText ? StockLabelLargeTextX : StockLabelX, PileHeadingY,
+            DrawText(BoardStockLabel, _game._largeText ? StockLabelLargeTextX : StockLabelX, PileHeadingY,
                 _game.SmallTextScale, BoardHeadingText);
-            _game.DrawText(BoardWasteLabel, _game._largeText ? WasteLabelLargeTextX : WasteLabelX, PileHeadingY,
+            DrawText(BoardWasteLabel, _game._largeText ? WasteLabelLargeTextX : WasteLabelX, PileHeadingY,
                 _game.SmallTextScale, BoardHeadingText);
 
             for (var foundationIndex = 0; foundationIndex < _game._foundations.Count; foundationIndex++)
@@ -72,15 +99,15 @@ internal sealed partial class SolitaireGame
 
                 if (_game._foundations[foundationIndex].Count == 0)
                 {
-                    _game.DrawText(BoardFoundationAceLabel, foundationBounds.X + FoundationAceOffsetX,
+                    DrawText(BoardFoundationAceLabel, foundationBounds.X + FoundationAceOffsetX,
                         foundationBounds.Y + FoundationAceOffsetY, 2, BoardPlaceholderText);
-                    _game.DrawText(_game._largeText ? BoardFoundationToKingCompactLabel : BoardFoundationToKingLabel,
+                    DrawText(_game._largeText ? BoardFoundationToKingCompactLabel : BoardFoundationToKingLabel,
                         foundationBounds.X + FoundationInstructionOffsetX,
                         foundationBounds.Y + FoundationInstructionOffsetY, _game.SmallTextScale, BoardPlaceholderText);
                 }
             }
 
-            _game.DrawText(BoardFoundationsLabel, _game._largeText ? FoundationsLabelLargeTextX : FoundationsLabelX,
+            DrawText(BoardFoundationsLabel, _game._largeText ? FoundationsLabelLargeTextX : FoundationsLabelX,
                 PileHeadingY, _game.SmallTextScale, BoardHeadingText);
 
             for (var columnIndex = 0; columnIndex < _game._tableau.Count; columnIndex++)
@@ -92,7 +119,7 @@ internal sealed partial class SolitaireGame
                 {
                     var slotBounds = new Rectangle(FirstColumnX + columnIndex * ColumnStep, cardY, CardWidth, CardHeight);
                     DrawSlot(slotBounds);
-                    _game.DrawText(BoardTableauKingLabel, slotBounds.X + TableauKingOffsetX,
+                    DrawText(BoardTableauKingLabel, slotBounds.X + TableauKingOffsetX,
                         slotBounds.Y + TableauKingOffsetY, 2, BoardPlaceholderText);
                 }
 
@@ -115,14 +142,14 @@ internal sealed partial class SolitaireGame
             DrawInvalidFeedback();
             DrawWinCelebration();
 
-            _game.Fill(GetFooterBounds(), _game._highContrast ? Color.Black : FooterTint);
-            _game.Fill(GetFooterDividerBounds(), BoardSeparatorLine);
+            Fill(GetFooterBounds(), _game._highContrast ? Color.Black : FooterTint);
+            Fill(GetFooterDividerBounds(), BoardSeparatorLine);
             DrawAccessibleFooter();
 
             if (_game._hasWon && _game._cardTransitions.Count == 0)
             {
                 _game._spriteBatch.Draw(_game._artwork.Banner, WinBannerBounds, Color.White);
-                _game.DrawText(BoardWinLabel, WinTextX, WinTextY, 3, GoldHighlight);
+                DrawText(BoardWinLabel, WinTextX, WinTextY, 3, GoldHighlight);
             }
 
             if (_game._keyboardFocusVisible && !_game._optionsOpen)
@@ -150,16 +177,16 @@ internal sealed partial class SolitaireGame
             DrawToolbarButton(SoundButtonBounds,
                 _game._audioUnavailable ? AudioUnavailableLabel : _game._soundEnabled ? SoundEnabledLabel : SoundDisabledLabel,
                 !_game._audioUnavailable);
-            _game.DrawText(ToolbarTitleLabel, ToolbarTitleX, ToolbarTitleY, 2, ToolbarPrimaryText);
-            _game.DrawText(_game._largeText ? ToolbarShortcutsCompactLabel : ToolbarShortcutsLabel, ToolbarShortcutsX,
+            DrawText(ToolbarTitleLabel, ToolbarTitleX, ToolbarTitleY, 2, ToolbarPrimaryText);
+            DrawText(_game._largeText ? ToolbarShortcutsCompactLabel : ToolbarShortcutsLabel, ToolbarShortcutsX,
                 ToolbarShortcutsY, _game.SmallTextScale, ToolbarSecondaryText);
-            _game.DrawText(ToolbarMovesLabel, ToolbarMovesX, ToolbarStatsCaptionY, _game.SmallTextScale,
+            DrawText(ToolbarMovesLabel, ToolbarMovesX, ToolbarStatsCaptionY, _game.SmallTextScale,
                 ToolbarSecondaryText);
-            _game.DrawText(_game._moveCount.ToString(), ToolbarMovesX, ToolbarStatsValueY, 2, ToolbarPrimaryText);
-            _game.DrawText(ToolbarTimeLabel, ToolbarTimeX, ToolbarStatsCaptionY, _game.SmallTextScale,
+            DrawText(_game._moveCount.ToString(), ToolbarMovesX, ToolbarStatsValueY, 2, ToolbarPrimaryText);
+            DrawText(ToolbarTimeLabel, ToolbarTimeX, ToolbarStatsCaptionY, _game.SmallTextScale,
                 ToolbarSecondaryText);
             var totalSeconds = (long)_game._playingTime.TotalSeconds;
-            _game.DrawText($"{totalSeconds / 60:00}M {totalSeconds % 60:00}S", ToolbarTimeX, ToolbarStatsValueY,
+            DrawText($"{totalSeconds / 60:00}M {totalSeconds % 60:00}S", ToolbarTimeX, ToolbarStatsValueY,
                 _game.SmallTextScale, ToolbarPrimaryText);
         }
 
@@ -173,7 +200,7 @@ internal sealed partial class SolitaireGame
             var texture = isHovered ? _game._artwork.ButtonHover : _game._artwork.Button;
             if (_game._highContrast)
             {
-                _game.Fill(bounds, enabled ? Color.White : ButtonDisabledHighContrastFill);
+                Fill(bounds, enabled ? Color.White : ButtonDisabledHighContrastFill);
                 DrawTargetOutline(bounds, Color.White);
             }
             else
@@ -183,7 +210,7 @@ internal sealed partial class SolitaireGame
 
             var ink = _game._highContrast ? (enabled ? Color.Black : Color.White)
                 : enabled ? ButtonEnabledInk : ButtonDisabledInk;
-            _game.DrawText(label, bounds.X + (bounds.Width - label.Length * 12 + 2) / 2, bounds.Y + 15,
+            DrawText(label, bounds.X + (bounds.Width - label.Length * 12 + 2) / 2, bounds.Y + 15,
                 2, ink, preserveColor: true);
         }
 
@@ -223,7 +250,7 @@ internal sealed partial class SolitaireGame
                 }
 
                 var particleColor = particleIndex % 3 == 0 ? MintHighlight : GoldHighlight;
-                _game.Fill(new Rectangle((int)particleX, (int)particleY, ParticleWidth, ParticleHeight),
+                Fill(new Rectangle((int)particleX, (int)particleY, ParticleWidth, ParticleHeight),
                     particleColor * opacity);
             }
         }
@@ -256,11 +283,11 @@ internal sealed partial class SolitaireGame
                 var widthScale = Math.Max(0.02f, Math.Abs(1 - 2 * progress));
                 var centerX = bounds.Center.X;
                 _game._spriteBatch.End();
-                _game.BeginBoardDrawing(Matrix.CreateTranslation(-centerX, 0, 0) *
+                BeginBoardDrawing(Matrix.CreateTranslation(-centerX, 0, 0) *
                     Matrix.CreateScale(widthScale, 1, 1) * Matrix.CreateTranslation(centerX, 0, 0));
                 DrawCardArtwork(entry.Key, bounds, false, !faceUp);
                 _game._spriteBatch.End();
-                _game.BeginBoardDrawing();
+                BeginBoardDrawing();
             }
         }
 
@@ -342,38 +369,38 @@ internal sealed partial class SolitaireGame
         private void DrawTargetOutline(Rectangle bounds, Color color)
         {
             bounds.Inflate(TargetOutlineInflate, TargetOutlineInflate);
-            _game.Fill(new Rectangle(bounds.X, bounds.Y, bounds.Width, TargetOutlineThickness), color);
-            _game.Fill(new Rectangle(bounds.X, bounds.Bottom - TargetOutlineThickness, bounds.Width,
+            Fill(new Rectangle(bounds.X, bounds.Y, bounds.Width, TargetOutlineThickness), color);
+            Fill(new Rectangle(bounds.X, bounds.Bottom - TargetOutlineThickness, bounds.Width,
                 TargetOutlineThickness), color);
-            _game.Fill(new Rectangle(bounds.X, bounds.Y, TargetOutlineThickness, bounds.Height), color);
-            _game.Fill(new Rectangle(bounds.Right - TargetOutlineThickness, bounds.Y, TargetOutlineThickness,
+            Fill(new Rectangle(bounds.X, bounds.Y, TargetOutlineThickness, bounds.Height), color);
+            Fill(new Rectangle(bounds.Right - TargetOutlineThickness, bounds.Y, TargetOutlineThickness,
                 bounds.Height), color);
         }
 
         /// <summary>Draws the settings panel with large, always-readable labels and explicit on/off states.</summary>
         private void DrawAccessibilityOptions()
         {
-            _game.Fill(GetBoardBounds(), Color.Black * 0.75f);
+            Fill(GetBoardBounds(), Color.Black * 0.75f);
             var panelBounds = GetPanelBounds();
-            _game.Fill(panelBounds, Color.Black);
+            Fill(panelBounds, Color.Black);
             DrawTargetOutline(panelBounds, Color.White);
-            _game.DrawText(AccessibilityTitle, FirstRowX, TitleY, 3, Color.White);
+            DrawText(AccessibilityTitle, FirstRowX, TitleY, 3, Color.White);
             for (var index = 0; index < OptionCount; index++)
             {
                 var bounds = GetOptionBounds(index);
-                _game.Fill(bounds, OptionsRowFill);
+                Fill(bounds, OptionsRowFill);
                 var label = GetOptionLabel(index, _game._largeText, _game._highContrast, _game._reducedMotion);
-                _game.DrawText(label, bounds.X + LabelPaddingX, bounds.Y + LabelPaddingY, 2, Color.White);
+                DrawText(label, bounds.X + LabelPaddingX, bounds.Y + LabelPaddingY, 2, Color.White);
                 if (index == _game._optionIndex)
                 {
                     DrawFocusCorners(bounds);
                 }
             }
 
-            _game.DrawText(AccessibilityHelpNavigation, FirstRowX, HelpStartY, 2, Color.White);
-            _game.DrawText(AccessibilityHelpPersistence, FirstRowX, HelpStartY + HelpLineStep, 2, Color.White);
-            _game.DrawText(AccessibilityHelpCloseAndExit, FirstRowX, HelpStartY + HelpLineStep * 2, 2, Color.White);
-            _game.DrawText(AccessibilityHelpShortcutsDisabled, FirstRowX, HelpStartY + HelpLineStep * 3, 2, Color.White);
+            DrawText(AccessibilityHelpNavigation, FirstRowX, HelpStartY, 2, Color.White);
+            DrawText(AccessibilityHelpPersistence, FirstRowX, HelpStartY + HelpLineStep, 2, Color.White);
+            DrawText(AccessibilityHelpCloseAndExit, FirstRowX, HelpStartY + HelpLineStep * 2, 2, Color.White);
+            DrawText(AccessibilityHelpShortcutsDisabled, FirstRowX, HelpStartY + HelpLineStep * 3, 2, Color.White);
         }
 
         /// <summary>Draws an empty pile using either the themed texture or a solid high-contrast surface.</summary>
@@ -382,7 +409,7 @@ internal sealed partial class SolitaireGame
         {
             if (_game._highContrast)
             {
-                _game.Fill(bounds, Color.Black);
+                Fill(bounds, Color.Black);
                 DrawTargetOutline(bounds, Color.White);
             }
             else
@@ -398,12 +425,12 @@ internal sealed partial class SolitaireGame
                 ? FooterInvalidMoveMessage
                 : _game._hintTimeRemaining > TimeSpan.Zero ? _game._hintMessage
                 : _game._keyboardFocusVisible ? _game.GetKeyboardDescription() : FooterDefaultMessage;
-            _game.DrawText(message, FooterTextX, FooterStatusY, _game.SmallTextScale, FooterPrimaryText);
+            DrawText(message, FooterTextX, FooterStatusY, _game.SmallTextScale, FooterPrimaryText);
             var instructions = _game._keyboardFocusVisible
                 ? FooterKeyboardInstructions
                 : _game._audioUnavailable ? FooterSoundUnavailableInstructions
                 : FooterDefaultInstructions;
-            _game.DrawText(instructions, FooterTextX, FooterInstructionsY, _game.SmallTextScale,
+            DrawText(instructions, FooterTextX, FooterInstructionsY, _game.SmallTextScale,
                 ToolbarSecondaryText);
             DrawToolbarButton(OptionsButtonBounds, FooterOptionsLabel, true);
         }
@@ -413,19 +440,19 @@ internal sealed partial class SolitaireGame
         private void DrawFocusCorners(Rectangle bounds)
         {
             bounds.Inflate(FocusCornerInflate, FocusCornerInflate);
-            _game.Fill(new Rectangle(bounds.X, bounds.Y, FocusCornerLength, FocusCornerThickness), Color.White);
-            _game.Fill(new Rectangle(bounds.Right - FocusCornerLength, bounds.Y, FocusCornerLength,
+            Fill(new Rectangle(bounds.X, bounds.Y, FocusCornerLength, FocusCornerThickness), Color.White);
+            Fill(new Rectangle(bounds.Right - FocusCornerLength, bounds.Y, FocusCornerLength,
                 FocusCornerThickness), Color.White);
-            _game.Fill(new Rectangle(bounds.X, bounds.Bottom - FocusCornerThickness, FocusCornerLength,
+            Fill(new Rectangle(bounds.X, bounds.Bottom - FocusCornerThickness, FocusCornerLength,
                 FocusCornerThickness), Color.White);
-            _game.Fill(new Rectangle(bounds.Right - FocusCornerLength, bounds.Bottom - FocusCornerThickness,
+            Fill(new Rectangle(bounds.Right - FocusCornerLength, bounds.Bottom - FocusCornerThickness,
                 FocusCornerLength, FocusCornerThickness), Color.White);
-            _game.Fill(new Rectangle(bounds.X, bounds.Y, FocusCornerThickness, FocusCornerLength), Color.White);
-            _game.Fill(new Rectangle(bounds.Right - FocusCornerThickness, bounds.Y, FocusCornerThickness,
+            Fill(new Rectangle(bounds.X, bounds.Y, FocusCornerThickness, FocusCornerLength), Color.White);
+            Fill(new Rectangle(bounds.Right - FocusCornerThickness, bounds.Y, FocusCornerThickness,
                 FocusCornerLength), Color.White);
-            _game.Fill(new Rectangle(bounds.X, bounds.Bottom - FocusCornerLength, FocusCornerThickness,
+            Fill(new Rectangle(bounds.X, bounds.Bottom - FocusCornerLength, FocusCornerThickness,
                 FocusCornerLength), Color.White);
-            _game.Fill(new Rectangle(bounds.Right - FocusCornerThickness, bounds.Bottom - FocusCornerLength,
+            Fill(new Rectangle(bounds.Right - FocusCornerThickness, bounds.Bottom - FocusCornerLength,
                 FocusCornerThickness, FocusCornerLength), Color.White);
         }
 
@@ -494,11 +521,11 @@ internal sealed partial class SolitaireGame
 
             if (_game._highContrast)
             {
-                _game.Fill(bounds, faceDown ? Color.Black : Color.White);
+                Fill(bounds, faceDown ? Color.Black : Color.White);
                 DrawTargetOutline(bounds, isSelected && !faceDown ? Color.Yellow : Color.White);
                 if (faceDown)
                 {
-                    _game.DrawText(CardBackLabel, bounds.X + CardBackLabelOffsetX, bounds.Y + CardBackLabelOffsetY,
+                    DrawText(CardBackLabel, bounds.X + CardBackLabelOffsetX, bounds.Y + CardBackLabelOffsetY,
                         2, Color.White);
                 }
             }
@@ -520,7 +547,7 @@ internal sealed partial class SolitaireGame
             var suitTexture = _game._artwork.Suits[(int)card.Suit];
 
             var rankScale = _game._largeText ? 3 : 2;
-            _game.DrawText(rankLabel, bounds.X + CardRankTopOffsetX,
+            DrawText(rankLabel, bounds.X + CardRankTopOffsetX,
                 bounds.Y + (_game._largeText ? CardRankTopOffsetYLarge : CardRankTopOffsetY), rankScale, suitColor,
                 preserveColor: true);
             _game._spriteBatch.Draw(suitTexture,
@@ -532,7 +559,7 @@ internal sealed partial class SolitaireGame
             _game._spriteBatch.Draw(suitTexture,
                 new Rectangle(bounds.X + CardSuitBottomOffsetX, bounds.Bottom - CardSuitBottomOffset,
                     CardSuitBottomSize, CardSuitBottomSize), suitColor);
-            _game.DrawText(rankLabel, bounds.Right - (rankLabel.Length * 6 * rankScale) - CardRankBottomPaddingX,
+            DrawText(rankLabel, bounds.Right - (rankLabel.Length * 6 * rankScale) - CardRankBottomPaddingX,
                 bounds.Bottom - (7 * rankScale) - CardRankBottomPaddingY, rankScale, suitColor, preserveColor: true);
         }
     }
