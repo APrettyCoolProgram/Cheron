@@ -1,5 +1,5 @@
-// 261028_code
-// 261028_documentation
+// 261029_code
+// 261029_documentation
 
 using System;
 using System.Collections.Generic;
@@ -48,6 +48,26 @@ internal sealed partial class SolitaireGame
                 return;
             }
 
+            if (_game._helpOpen)
+            {
+                var currentWheel = Mouse.GetState().ScrollWheelValue;
+                var wheelDelta = currentWheel - _game._previousScrollWheelValue;
+                if (wheelDelta != 0)
+                {
+                    _game.ScrollHelpOverlay(wheelDelta < 0 ? 1 : -1);
+                }
+
+                _game._previousScrollWheelValue = currentWheel;
+
+                if (!isDown && _game._pointerWasDown)
+                {
+                    _game.CloseHelpOverlay();
+                }
+
+                _game._pointerWasDown = isDown;
+                return;
+            }
+
             if (_game.IsNewGamePromptOpen)
             {
                 UpdateNewGamePromptPointer(position, isDown);
@@ -65,6 +85,8 @@ internal sealed partial class SolitaireGame
                 _game._keyboardFocusVisible = false;
             }
 
+            _game._previousScrollWheelValue = Mouse.GetState().ScrollWheelValue;
+
             if (_game._cardTransitions.Count > 0)
             {
                 if (isDown && !_game._pointerWasDown && NewGameButtonBounds.Contains(position))
@@ -74,6 +96,10 @@ internal sealed partial class SolitaireGame
                 else if (isDown && !_game._pointerWasDown && SoundButtonBounds.Contains(position))
                 {
                     _game.ToggleSound();
+                }
+                else if (isDown && !_game._pointerWasDown && HelpButtonBounds.Contains(position))
+                {
+                    _game.OpenHelpOverlay();
                 }
                 else if (isDown && !_game._pointerWasDown && OptionsButtonBounds.Contains(position))
                 {
@@ -302,9 +328,44 @@ internal sealed partial class SolitaireGame
                 return true;
             }
 
-            if (IsNewKey(keyboard, Keys.F1))
+            if (_game._helpOpen)
+            {
+                if (IsNewKey(keyboard, Keys.Escape) || IsNewKey(keyboard, Keys.Back) || IsNewKey(keyboard, Keys.F1))
+                {
+                    _game.CloseHelpOverlay();
+                    return true;
+                }
+
+                if (IsNewKey(keyboard, Keys.Down) || IsNewKey(keyboard, Keys.PageDown))
+                {
+                    _game.ScrollHelpOverlay(1);
+                    return true;
+                }
+
+                if (IsNewKey(keyboard, Keys.Up) || IsNewKey(keyboard, Keys.PageUp))
+                {
+                    _game.ScrollHelpOverlay(-1);
+                    return true;
+                }
+
+                return true;
+            }
+
+            if (IsNewKey(keyboard, Keys.O))
             {
                 ToggleOptions();
+                return true;
+            }
+
+            if (IsNewKey(keyboard, Keys.M))
+            {
+                _game.ToggleSound();
+                return true;
+            }
+
+            if (IsNewKey(keyboard, Keys.F1))
+            {
+                _game.OpenHelpOverlay();
                 return true;
             }
 
@@ -528,10 +589,19 @@ internal sealed partial class SolitaireGame
             {
                 MoveKeyboardCardToFoundation();
             }
-            else if (IsNewKey(keyboard, Keys.Enter) || IsNewKey(keyboard, Keys.Space))
+            if (IsNewKey(keyboard, Keys.Enter) || IsNewKey(keyboard, Keys.Space))
             {
                 ActivateKeyboardTarget();
             }
+
+            var currentWheel = Mouse.GetState().ScrollWheelValue;
+            var wheelDelta = currentWheel - _game._previousScrollWheelValue;
+            if (_game._helpOpen && wheelDelta != 0)
+            {
+                _game.ScrollHelpOverlay(wheelDelta < 0 ? 1 : -1);
+            }
+
+            _game._previousScrollWheelValue = currentWheel;
         }
 
         /// <summary>Focuses a control or pile, choosing its top card without altering the current selection.</summary>

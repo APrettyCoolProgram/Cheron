@@ -1,5 +1,4 @@
-﻿# 🎯 Complete remaining follow-up steps for Solitaire variant work
-
+﻿# Complete remaining follow-up steps for Solitaire variant work
 ## Understanding
 The user asked to complete the remaining follow-up items after the existing prompt/variant tests. The highest-value remaining work is finishing the testability cleanup and adding regression coverage for input isolation while the new-game prompt is open.
 
@@ -22,13 +21,8 @@ Finally, run a full build and the test project to confirm everything still passe
 - Moving helpers must preserve exact semantics so existing tests keep passing.
 - Added test hooks should remain minimal and limited to what tests need.
 
-**Progress**: 75% [███████░░░]
-
-**Last Updated**: 2026-10-29 19:26:19
-
-## 📝 Plan Steps
-- ✅ **Remove inline test-hook methods from SolitaireGame.cs**
-- ⏭️ **Create SolitaireGame.Testing.cs partial with test helpers**
-- ✅ **Extend SolitaireVariantPromptTests with prompt isolation regression tests**
-- ✅ **Build solution and run Solitaire.Tests**
-
+## Steps
+1. Remove inline test-hook methods from SolitaireGame.cs
+2. Create SolitaireGame.Testing.cs partial with test helpers
+3. Extend SolitaireVariantPromptTests with prompt isolation regression tests
+4. Build solution and run Solitaire.Tests

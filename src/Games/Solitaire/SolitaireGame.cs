@@ -1,5 +1,5 @@
-﻿// 261028_code
-// 261028_documentation
+﻿// 261029_code
+// 261029_documentation
 
 using System;
 using System.Collections.Generic;
@@ -140,6 +140,50 @@ internal sealed partial class SolitaireGame : IGameModule
         _newGamePromptOpen = false;
     }
 
+    /// <summary>Opens the in-game Help overlay and resets its scroll position.</summary>
+    private void OpenHelpOverlay()
+    {
+        _helpOpen = true;
+        _helpScrollOffset = 0;
+        _optionsOpen = false;
+        _newGamePromptOpen = false;
+        _smokePassOverlayOpen = false;
+    }
+
+    /// <summary>Closes the in-game Help overlay without changing board state.</summary>
+    private void CloseHelpOverlay()
+    {
+        _helpOpen = false;
+    }
+
+    /// <summary>Scrolls the Help overlay content by one or more line steps.</summary>
+    /// <param name="direction">Positive values scroll down; negative values scroll up.</param>
+    private void ScrollHelpOverlay(int direction)
+    {
+        if (!_helpOpen || direction == 0)
+        {
+            return;
+        }
+
+        var lineStep = _largeText ? 34 : 26;
+        _helpScrollOffset = Math.Clamp(_helpScrollOffset + direction * lineStep, 0, GetHelpMaxScrollOffset());
+    }
+
+    /// <summary>Gets the variant-specific help subtitle shown in the Help overlay.</summary>
+    private string GetHelpSubtitle() => _variant.IsFreeCell() ? HelpOverlayFreeCellSubtitle : HelpOverlayKlondikeSubtitle;
+
+    /// <summary>Gets variant-specific gameplay instruction lines for the Help overlay.</summary>
+    private IReadOnlyList<string> GetHelpLines() => _variant.IsFreeCell() ? FreeCellHelpLines : KlondikeHelpLines;
+
+    /// <summary>Calculates the maximum vertical scroll offset for Help overlay content.</summary>
+    private int GetHelpMaxScrollOffset()
+    {
+        var lineHeight = _largeText ? 34 : 26;
+        var contentHeight = GetHelpContentBounds().Height;
+        var totalHeight = GetHelpLines().Count * lineHeight;
+        return Math.Max(0, totalHeight - contentHeight + 10);
+    }
+
     /// <summary>Gets whether the new-game prompt is open for tests.</summary>
     internal bool TestIsNewGamePromptOpen() => _newGamePromptOpen;
 
@@ -148,6 +192,12 @@ internal sealed partial class SolitaireGame : IGameModule
 
     /// <summary>Gets whether the options panel is open for tests.</summary>
     internal bool TestIsOptionsOpen() => _optionsOpen;
+
+    /// <summary>Gets whether the Help overlay is open for tests.</summary>
+    internal bool TestIsHelpOverlayOpen() => _helpOpen;
+
+    /// <summary>Gets the current Help overlay scroll offset for tests.</summary>
+    internal int TestGetHelpScrollOffset() => _helpScrollOffset;
 
     /// <summary>Gets the active variant for tests.</summary>
     internal SolitaireVariant TestGetVariant() => _variant;
@@ -178,6 +228,30 @@ internal sealed partial class SolitaireGame : IGameModule
     {
         OpenNewGamePrompt();
     }
+
+    /// <summary>Opens the Help overlay for tests.</summary>
+    internal void TestOpenHelpOverlay()
+    {
+        OpenHelpOverlay();
+    }
+
+    /// <summary>Closes the Help overlay for tests.</summary>
+    internal void TestCloseHelpOverlay()
+    {
+        CloseHelpOverlay();
+    }
+
+    /// <summary>Scrolls Help overlay content for tests.</summary>
+    internal void TestScrollHelpOverlay(int direction)
+    {
+        ScrollHelpOverlay(direction);
+    }
+
+    /// <summary>Gets the active Help subtitle for tests.</summary>
+    internal string TestGetHelpSubtitle() => GetHelpSubtitle();
+
+    /// <summary>Gets active Help lines for tests.</summary>
+    internal string[] TestGetHelpLines() => GetHelpLines().ToArray();
 
     /// <summary>Toggles prompt variant for tests.</summary>
     internal void TestTogglePromptVariant()
@@ -288,7 +362,7 @@ internal sealed partial class SolitaireGame : IGameModule
 
         if (!HandleAccessibilityKeys(keyboardState))
         {
-            if (IsNewKey(keyboardState, Keys.R))
+            if (IsNewKey(keyboardState, Keys.N))
             {
                 OpenNewGamePrompt();
             }
@@ -338,6 +412,32 @@ internal sealed partial class SolitaireGame : IGameModule
 
     /// <summary>The active card transitions, ordered from underlying cards to overlying cards.</summary>
     private readonly Dictionary<Card, CardTransition> _cardTransitions = new();
+
+    /// <summary>Variant-specific Help lines for Klondike gameplay.</summary>
+    private static readonly string[] KlondikeHelpLines =
+    [
+        HelpKlondikeLine1,
+        HelpKlondikeLine2,
+        HelpKlondikeLine3,
+        HelpKlondikeLine4,
+        HelpKlondikeLine5,
+        HelpKlondikeLine6,
+        HelpKlondikeLine7,
+        HelpKlondikeLine8
+    ];
+
+    /// <summary>Variant-specific Help lines for FreeCell gameplay.</summary>
+    private static readonly string[] FreeCellHelpLines =
+    [
+        HelpFreeCellLine1,
+        HelpFreeCellLine2,
+        HelpFreeCellLine3,
+        HelpFreeCellLine4,
+        HelpFreeCellLine5,
+        HelpFreeCellLine6,
+        HelpFreeCellLine7,
+        HelpFreeCellLine8
+    ];
 
     /// <summary>Whether sounds are enabled for this module session, preserved across deals.</summary>
     private bool _soundEnabled = true;
@@ -825,6 +925,12 @@ internal sealed partial class SolitaireGame : IGameModule
             return true;
         }
 
+        if (HelpButtonBounds.Contains(position))
+        {
+            OpenHelpOverlay();
+            return true;
+        }
+
         if (OptionsButtonBounds.Contains(position))
         {
             ToggleOptions();
@@ -1181,11 +1287,20 @@ internal sealed partial class SolitaireGame : IGameModule
     /// <summary>Whether the modal accessibility settings panel is open.</summary>
     private bool _optionsOpen;
 
+    /// <summary>Whether the in-game Help overlay is visible.</summary>
+    private bool _helpOpen;
+
+    /// <summary>The current vertical scroll offset for Help overlay content.</summary>
+    private int _helpScrollOffset;
+
     /// <summary>Whether the in-app manual smoke-pass checklist overlay is visible.</summary>
     private bool _smokePassOverlayOpen;
 
     /// <summary>The focused settings row: larger text, high contrast, reduced motion, or close.</summary>
     private int _optionIndex;
+
+    /// <summary>The previous mouse-wheel value used to detect edge-triggered Help scrolling.</summary>
+    private int _previousScrollWheelValue;
 
     /// <summary>The focused control or pile: five controls, stock, waste, four foundations, then seven columns.</summary>
     private int _keyboardFocus = -1;

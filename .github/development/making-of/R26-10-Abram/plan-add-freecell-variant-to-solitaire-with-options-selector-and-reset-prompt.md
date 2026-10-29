@@ -1,5 +1,4 @@
-﻿# 🎯 Add FreeCell Variant to Solitaire with Options Selector and Reset Prompt
-
+﻿# Add FreeCell Variant to Solitaire with Options Selector and Reset Prompt
 ## Understanding
 The user wants to keep Klondike and add FreeCell as a playable variant. Variant selection must be done via the existing options panel, and switching variants should prompt before resetting the current deal.
 
@@ -30,19 +29,14 @@ Extend options panel metadata/layout to include a variant selector row and a res
 - Existing undo/snapshot/history format may require adaptation for FreeCell pile topology.
 - Options panel row indexing changes can affect keyboard/pointer option navigation.
 
-**Progress**: 100% [██████████]
-
-**Last Updated**: 2026-10-29 19:02:15
-
-## 📝 Plan Steps
-- ✅ **Add variant model and state**
-- ✅ **Implement FreeCell deal and board structures**
-- ✅ **Extend move-rule helpers for FreeCell**
-- ✅ **Branch game move/select logic by variant**
-- ✅ **Add options-panel variant selector and pending-switch state**
-- ✅ **Implement confirm/cancel prompt flow for variant switching**
-- ✅ **Update renderer for FreeCell board and prompt UI text**
-- ✅ **Update accessibility labels/constants/layout for new option row**
-- ✅ **Build and fix compile errors**
-- ✅ **Validate core gameplay flows for both variants**
-
+## Steps
+1. Add variant model and state
+2. Implement FreeCell deal and board structures
+3. Extend move-rule helpers for FreeCell
+4. Branch game move/select logic by variant
+5. Add options-panel variant selector and pending-switch state
+6. Implement confirm/cancel prompt flow for variant switching
+7. Update renderer for FreeCell board and prompt UI text
+8. Update accessibility labels/constants/layout for new option row
+9. Build and fix compile errors
+10. Validate core gameplay flows for both variants

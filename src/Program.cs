@@ -1,8 +1,7 @@
-﻿// 261028_code
-// 261028_documentation
+﻿// 261029_code
+// 261029_documentation
 
 using Cheron.Engine;
-using Cheron.Games.Solitaire;
 
-using var gameHost = new GameHost(new SolitaireGame());
+using var gameHost = new GameHost(new StartScreenGame());
 gameHost.Run();

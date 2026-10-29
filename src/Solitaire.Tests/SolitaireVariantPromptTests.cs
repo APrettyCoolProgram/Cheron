@@ -204,7 +204,7 @@ public sealed class SolitaireVariantPromptTests
         Assert.True(game.TestIsSmokePassOverlayOpen());
 
         game.TestHandleAccessibilityKeys(Press());
-        game.TestHandleAccessibilityKeys(Press(Keys.F1));
+        game.TestHandleAccessibilityKeys(Press(Keys.O));
         Assert.False(game.TestIsOptionsOpen());
 
         game.TestHandleAccessibilityKeys(Press());
@@ -212,7 +212,7 @@ public sealed class SolitaireVariantPromptTests
         Assert.False(game.TestIsSmokePassOverlayOpen());
 
         game.TestHandleAccessibilityKeys(Press());
-        game.TestHandleAccessibilityKeys(Press(Keys.F1));
+        game.TestHandleAccessibilityKeys(Press(Keys.O));
         Assert.True(game.TestIsOptionsOpen());
     }
 
@@ -247,5 +247,67 @@ public sealed class SolitaireVariantPromptTests
 
         var eighthColumnTopCardBounds = game.TestGetTableauCardBounds(7, 0);
         Assert.True(eighthColumnTopCardBounds.Right <= SolitaireLayout.BoardWidth);
+    }
+
+    [Fact]
+    public void HelpShortcut_OpensOverlay_AndEscapeClosesIt()
+    {
+        var game = new SolitaireGame();
+
+        game.TestResetPreviousKeyboardState();
+        var opened = game.TestHandleAccessibilityKeys(Press(Keys.F1));
+
+        Assert.True(opened);
+        Assert.True(game.TestIsHelpOverlayOpen());
+
+        game.TestHandleAccessibilityKeys(Press());
+        game.TestHandleAccessibilityKeys(Press(Keys.Escape));
+
+        Assert.False(game.TestIsHelpOverlayOpen());
+    }
+
+    [Fact]
+    public void HelpOverlay_ScrollsWithinBounds()
+    {
+        var game = new SolitaireGame();
+
+        game.TestOpenHelpOverlay();
+        var initialOffset = game.TestGetHelpScrollOffset();
+        game.TestScrollHelpOverlay(1);
+
+        Assert.True(game.TestGetHelpScrollOffset() >= initialOffset);
+
+        for (var index = 0; index < 40; index++)
+        {
+            game.TestScrollHelpOverlay(1);
+        }
+
+        var maxOffset = game.TestGetHelpScrollOffset();
+        game.TestScrollHelpOverlay(1);
+
+        Assert.Equal(maxOffset, game.TestGetHelpScrollOffset());
+
+        for (var index = 0; index < 60; index++)
+        {
+            game.TestScrollHelpOverlay(-1);
+        }
+
+        Assert.Equal(0, game.TestGetHelpScrollOffset());
+    }
+
+    [Fact]
+    public void HelpOverlay_UsesVariantSpecificInstructions()
+    {
+        var game = new SolitaireGame();
+
+        game.TestSetVariant(SolitaireVariant.Klondike);
+        game.TestOpenHelpOverlay();
+        Assert.Equal("KLONDIKE", game.TestGetHelpSubtitle());
+        Assert.Contains("TABLEAU BUILDS DOWN BY ALTERNATING COLORS", game.TestGetHelpLines());
+
+        game.TestSetVariant(SolitaireVariant.FreeCell);
+        game.TestOpenHelpOverlay();
+        Assert.Equal("FREECELL", game.TestGetHelpSubtitle());
+        Assert.Contains("USE FREECELLS TO HOLD ONE CARD EACH", game.TestGetHelpLines());
     }
 }

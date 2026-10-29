@@ -1,5 +1,5 @@
-// 261028_code
-// 261028_documentation
+// 261029_code
+// 261029_documentation
 
 using System;
 using System.Collections.Generic;
@@ -46,7 +46,7 @@ internal sealed partial class SolitaireGame
         /// <param name="localTransform">The optional board-space transform used for a card flip.</param>
         private void BeginBoardDrawing(Matrix? localTransform = null)
         {
-            _game._spriteBatch.Begin(samplerState: SamplerState.LinearClamp,
+            _game._spriteBatch.Begin(samplerState: SamplerState.PointClamp,
                 rasterizerState: _game._boardRasterizerState,
                 transformMatrix: (localTransform ?? Matrix.Identity) * _game._viewport.Transform);
         }
@@ -132,6 +132,7 @@ internal sealed partial class SolitaireGame
             DrawCardTransitions();
             DrawInvalidFeedback();
             DrawWinCelebration();
+            DrawBoardStats();
 
             Fill(GetFooterBounds(), _game._highContrast ? Color.Black : FooterTint);
             Fill(GetFooterDividerBounds(), BoardSeparatorLine);
@@ -163,6 +164,11 @@ internal sealed partial class SolitaireGame
                 DrawSmokePassOverlay();
             }
 
+            if (_game._helpOpen)
+            {
+                DrawHelpOverlay(graphicsDevice);
+            }
+
             _game._spriteBatch.End();
             graphicsDevice.ScissorRectangle = previousScissor;
             graphicsDevice.RasterizerState = previousRasterizer;
@@ -172,23 +178,77 @@ internal sealed partial class SolitaireGame
         private void DrawToolbar()
         {
             var canUseBoard = _game._cardTransitions.Count == 0 && !_game._isDragging;
-            DrawToolbarButton(NewGameButtonBounds, NewGameLabel, true);
-            DrawToolbarButton(UndoButtonBounds, UndoLabel, canUseBoard && _game._undoHistory.Count > 0);
-            DrawToolbarButton(HintButtonBounds, HintLabel, canUseBoard && !_game._hasWon);
-            DrawToolbarButton(SoundButtonBounds,
-                _game._audioUnavailable ? AudioUnavailableLabel : _game._soundEnabled ? SoundEnabledLabel : SoundDisabledLabel,
-                !_game._audioUnavailable);
-            DrawText(ToolbarTitleLabel, ToolbarTitleX, ToolbarTitleY, 2, ToolbarPrimaryText);
-            DrawText(_game._largeText ? ToolbarShortcutsCompactLabel : ToolbarShortcutsLabel, ToolbarShortcutsX,
-                ToolbarShortcutsY, _game.SmallTextScale, ToolbarSecondaryText);
-            DrawText(ToolbarMovesLabel, ToolbarMovesX, ToolbarStatsCaptionY, _game.SmallTextScale,
-                ToolbarSecondaryText);
-            DrawText(_game._moveCount.ToString(), ToolbarMovesX, ToolbarStatsValueY, 2, ToolbarPrimaryText);
-            DrawText(ToolbarTimeLabel, ToolbarTimeX, ToolbarStatsCaptionY, _game.SmallTextScale,
-                ToolbarSecondaryText);
-            var totalSeconds = (long)_game._playingTime.TotalSeconds;
-            DrawText($"{totalSeconds / 60:00}M {totalSeconds % 60:00}S", ToolbarTimeX, ToolbarStatsValueY,
-                _game.SmallTextScale, ToolbarPrimaryText);
+            DrawTopBarActionLabel(NewGameButtonBounds, NewGameLabel, "N", true);
+            DrawTopBarActionLabel(UndoButtonBounds, UndoLabel, "U", canUseBoard && _game._undoHistory.Count > 0);
+            DrawTopBarActionLabel(HintButtonBounds, HintLabel, "H", canUseBoard && !_game._hasWon);
+            DrawTopBarActionLabel(OptionsButtonBounds, FooterOptionsLabel, "O", true);
+            DrawTopBarActionLabel(HelpButtonBounds, HelpLabel, "F1", true);
+            DrawTopBarSoundActionLabel(SoundButtonBounds, "M", !_game._audioUnavailable);
+
+            const int titleScale = 4;
+            const int variantScale = 1;
+            const int titleGap = 5;
+            var variantLabel = _game._variant == SolitaireVariant.FreeCell ? "FREECELL" : "KLONDIKE";
+            var titleBlockHeight = 7 * titleScale + titleGap + 7 * variantScale;
+            var titleTopY = GetTopBarBounds().Y + (GetTopBarBounds().Height - titleBlockHeight) / 2;
+            var titleWidth = ToolbarTitleLabel.Length * 6 * titleScale;
+            var variantWidth = variantLabel.Length * 6 * variantScale;
+
+            DrawText(ToolbarTitleLabel, (BoardWidth - titleWidth) / 2, titleTopY, titleScale, ToolbarPrimaryText);
+            DrawText(variantLabel, (BoardWidth - variantWidth) / 2, titleTopY + 7 * titleScale + titleGap,
+                variantScale, ToolbarPrimaryText);
+        }
+
+        /// <summary>Draws a plain two-line top-bar action label centered vertically in the toolbar strip.</summary>
+        private void DrawTopBarActionLabel(Rectangle bounds, string label, string shortcut, bool enabled)
+        {
+            const int labelScale = 2;
+            var shortcutScale = Math.Max(1, labelScale / 2);
+            const int lineGap = 5;
+            var stripBounds = GetTopBarBounds();
+            var blockHeight = 7 * labelScale + lineGap + 7 * shortcutScale;
+            var firstLineY = stripBounds.Y + (stripBounds.Height - blockHeight) / 2;
+            var secondLineY = firstLineY + 7 * labelScale + lineGap;
+            var color = enabled ? GoldHighlight : ToolbarSecondaryText;
+
+            var labelX = bounds.X + (bounds.Width - label.Length * 6 * labelScale + 2) / 2;
+            var shortcutX = bounds.X + (bounds.Width - shortcut.Length * 6 * shortcutScale + 2) / 2;
+            DrawText(label, labelX, firstLineY, labelScale, color, preserveColor: true);
+            DrawText(shortcut, shortcutX, secondLineY, shortcutScale, color, preserveColor: true);
+        }
+
+        /// <summary>Draws the two-line sound action label while keeping the SOUND prefix fixed during ON/OFF toggles.</summary>
+        private void DrawTopBarSoundActionLabel(Rectangle bounds, string shortcut, bool enabled)
+        {
+            const int labelScale = 2;
+            var shortcutScale = Math.Max(1, labelScale / 2);
+            const int lineGap = 5;
+            var stripBounds = GetTopBarBounds();
+            var blockHeight = 7 * labelScale + lineGap + 7 * shortcutScale;
+            var firstLineY = stripBounds.Y + (stripBounds.Height - blockHeight) / 2;
+            var secondLineY = firstLineY + 7 * labelScale + lineGap;
+            var color = enabled ? GoldHighlight : ToolbarSecondaryText;
+
+            if (_game._audioUnavailable)
+            {
+                var unavailableX = bounds.X + (bounds.Width - AudioUnavailableLabel.Length * 6 * labelScale + 2) / 2;
+                DrawText(AudioUnavailableLabel, unavailableX, firstLineY, labelScale, color, preserveColor: true);
+            }
+            else
+            {
+                const string soundPrefix = "SOUND";
+                const int stateSlotCharacters = 3;
+                var prefixWidth = soundPrefix.Length * 6 * labelScale;
+                var stateX = bounds.X + (bounds.Width - (prefixWidth + 6 * labelScale + stateSlotCharacters * 6 * labelScale) + 2) / 2 +
+                    prefixWidth + 6 * labelScale;
+                var prefixX = stateX - (prefixWidth + 6 * labelScale);
+
+                DrawText(soundPrefix, prefixX, firstLineY, labelScale, color, preserveColor: true);
+                DrawText(_game._soundEnabled ? "ON" : "OFF", stateX, firstLineY, labelScale, color, preserveColor: true);
+            }
+
+            var shortcutX = bounds.X + (bounds.Width - shortcut.Length * 6 * shortcutScale + 2) / 2;
+            DrawText(shortcut, shortcutX, secondLineY, shortcutScale, color, preserveColor: true);
         }
 
         /// <summary>Draws one themed button with hover feedback only while enabled.</summary>
@@ -425,21 +485,111 @@ internal sealed partial class SolitaireGame
             }
         }
 
-        /// <summary>Draws footer status and discoverable access to settings without overlapping larger text.</summary>
+        /// <summary>Draws moves/time statistics near the lower edge of the center play area.</summary>
+        private void DrawBoardStats()
+        {
+            const int captionScale = 2;
+            const int valueScale = 2;
+            const int columnGap = 88;
+            const int rowGap = 4;
+
+            var totalSeconds = (long)_game._playingTime.TotalSeconds;
+            var movesValue = _game._moveCount.ToString();
+            var timeValue = $"{totalSeconds / 60:00}M {totalSeconds % 60:00}S";
+
+            var movesCaptionWidth = ToolbarMovesLabel.Length * 6 * captionScale;
+            var movesValueWidth = movesValue.Length * 6 * valueScale;
+            var timeCaptionWidth = ToolbarTimeLabel.Length * 6 * captionScale;
+            var timeValueWidth = timeValue.Length * 6 * valueScale;
+
+            var movesColumnWidth = Math.Max(movesCaptionWidth, movesValueWidth);
+            var timeColumnWidth = Math.Max(timeCaptionWidth, timeValueWidth);
+            var totalWidth = movesColumnWidth + columnGap + timeColumnWidth;
+            var startX = (BoardWidth - totalWidth) / 2;
+
+            var valueY = FooterY - 12 - 7 * valueScale;
+            var captionY = valueY - rowGap - 7 * captionScale;
+
+            DrawText(ToolbarMovesLabel, startX + (movesColumnWidth - movesCaptionWidth) / 2, captionY,
+                captionScale, ToolbarSecondaryText);
+            DrawText(movesValue, startX + (movesColumnWidth - movesValueWidth) / 2, valueY,
+                valueScale, ToolbarPrimaryText);
+
+            var timeX = startX + movesColumnWidth + columnGap;
+            DrawText(ToolbarTimeLabel, timeX + (timeColumnWidth - timeCaptionWidth) / 2, captionY,
+                captionScale, ToolbarSecondaryText);
+            DrawText(timeValue, timeX + (timeColumnWidth - timeValueWidth) / 2, valueY,
+                valueScale, ToolbarPrimaryText);
+        }
+
+        /// <summary>Draws centered footer instructions and a plain options action label.</summary>
         private void DrawAccessibleFooter()
         {
-            var message = _game._invalidTimeRemaining > TimeSpan.Zero
-                ? FooterInvalidMoveMessage
-                : _game._hintTimeRemaining > TimeSpan.Zero ? _game._hintMessage
-                : _game._keyboardFocusVisible ? _game.GetKeyboardDescription() : FooterDefaultMessage;
-            DrawText(message, FooterTextX, FooterStatusY, _game.SmallTextScale, FooterPrimaryText);
             var instructions = _game._keyboardFocusVisible
                 ? FooterKeyboardInstructions
                 : _game._audioUnavailable ? FooterSoundUnavailableInstructions
                 : FooterDefaultInstructions;
-            DrawText(instructions, FooterTextX, FooterInstructionsY, _game.SmallTextScale,
-                ToolbarSecondaryText);
-            DrawToolbarButton(OptionsButtonBounds, FooterOptionsLabel, true);
+
+            DrawCenteredFooterInstructions(instructions, ToolbarSecondaryText);
+
+        }
+
+        /// <summary>Draws one centered footer instruction line, emphasizing key action words.</summary>
+        private void DrawCenteredFooterInstructions(string text, Color baseColor)
+        {
+            var footerBounds = GetFooterBounds();
+            var scale = _game.SmallTextScale + 1;
+            var components = text.Split("  ", StringSplitOptions.RemoveEmptyEntries);
+            const int componentGapUnits = 18;
+            const int wordGapUnits = 4;
+
+            var totalWidth = 0;
+            for (var componentIndex = 0; componentIndex < components.Length; componentIndex++)
+            {
+                var words = components[componentIndex].Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                for (var wordIndex = 0; wordIndex < words.Length; wordIndex++)
+                {
+                    totalWidth += words[wordIndex].Length * 6 * scale;
+                    if (wordIndex < words.Length - 1)
+                    {
+                        totalWidth += wordGapUnits * scale;
+                    }
+                }
+
+                if (componentIndex < components.Length - 1)
+                {
+                    totalWidth += componentGapUnits * scale;
+                }
+            }
+
+            var x = footerBounds.X + (footerBounds.Width - totalWidth) / 2;
+            var y = footerBounds.Y + (footerBounds.Height - 7 * scale) / 2;
+
+            for (var componentIndex = 0; componentIndex < components.Length; componentIndex++)
+            {
+                var words = components[componentIndex].Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                for (var wordIndex = 0; wordIndex < words.Length; wordIndex++)
+                {
+                    var word = words[wordIndex];
+                    var isBoldWord = word is "DRAG" or "TAB" or "ARROWS" or "ENTER" or "F" or "BACKSPACE" or "CLICK" or "ESC";
+                    DrawText(word, x, y, scale, baseColor, preserveColor: true);
+                    if (isBoldWord)
+                    {
+                        DrawText(word, x + 1, y, scale, baseColor, preserveColor: true);
+                    }
+
+                    x += word.Length * 6 * scale;
+                    if (wordIndex < words.Length - 1)
+                    {
+                        x += wordGapUnits * scale;
+                    }
+                }
+
+                if (componentIndex < components.Length - 1)
+                {
+                    x += componentGapUnits * scale;
+                }
+            }
         }
 
         /// <summary>Draws a static corner-shaped focus indicator distinct from continuous selection outlines.</summary>
@@ -514,6 +664,43 @@ internal sealed partial class SolitaireGame
             DrawText(SmokePassStep5, panelBounds.X + 42, panelBounds.Y + 292, 2, Color.White);
             DrawText(SmokePassStep6, panelBounds.X + 42, panelBounds.Y + 342, 2, Color.White);
             DrawText(SmokePassFooter, panelBounds.X + 42, panelBounds.Bottom - 58, 2, Color.White);
+        }
+
+        /// <summary>Draws a variant Help modal with vertically scrollable instructions.</summary>
+        private void DrawHelpOverlay(GraphicsDevice graphicsDevice)
+        {
+            Fill(GetBoardBounds(), Color.Black * 0.78f);
+            var panelBounds = GetHelpPanelBounds();
+            Fill(panelBounds, Color.Black);
+            DrawTargetOutline(panelBounds, Color.White);
+
+            DrawText(HelpOverlayTitle, panelBounds.X + 30, panelBounds.Y + 20, 3, GoldHighlight);
+            DrawText(_game.GetHelpSubtitle(), panelBounds.Right - 240, panelBounds.Y + 28, 2, MintHighlight);
+
+            var contentBounds = GetHelpContentBounds();
+            Fill(contentBounds, _game._highContrast ? Color.Black : new Color(18, 24, 34));
+            DrawTargetOutline(contentBounds, ToolbarSecondaryText);
+
+            var previousScissor = graphicsDevice.ScissorRectangle;
+            var clip = Rectangle.Intersect(_game._viewport.ScissorBounds, new Rectangle(
+                (int)MathF.Floor(contentBounds.X * _game._viewport.Scale + _game._viewport.Offset.X),
+                (int)MathF.Floor(contentBounds.Y * _game._viewport.Scale + _game._viewport.Offset.Y),
+                (int)MathF.Ceiling(contentBounds.Width * _game._viewport.Scale),
+                (int)MathF.Ceiling(contentBounds.Height * _game._viewport.Scale)));
+            graphicsDevice.ScissorRectangle = clip;
+
+            var lineHeight = _game._largeText ? 34 : 26;
+            var textY = contentBounds.Y + 10 - _game._helpScrollOffset;
+            foreach (var line in _game.GetHelpLines())
+            {
+                DrawText(line, contentBounds.X + 16, textY, 2, Color.White);
+                textY += lineHeight;
+            }
+
+            graphicsDevice.ScissorRectangle = previousScissor;
+
+            var closeHint = GetHelpCloseHintBounds();
+            DrawText(HelpOverlayFooterHint, closeHint.X + 8, closeHint.Y + 2, 2, ToolbarSecondaryText);
         }
 
         /// <summary>Draws a pile's top non-dragged card, or an outlined slot when no card remains visible.</summary>

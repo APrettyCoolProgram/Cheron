@@ -1,5 +1,4 @@
-﻿# 🎯 Move Variant Selection to New Game Flow
-
+﻿# Move Variant Selection to New Game Flow
 ## Understanding
 The user wants variant selection to happen when starting a new game, instead of choosing variant in the options panel. Starting a new game should prompt variant choice and then deal that variant.
 
@@ -22,15 +21,10 @@ Add a dedicated pending state for "new game variant choice" and handle it in key
 - Need to preserve existing keyboard shortcuts behavior while prompt is active.
 - Must ensure prompt is reachable from both toolbar click and R key.
 
-**Progress**: 16% [█░░░░░░░░░]
-
-**Last Updated**: 2026-10-29 19:05:35
-
-## 📝 Plan Steps
-- 🔄 **Add new-game variant prompt state in SolitaireGame**
-- ✅ **Route New Game actions to variant prompt in interaction controller**
--  **Implement prompt input handling for variant selection/confirm/cancel**
--  **Remove variant selector from options metadata and options rendering flow**
--  **Add/update renderer and text constants for new-game variant picker**
--  **Build and fix compile errors**
-
+## Steps
+1. Add new-game variant prompt state in SolitaireGame
+2. Route New Game actions to variant prompt in interaction controller
+3. Implement prompt input handling for variant selection/confirm/cancel
+4. Remove variant selector from options metadata and options rendering flow
+5. Add/update renderer and text constants for new-game variant picker
+6. Build and fix compile errors

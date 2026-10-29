@@ -1,12 +1,16 @@
 # Making of Cheron
 
-## [R26.10 (Abram)](./R26-10-Abram/README.md)
+* [R26.10 (Abram)](./R26-10-Abram/README.md)
 
 
 
 <!--
 
-* [R26.10 (Abram)](./Abram/README.md)Adjudicator
+* [RYY.MM (Adjudicator)](./RYY-MM-Adjudicator/README.md)
+  - Memory Tiles
+  - Class libraries for game type
+  - Cartridge system
+
 * Akira
 * Ares
 * Aurelio

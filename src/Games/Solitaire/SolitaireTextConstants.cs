@@ -1,5 +1,5 @@
-// 261028_code
-// 261028_documentation
+// 261029_code
+// 261029_documentation
 
 namespace Cheron.Games.Solitaire;
 
@@ -17,6 +17,9 @@ internal static class SolitaireTextConstants
 
     /// <summary>The toolbar label for requesting a one-step hint.</summary>
     internal const string HintLabel = "HINT";
+
+    /// <summary>The toolbar label for opening variant instructions.</summary>
+    internal const string HelpLabel = "HELP";
 
     /// <summary>The toolbar status label when sound cannot be used.</summary>
     internal const string AudioUnavailableLabel = "NA";
@@ -64,7 +67,7 @@ internal static class SolitaireTextConstants
     internal const string SmokePassTitle = "MANUAL UX SMOKE PASS";
 
     /// <summary>The manual smoke-pass overlay step 1.</summary>
-    internal const string SmokePassStep1 = "1  OPEN NEW GAME PROMPT  (R OR NEW GAME BUTTON)";
+    internal const string SmokePassStep1 = "1  OPEN NEW GAME PROMPT  (N OR NEW GAME BUTTON)";
 
     /// <summary>The manual smoke-pass overlay step 2.</summary>
     internal const string SmokePassStep2 = "2  VERIFY KLONDIKE AND FREECELL OPTIONS RENDER";
@@ -85,7 +88,7 @@ internal static class SolitaireTextConstants
     internal const string SmokePassFooter = "SHIFT+F9 TO CLOSE";
 
     /// <summary>The close action label shown in the accessibility options list.</summary>
-    internal const string AccessibilityCloseOptionsLabel = "F1  CLOSE OPTIONS";
+    internal const string AccessibilityCloseOptionsLabel = "O  CLOSE OPTIONS";
 
     /// <summary>The accessibility help row describing keyboard navigation and activation.</summary>
     internal const string AccessibilityHelpNavigation = "TAB OR UP DOWN  CHOOSE   ENTER OR SPACE  TOGGLE";
@@ -94,7 +97,7 @@ internal static class SolitaireTextConstants
     internal const string AccessibilityHelpPersistence = "SETTINGS LAST UNTIL THE APPLICATION CLOSES";
 
     /// <summary>The accessibility help row describing close and exit shortcuts.</summary>
-    internal const string AccessibilityHelpCloseAndExit = "F1 CLOSES OPTIONS   ESC EXITS THE GAME";
+    internal const string AccessibilityHelpCloseAndExit = "O CLOSES OPTIONS   ESC EXITS THE GAME";
 
     /// <summary>The accessibility help row noting board shortcuts are suspended while modal is open.</summary>
     internal const string AccessibilityHelpShortcutsDisabled =
@@ -116,8 +119,68 @@ internal static class SolitaireTextConstants
     /// <summary>The footer instructions shown during normal pointer-first play.</summary>
     internal const string FooterDefaultInstructions = "DRAG OR CLICK TO MOVE  TAB KEYBOARD PLAY  ESC EXIT";
 
-    /// <summary>The footer-adjacent options button label.</summary>
-    internal const string FooterOptionsLabel = "OPTIONS F1";
+    /// <summary>The title shown in the Help overlay.</summary>
+    internal const string HelpOverlayTitle = "HOW TO PLAY";
+
+    /// <summary>The Help overlay subtitle for Klondike instructions.</summary>
+    internal const string HelpOverlayKlondikeSubtitle = "KLONDIKE";
+
+    /// <summary>The Help overlay subtitle for FreeCell instructions.</summary>
+    internal const string HelpOverlayFreeCellSubtitle = "FREECELL";
+
+    /// <summary>The close/scroll hint shown in the Help overlay footer.</summary>
+    internal const string HelpOverlayFooterHint = "ESC CLOSE   UP DOWN OR WHEEL SCROLL";
+
+    /// <summary>Klondike Help line 1.</summary>
+    internal const string HelpKlondikeLine1 = "GOAL  BUILD FOUR FOUNDATIONS FROM ACE TO KING";
+
+    /// <summary>Klondike Help line 2.</summary>
+    internal const string HelpKlondikeLine2 = "TABLEAU BUILDS DOWN BY ALTERNATING COLORS";
+
+    /// <summary>Klondike Help line 3.</summary>
+    internal const string HelpKlondikeLine3 = "MOVE A FACE-UP RUN AS A GROUP";
+
+    /// <summary>Klondike Help line 4.</summary>
+    internal const string HelpKlondikeLine4 = "ONLY A KING MAY FILL AN EMPTY TABLEAU COLUMN";
+
+    /// <summary>Klondike Help line 5.</summary>
+    internal const string HelpKlondikeLine5 = "CLICK STOCK TO DRAW CARDS TO WASTE";
+
+    /// <summary>Klondike Help line 6.</summary>
+    internal const string HelpKlondikeLine6 = "WHEN STOCK IS EMPTY CLICK IT TO RECYCLE WASTE";
+
+    /// <summary>Klondike Help line 7.</summary>
+    internal const string HelpKlondikeLine7 = "DOUBLE-CLICK A CARD TO TRY MOVING IT TO FOUNDATION";
+
+    /// <summary>Klondike Help line 8.</summary>
+    internal const string HelpKlondikeLine8 = "USE HINT FOR A SUGGESTED MOVE AND UNDO TO STEP BACK";
+
+    /// <summary>FreeCell Help line 1.</summary>
+    internal const string HelpFreeCellLine1 = "GOAL  BUILD FOUR FOUNDATIONS FROM ACE TO KING";
+
+    /// <summary>FreeCell Help line 2.</summary>
+    internal const string HelpFreeCellLine2 = "ALL CARDS START FACE UP IN EIGHT CASCADES";
+
+    /// <summary>FreeCell Help line 3.</summary>
+    internal const string HelpFreeCellLine3 = "TABLEAU BUILDS DOWN BY ALTERNATING COLORS";
+
+    /// <summary>FreeCell Help line 4.</summary>
+    internal const string HelpFreeCellLine4 = "USE FREECELLS TO HOLD ONE CARD EACH";
+
+    /// <summary>FreeCell Help line 5.</summary>
+    internal const string HelpFreeCellLine5 = "EMPTY FREECELLS AND COLUMNS INCREASE MOVE CAPACITY";
+
+    /// <summary>FreeCell Help line 6.</summary>
+    internal const string HelpFreeCellLine6 = "ANY CARD MAY MOVE TO AN EMPTY COLUMN";
+
+    /// <summary>FreeCell Help line 7.</summary>
+    internal const string HelpFreeCellLine7 = "DOUBLE-CLICK A CARD TO TRY MOVING IT TO FOUNDATION";
+
+    /// <summary>FreeCell Help line 8.</summary>
+    internal const string HelpFreeCellLine8 = "PLAN AHEAD  BLOCKED LOW CARDS CAN STOP PROGRESS";
+
+    /// <summary>The footer-adjacent options action label.</summary>
+    internal const string FooterOptionsLabel = "OPTIONS";
 
     /// <summary>The keyboard-focus description for the New Game control.</summary>
     internal const string KeyboardDescriptionNewGame = "NEW GAME  R";
@@ -144,7 +207,7 @@ internal static class SolitaireTextConstants
     internal const string KeyboardDescriptionSoundOff = "SOUND OFF  M";
 
     /// <summary>The keyboard-focus description for the options control.</summary>
-    internal const string KeyboardDescriptionOptions = "OPTIONS  F1";
+    internal const string KeyboardDescriptionOptions = "OPTIONS  O";
 
     /// <summary>The keyboard-focus description prefix for a non-empty stock pile.</summary>
     internal const string KeyboardDescriptionStockPrefix = "STOCK";
@@ -222,7 +285,7 @@ internal static class SolitaireTextConstants
     internal const string ToolbarTitleLabel = "SOLITAIRE";
 
     /// <summary>Toolbar shortcut legend shown in larger-text mode.</summary>
-    internal const string ToolbarShortcutsCompactLabel = "F1 OPTIONS";
+    internal const string ToolbarShortcutsCompactLabel = "O OPTIONS";
 
     /// <summary>Toolbar shortcut legend shown in normal-text mode.</summary>
     internal const string ToolbarShortcutsLabel = "R NEW GAME  U UNDO  H HINT  M SOUND";

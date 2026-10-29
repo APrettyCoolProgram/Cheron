@@ -1,5 +1,5 @@
-// 261028_code
-// 261028_documentation
+// 261029_code
+// 261029_documentation
 
 using Microsoft.Xna.Framework;
 
@@ -231,19 +231,22 @@ internal static class SolitaireLayout
     internal const int TableauKingOffsetY = 46;
 
     /// <summary>The new-game button bounds shared by drawing and pointer handling.</summary>
-    internal static readonly Rectangle NewGameButtonBounds = new(32, 20, 132, 44);
+    internal static readonly Rectangle NewGameButtonBounds = new(12, 20, 100, 44);
 
     /// <summary>The undo button bounds in logical board coordinates.</summary>
-    internal static readonly Rectangle UndoButtonBounds = new(180, 20, 104, 44);
+    internal static readonly Rectangle UndoButtonBounds = new(116, 20, 60, 44);
 
     /// <summary>The hint button bounds in logical board coordinates.</summary>
-    internal static readonly Rectangle HintButtonBounds = new(300, 20, 104, 44);
+    internal static readonly Rectangle HintButtonBounds = new(180, 20, 60, 44);
 
-    /// <summary>The sound button bounds, shared by drawing and pointer input.</summary>
-    internal static readonly Rectangle SoundButtonBounds = new(1008, 20, 68, 44);
+    /// <summary>The help button bounds in logical board coordinates.</summary>
+    internal static readonly Rectangle HelpButtonBounds = new(860, 20, 72, 44);
 
-    /// <summary>The always-available settings button in logical board coordinates.</summary>
-    internal static readonly Rectangle OptionsButtonBounds = new(882, 742, 186, 40);
+    /// <summary>The footer sound toggle bounds, shared by drawing and pointer input.</summary>
+    internal static readonly Rectangle SoundButtonBounds = new(902, 20, 186, 44);
+
+    /// <summary>The footer options action bounds in logical board coordinates.</summary>
+    internal static readonly Rectangle OptionsButtonBounds = new(750, 20, 96, 44);
 
     /// <summary>The win banner bounds in logical board coordinates.</summary>
     internal static readonly Rectangle WinBannerBounds = new(370, 376, 360, 56);
@@ -312,6 +315,21 @@ internal static class SolitaireLayout
     /// <returns>The cancel action bounds.</returns>
     internal static Rectangle GetNewGamePromptCancelBounds() =>
         new(GetNewGamePromptPanelBounds().X + 114, GetNewGamePromptPanelBounds().Bottom - 46, 286, 24);
+
+    /// <summary>Gets the outer panel bounds for the in-game Help overlay.</summary>
+    /// <returns>The Help overlay panel bounds.</returns>
+    internal static Rectangle GetHelpPanelBounds() => new(146, 116, 808, 568);
+
+    /// <summary>Gets the clipping bounds used for scrollable Help body text.</summary>
+    /// <returns>The Help content viewport bounds.</returns>
+    internal static Rectangle GetHelpContentBounds() =>
+        new(GetHelpPanelBounds().X + 34, GetHelpPanelBounds().Y + 92, GetHelpPanelBounds().Width - 68,
+            GetHelpPanelBounds().Height - 162);
+
+    /// <summary>Gets the close hint bounds at the bottom of the Help overlay.</summary>
+    /// <returns>The Help overlay close hint bounds.</returns>
+    internal static Rectangle GetHelpCloseHintBounds() =>
+        new(GetHelpPanelBounds().X + 34, GetHelpPanelBounds().Bottom - 52, GetHelpPanelBounds().Width - 68, 24);
 
     /// <summary>Calculates a foundation slot's bounds in logical board coordinates.</summary>
     /// <param name="foundationIndex">The zero-based index of the foundation slot.</param>
