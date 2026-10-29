@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using Cheron.Games.Solitaire.FreeCell;
+using Cheron.Games.Solitaire.Klondike;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using static Cheron.Games.Solitaire.SolitaireAccessibilityOptions;
@@ -73,40 +75,14 @@ internal sealed partial class SolitaireGame
             Fill(GetTopBarDividerBounds(), BoardSeparatorLine);
             DrawToolbar();
 
-            if (_game._variant == SolitaireVariant.FreeCell)
+            if (_game._variant.IsFreeCell())
             {
-                for (var freeCellIndex = 0; freeCellIndex < _game._freeCells.Count; freeCellIndex++)
-                {
-                    var freeCellBounds = GetFreeCellBounds(freeCellIndex);
-                    DrawPile(_game._freeCells[freeCellIndex], freeCellBounds);
-                    if (_game._freeCells[freeCellIndex].Count == 0)
-                    {
-                        DrawText(BoardFreeCellLabel, freeCellBounds.X + 8, PileHeadingY,
-                            _game.SmallTextScale, BoardHeadingText);
-                    }
-                }
-
-                DrawText(BoardFreeCellsLabel, StockLabelX, PileHeadingY, _game.SmallTextScale, BoardHeadingText);
+                FreeCellBoardRenderer.DrawTopRow(_game._freeCells, _game.SmallTextScale, DrawPile, DrawText);
             }
             else
             {
-                var stockBounds = GetStockBounds();
-                DrawPile(_game._stock, stockBounds, faceDown: true);
-
-                if (_game._stock.Count == 0)
-                {
-                    DrawText(BoardDealLabel, _game._largeText ? DealLabelLargeTextX : DealLabelX, DealLabelY,
-                        _game.SmallTextScale, BoardDealPromptText);
-                    DrawText(BoardAgainLabel, _game._largeText ? AgainLabelLargeTextX : AgainLabelX,
-                        _game._largeText ? AgainLabelLargeTextY : AgainLabelY, _game.SmallTextScale,
-                        BoardDealPromptText);
-                }
-
-                DrawPile(_game._waste, GetWasteBounds());
-                DrawText(BoardStockLabel, _game._largeText ? StockLabelLargeTextX : StockLabelX, PileHeadingY,
-                    _game.SmallTextScale, BoardHeadingText);
-                DrawText(BoardWasteLabel, _game._largeText ? WasteLabelLargeTextX : WasteLabelX, PileHeadingY,
-                    _game.SmallTextScale, BoardHeadingText);
+                KlondikeBoardRenderer.DrawTopRow(_game._stock, _game._waste, _game._largeText, _game.SmallTextScale,
+                    DrawPile, DrawText);
             }
 
             for (var foundationIndex = 0; foundationIndex < _game._foundations.Count; foundationIndex++)
@@ -324,15 +300,10 @@ internal sealed partial class SolitaireGame
                 return;
             }
 
-            if (_game._variant == SolitaireVariant.FreeCell)
+            if (_game._variant.IsFreeCell())
             {
-                for (var freeCellIndex = 0; freeCellIndex < _game._freeCells.Count; freeCellIndex++)
-                {
-                    if (_game.CanMoveToFreeCell(freeCellIndex))
-                    {
-                        DrawTargetOutline(GetFreeCellBounds(freeCellIndex), MintHighlight);
-                    }
-                }
+                FreeCellBoardRenderer.DrawLegalCellTargets(_game._freeCells.Count, _game.CanMoveToFreeCell,
+                    bounds => DrawTargetOutline(bounds, MintHighlight));
             }
 
             for (var foundationIndex = 0; foundationIndex < _game._foundations.Count; foundationIndex++)

@@ -206,15 +206,9 @@ internal sealed partial class SolitaireGame
         /// <param name="position">The pointer position at release.</param>
         internal void DropSelectedCards(Point position)
         {
-            if (_game._variant == SolitaireVariant.FreeCell)
+            if (_game.TryDropToVariantTopRow(position))
             {
-                for (var freeCellIndex = 0; freeCellIndex < _game._freeCells.Count; freeCellIndex++)
-                {
-                    if (GetFreeCellBounds(freeCellIndex).Contains(position) && _game.TryMoveToFreeCell(freeCellIndex))
-                    {
-                        return;
-                    }
-                }
+                return;
             }
 
             for (var foundationIndex = 0; foundationIndex < _game._foundations.Count; foundationIndex++)
