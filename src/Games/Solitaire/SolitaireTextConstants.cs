@@ -45,6 +45,21 @@ internal static class SolitaireTextConstants
     /// <summary>The title shown in the accessibility options modal.</summary>
     internal const string AccessibilityTitle = "ACCESSIBILITY";
 
+    /// <summary>The new-game variant prompt title shown over the board.</summary>
+    internal const string NewGameVariantPromptTitle = "START NEW GAME";
+
+    /// <summary>The new-game prompt variant option label for Klondike.</summary>
+    internal const string NewGameVariantKlondikeLabel = "KLONDIKE";
+
+    /// <summary>The new-game prompt variant option label for FreeCell.</summary>
+    internal const string NewGameVariantFreeCellLabel = "FREECELL";
+
+    /// <summary>The new-game variant prompt confirm label.</summary>
+    internal const string NewGameVariantConfirmLabel = "ENTER  START";
+
+    /// <summary>The new-game variant prompt cancel label.</summary>
+    internal const string NewGameVariantCancelLabel = "BACKSPACE  CANCEL";
+
     /// <summary>The close action label shown in the accessibility options list.</summary>
     internal const string AccessibilityCloseOptionsLabel = "F1  CLOSE OPTIONS";
 
@@ -157,6 +172,12 @@ internal static class SolitaireTextConstants
 
     /// <summary>Heading label for the waste pile.</summary>
     internal const string BoardWasteLabel = "WASTE";
+
+    /// <summary>Heading label for the FreeCell holding cells.</summary>
+    internal const string BoardFreeCellsLabel = "FREECELLS";
+
+    /// <summary>Label shown over each individual FreeCell holding slot.</summary>
+    internal const string BoardFreeCellLabel = "CELL";
 
     /// <summary>Placeholder rank shown in an empty foundation slot.</summary>
     internal const string BoardFoundationAceLabel = "A";

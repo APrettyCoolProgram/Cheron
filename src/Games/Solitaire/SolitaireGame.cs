@@ -37,6 +37,9 @@ internal sealed partial class SolitaireGame : IGameModule
     /// <summary>The four foundation piles, each built from Ace to King in a suit determined by its first card.</summary>
     private readonly List<List<Card>> _foundations = new();
 
+    /// <summary>The four FreeCell holding cells, each containing at most one card.</summary>
+    private readonly List<List<Card>> _freeCells = new();
+
     /// <summary>The module-owned sprite batch, created during content loading and released during disposal.</summary>
     private SpriteBatch _spriteBatch = null!;
 
@@ -61,6 +64,15 @@ internal sealed partial class SolitaireGame : IGameModule
     /// <summary>Whether the last completed move left all four foundations with thirteen cards each.</summary>
     private bool _hasWon;
 
+    /// <summary>The currently active solitaire variant.</summary>
+    private SolitaireVariant _variant = SolitaireVariant.Klondike;
+
+    /// <summary>The variant currently highlighted by the new-game picker prompt.</summary>
+    private SolitaireVariant _newGamePromptVariant = SolitaireVariant.Klondike;
+
+    /// <summary>Whether the new-game variant picker prompt is currently visible.</summary>
+    private bool _newGamePromptOpen;
+
     /// <summary>The renderer responsible for drawing the board and UI.</summary>
     private readonly SolitaireRenderer _renderer;
 
@@ -74,6 +86,9 @@ internal sealed partial class SolitaireGame : IGameModule
         _interactionController = new SolitaireInteractionController(this);
     }
 
+    /// <summary>Whether the new-game variant picker prompt is currently visible.</summary>
+    private bool IsNewGamePromptOpen => _newGamePromptOpen;
+
     /// <summary>Gets the Solitaire window title.</summary>
     public string Title => WindowTitle;
 
@@ -84,6 +99,13 @@ internal sealed partial class SolitaireGame : IGameModule
     public void Initialize()
     {
         StartNewGame();
+    }
+
+    /// <summary>Opens the new-game variant picker prompt with the current variant preselected.</summary>
+    private void OpenNewGamePrompt()
+    {
+        _newGamePromptVariant = _variant;
+        _newGamePromptOpen = true;
     }
 
     /// <summary>Creates owned drawing resources, card-table artwork, and optional synthesized sounds.</summary>
@@ -117,7 +139,7 @@ internal sealed partial class SolitaireGame : IGameModule
         {
             if (IsNewKey(keyboardState, Keys.R))
             {
-                StartNewGame();
+                OpenNewGamePrompt();
             }
             else
             {
@@ -512,11 +534,22 @@ internal sealed partial class SolitaireGame : IGameModule
     private string _hintMessage = string.Empty;
 
     /// <summary>Enumerates the existing pile objects in a stable order for history capture and restoration.</summary>
-    /// <returns>Stock, waste, tableau columns, then foundations.</returns>
+    /// <returns>Variant-dependent piles, then tableau columns, then foundations.</returns>
     private IEnumerable<List<Card>> EnumeratePiles()
     {
-        yield return _stock;
-        yield return _waste;
+        if (_variant == SolitaireVariant.FreeCell)
+        {
+            foreach (var freeCell in _freeCells)
+            {
+                yield return freeCell;
+            }
+        }
+        else
+        {
+            yield return _stock;
+            yield return _waste;
+        }
+
         foreach (var pile in _tableau)
         {
             yield return pile;
@@ -625,7 +658,7 @@ internal sealed partial class SolitaireGame : IGameModule
     {
         if (NewGameButtonBounds.Contains(position))
         {
-            StartNewGame();
+            OpenNewGamePrompt();
             return true;
         }
 
@@ -873,7 +906,50 @@ internal sealed partial class SolitaireGame : IGameModule
         }
 
         var movingCard = _selectedPile[_selectedCardIndex];
+        if (_variant == SolitaireVariant.FreeCell)
+        {
+            if (!MoveRules.CanMoveToFreeCellCascade(movingCard, destination))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(_selectedPile, _waste) || ReferenceEquals(_selectedPile, _stock))
+            {
+                return false;
+            }
+
+            if (_tableau.Contains(_selectedPile) && !MoveRules.IsFreeCellMovableRun(_selectedPile, _selectedCardIndex))
+            {
+                return false;
+            }
+
+            var runLength = _selectedPile.Count - _selectedCardIndex;
+            var emptyFreeCells = _freeCells.Count(cell => cell.Count == 0);
+            var emptyCascades = _tableau.Count(pile => pile.Count == 0);
+            var destinationIsEmpty = destination.Count == 0;
+            return MoveRules.CanMoveFreeCellRun(runLength, emptyFreeCells, emptyCascades, destinationIsEmpty);
+        }
+
         return MoveRules.CanMoveToTableau(movingCard, destination);
+    }
+
+    /// <summary>Checks FreeCell holding-cell legality without changing selection or card state.</summary>
+    /// <param name="freeCellIndex">The destination FreeCell holding-cell index.</param>
+    /// <returns>Whether the selection can move to the target holding cell.</returns>
+    private bool CanMoveToFreeCell(int freeCellIndex)
+    {
+        if (_variant != SolitaireVariant.FreeCell || _selectedPile is null)
+        {
+            return false;
+        }
+
+        var destination = _freeCells[freeCellIndex];
+        if (ReferenceEquals(destination, _selectedPile))
+        {
+            return false;
+        }
+
+        return _selectedCardIndex == _selectedPile.Count - 1 && MoveRules.CanMoveToFreeCell(destination);
     }
 
     /// <summary>Checks foundation legality without changing selection or card state.</summary>
@@ -926,12 +1002,28 @@ internal sealed partial class SolitaireGame : IGameModule
     /// <returns>Whether a selectable card was hit.</returns>
     private bool TryGetCardAt(Point position, out List<Card> pile, out int cardIndex, out Rectangle bounds)
     {
-        pile = _waste;
-        cardIndex = pile.Count - 1;
-        bounds = GetWasteBounds();
-        if (cardIndex >= 0 && bounds.Contains(position))
+        if (_variant == SolitaireVariant.FreeCell)
         {
-            return true;
+            for (var freeCellIndex = 0; freeCellIndex < _freeCells.Count; freeCellIndex++)
+            {
+                pile = _freeCells[freeCellIndex];
+                cardIndex = pile.Count - 1;
+                bounds = GetFreeCellBounds(freeCellIndex);
+                if (cardIndex >= 0 && bounds.Contains(position))
+                {
+                    return true;
+                }
+            }
+        }
+        else
+        {
+            pile = _waste;
+            cardIndex = pile.Count - 1;
+            bounds = GetWasteBounds();
+            if (cardIndex >= 0 && bounds.Contains(position))
+            {
+                return true;
+            }
         }
 
         for (var foundationIndex = 0; foundationIndex < _foundations.Count; foundationIndex++)
@@ -1140,13 +1232,14 @@ internal sealed partial class SolitaireGame : IGameModule
         _interactionController.UpdateClientPointer(clientPosition, isDown, time);
     }
 
-    /// <summary>Shuffles a standard deck and deals seven tableau columns, leaving the remaining cards in stock.</summary>
+    /// <summary>Shuffles a standard deck and deals the active variant's opening board.</summary>
     private void StartNewGame()
     {
         _stock.Clear();
         _waste.Clear();
         _tableau.Clear();
         _foundations.Clear();
+        _freeCells.Clear();
         ClearSelection();
         ResetPointerGesture();
         ResetControls();
@@ -1154,9 +1247,22 @@ internal sealed partial class SolitaireGame : IGameModule
         _hasWon = false;
 
         var deck = DealBuilder.CreateShuffledDeck(new Random());
-        DealBuilder.DealTableau(deck, _tableau);
-        _stock.AddRange(deck);
-        DealBuilder.InitializeFoundations(_foundations);
+        if (_variant == SolitaireVariant.FreeCell)
+        {
+            DealBuilder.DealFreeCellCascades(deck, _tableau);
+            DealBuilder.InitializeFoundations(_foundations);
+            for (var freeCellIndex = 0; freeCellIndex < 4; freeCellIndex++)
+            {
+                _freeCells.Add(new List<Card>(1));
+            }
+        }
+        else
+        {
+            DealBuilder.DealTableau(deck, _tableau);
+            _stock.AddRange(deck);
+            DealBuilder.InitializeFoundations(_foundations);
+        }
+
         AnimateDeal();
     }
 
@@ -1170,22 +1276,47 @@ internal sealed partial class SolitaireGame : IGameModule
         }
 
         ClearHint();
-        var stockBounds = GetStockBounds();
-
-        if (stockBounds.Contains(clickPosition))
+        if (_variant == SolitaireVariant.Klondike)
         {
-            DrawFromStock();
+            var stockBounds = GetStockBounds();
+            if (stockBounds.Contains(clickPosition))
+            {
+                DrawFromStock();
+                return;
+            }
 
-            return;
+            var wasteBounds = GetWasteBounds();
+            if (wasteBounds.Contains(clickPosition))
+            {
+                SelectTop(_waste);
+                return;
+            }
         }
-
-        var wasteBounds = GetWasteBounds();
-
-        if (wasteBounds.Contains(clickPosition))
+        else
         {
-            SelectTop(_waste);
+            for (var freeCellIndex = 0; freeCellIndex < _freeCells.Count; freeCellIndex++)
+            {
+                if (!GetFreeCellBounds(freeCellIndex).Contains(clickPosition))
+                {
+                    continue;
+                }
 
-            return;
+                if (_selectedPile is not null)
+                {
+                    if (TryMoveToFreeCell(freeCellIndex))
+                    {
+                        return;
+                    }
+
+                    if (!ReferenceEquals(_selectedPile, _freeCells[freeCellIndex]))
+                    {
+                        ShowInvalidMove(clickPosition);
+                    }
+                }
+
+                SelectTop(_freeCells[freeCellIndex]);
+                return;
+            }
         }
 
         for (var foundationIndex = 0; foundationIndex < _foundations.Count; foundationIndex++)
@@ -1209,7 +1340,6 @@ internal sealed partial class SolitaireGame : IGameModule
             }
 
             SelectTop(_foundations[foundationIndex]);
-
             return;
         }
 
@@ -1296,7 +1426,6 @@ internal sealed partial class SolitaireGame : IGameModule
         if (ReferenceEquals(_selectedPile, destinationPile))
         {
             ClearSelection();
-
             return true;
         }
 
@@ -1306,7 +1435,32 @@ internal sealed partial class SolitaireGame : IGameModule
         }
 
         MoveSelectedCards(destinationPile);
+        return true;
+    }
 
+    /// <summary>Attempts to move the selected card to a FreeCell holding cell.</summary>
+    /// <param name="freeCellIndex">The zero-based index of the destination FreeCell holding cell.</param>
+    /// <returns>Whether the selected card was moved to the FreeCell holding cell.</returns>
+    private bool TryMoveToFreeCell(int freeCellIndex)
+    {
+        if (_variant != SolitaireVariant.FreeCell || _selectedPile is null)
+        {
+            return false;
+        }
+
+        var destination = _freeCells[freeCellIndex];
+        if (ReferenceEquals(_selectedPile, destination))
+        {
+            ClearSelection();
+            return true;
+        }
+
+        if (!CanMoveToFreeCell(freeCellIndex))
+        {
+            return false;
+        }
+
+        MoveSelectedCards(destination);
         return true;
     }
 

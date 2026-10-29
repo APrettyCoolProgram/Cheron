@@ -37,6 +37,12 @@ internal sealed partial class SolitaireGame
         internal void UpdatePointer(Point position, bool isDown, TimeSpan time)
         {
             _game._pointerPosition = position;
+            if (_game.IsNewGamePromptOpen)
+            {
+                UpdateNewGamePromptPointer(position, isDown);
+                return;
+            }
+
             if (_game._optionsOpen)
             {
                 _game.UpdateOptionsPointer(position, isDown);
@@ -52,7 +58,7 @@ internal sealed partial class SolitaireGame
             {
                 if (isDown && !_game._pointerWasDown && NewGameButtonBounds.Contains(position))
                 {
-                    _game.StartNewGame();
+                    _game.OpenNewGamePrompt();
                 }
                 else if (isDown && !_game._pointerWasDown && SoundButtonBounds.Contains(position))
                 {
@@ -185,10 +191,21 @@ internal sealed partial class SolitaireGame
             _game._ignoreUntilRelease = _game._pointerWasDown;
         }
 
-        /// <summary>Attempts to drop selected cards only onto an actual foundation or tableau hit area.</summary>
+        /// <summary>Attempts to drop selected cards only onto an actual foundation, holding cell, or tableau hit area.</summary>
         /// <param name="position">The pointer position at release.</param>
         internal void DropSelectedCards(Point position)
         {
+            if (_game._variant == SolitaireVariant.FreeCell)
+            {
+                for (var freeCellIndex = 0; freeCellIndex < _game._freeCells.Count; freeCellIndex++)
+                {
+                    if (GetFreeCellBounds(freeCellIndex).Contains(position) && _game.TryMoveToFreeCell(freeCellIndex))
+                    {
+                        return;
+                    }
+                }
+            }
+
             for (var foundationIndex = 0; foundationIndex < _game._foundations.Count; foundationIndex++)
             {
                 if (GetFoundationBounds(foundationIndex).Contains(position) && _game.CanMoveToFoundation(foundationIndex))
@@ -237,6 +254,34 @@ internal sealed partial class SolitaireGame
         /// <returns>Whether the keyboard update belongs to settings rather than the board.</returns>
         internal bool HandleAccessibilityKeys(KeyboardState keyboard)
         {
+            if (_game.IsNewGamePromptOpen)
+            {
+                if (IsNewKey(keyboard, Keys.Left) || IsNewKey(keyboard, Keys.Right) ||
+                    IsNewKey(keyboard, Keys.Up) || IsNewKey(keyboard, Keys.Down))
+                {
+                    _game._newGamePromptVariant = _game._newGamePromptVariant == SolitaireVariant.Klondike
+                        ? SolitaireVariant.FreeCell
+                        : SolitaireVariant.Klondike;
+                    return true;
+                }
+
+                if (IsNewKey(keyboard, Keys.Enter) || IsNewKey(keyboard, Keys.Space))
+                {
+                    _game._variant = _game._newGamePromptVariant;
+                    _game._newGamePromptOpen = false;
+                    _game.StartNewGame();
+                    return true;
+                }
+
+                if (IsNewKey(keyboard, Keys.Back) || IsNewKey(keyboard, Keys.Escape))
+                {
+                    _game._newGamePromptOpen = false;
+                    return true;
+                }
+
+                return true;
+            }
+
             if (IsNewKey(keyboard, Keys.F1))
             {
                 ToggleOptions();
@@ -311,6 +356,62 @@ internal sealed partial class SolitaireGame
                     ToggleOptions();
                     break;
             }
+        }
+
+        /// <summary>Consumes new-game prompt pointer input for variant selection and prompt dismissal.</summary>
+        /// <param name="position">The logical pointer position.</param>
+        /// <param name="isDown">Whether the left button is down.</param>
+        internal void UpdateNewGamePromptPointer(Point position, bool isDown)
+        {
+            if (_game._ignoreUntilRelease)
+            {
+                _game._ignoreUntilRelease = isDown;
+                _game._pointerWasDown = isDown;
+                return;
+            }
+
+            if (isDown && !_game._pointerWasDown)
+            {
+                _game._pressPosition = position;
+            }
+
+            if (!isDown && _game._pointerWasDown)
+            {
+                var panelBounds = GetNewGamePromptPanelBounds();
+                var klondikeBounds = GetNewGamePromptKlondikeBounds();
+                var freeCellBounds = GetNewGamePromptFreeCellBounds();
+                var confirmBounds = GetNewGamePromptConfirmBounds();
+                var cancelBounds = GetNewGamePromptCancelBounds();
+
+                if (klondikeBounds.Contains(position) && klondikeBounds.Contains(_game._pressPosition))
+                {
+                    _game._newGamePromptVariant = SolitaireVariant.Klondike;
+                    _game._variant = SolitaireVariant.Klondike;
+                    _game._newGamePromptOpen = false;
+                    _game.StartNewGame();
+                }
+                else if (freeCellBounds.Contains(position) && freeCellBounds.Contains(_game._pressPosition))
+                {
+                    _game._newGamePromptVariant = SolitaireVariant.FreeCell;
+                    _game._variant = SolitaireVariant.FreeCell;
+                    _game._newGamePromptOpen = false;
+                    _game.StartNewGame();
+                }
+                else if (confirmBounds.Contains(position) && confirmBounds.Contains(_game._pressPosition))
+                {
+                    _game._variant = _game._newGamePromptVariant;
+                    _game._newGamePromptOpen = false;
+                    _game.StartNewGame();
+                }
+                else if ((cancelBounds.Contains(position) && cancelBounds.Contains(_game._pressPosition)) ||
+                    (!panelBounds.Contains(position) && !panelBounds.Contains(_game._pressPosition)))
+                {
+                    _game._newGamePromptOpen = false;
+                }
+            }
+
+            _game._ignoreUntilRelease &= isDown;
+            _game._pointerWasDown = isDown;
         }
 
         /// <summary>Consumes settings pointer input, requiring press and release on the same row.</summary>
@@ -461,7 +562,7 @@ internal sealed partial class SolitaireGame
             switch (_game._keyboardFocus)
             {
                 case 0:
-                    _game.StartNewGame();
+                    _game.OpenNewGamePrompt();
                     break;
                 case 1:
                     _game.UndoLastAction();

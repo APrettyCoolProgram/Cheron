@@ -73,23 +73,41 @@ internal sealed partial class SolitaireGame
             Fill(GetTopBarDividerBounds(), BoardSeparatorLine);
             DrawToolbar();
 
-            var stockBounds = GetStockBounds();
-
-            DrawPile(_game._stock, stockBounds, faceDown: true);
-
-            if (_game._stock.Count == 0)
+            if (_game._variant == SolitaireVariant.FreeCell)
             {
-                DrawText(BoardDealLabel, _game._largeText ? DealLabelLargeTextX : DealLabelX, DealLabelY,
-                    _game.SmallTextScale, BoardDealPromptText);
-                DrawText(BoardAgainLabel, _game._largeText ? AgainLabelLargeTextX : AgainLabelX,
-                    _game._largeText ? AgainLabelLargeTextY : AgainLabelY, _game.SmallTextScale, BoardDealPromptText);
-            }
+                for (var freeCellIndex = 0; freeCellIndex < _game._freeCells.Count; freeCellIndex++)
+                {
+                    var freeCellBounds = GetFreeCellBounds(freeCellIndex);
+                    DrawPile(_game._freeCells[freeCellIndex], freeCellBounds);
+                    if (_game._freeCells[freeCellIndex].Count == 0)
+                    {
+                        DrawText(BoardFreeCellLabel, freeCellBounds.X + 8, PileHeadingY,
+                            _game.SmallTextScale, BoardHeadingText);
+                    }
+                }
 
-            DrawPile(_game._waste, GetWasteBounds());
-            DrawText(BoardStockLabel, _game._largeText ? StockLabelLargeTextX : StockLabelX, PileHeadingY,
-                _game.SmallTextScale, BoardHeadingText);
-            DrawText(BoardWasteLabel, _game._largeText ? WasteLabelLargeTextX : WasteLabelX, PileHeadingY,
-                _game.SmallTextScale, BoardHeadingText);
+                DrawText(BoardFreeCellsLabel, StockLabelX, PileHeadingY, _game.SmallTextScale, BoardHeadingText);
+            }
+            else
+            {
+                var stockBounds = GetStockBounds();
+                DrawPile(_game._stock, stockBounds, faceDown: true);
+
+                if (_game._stock.Count == 0)
+                {
+                    DrawText(BoardDealLabel, _game._largeText ? DealLabelLargeTextX : DealLabelX, DealLabelY,
+                        _game.SmallTextScale, BoardDealPromptText);
+                    DrawText(BoardAgainLabel, _game._largeText ? AgainLabelLargeTextX : AgainLabelX,
+                        _game._largeText ? AgainLabelLargeTextY : AgainLabelY, _game.SmallTextScale,
+                        BoardDealPromptText);
+                }
+
+                DrawPile(_game._waste, GetWasteBounds());
+                DrawText(BoardStockLabel, _game._largeText ? StockLabelLargeTextX : StockLabelX, PileHeadingY,
+                    _game.SmallTextScale, BoardHeadingText);
+                DrawText(BoardWasteLabel, _game._largeText ? WasteLabelLargeTextX : WasteLabelX, PileHeadingY,
+                    _game.SmallTextScale, BoardHeadingText);
+            }
 
             for (var foundationIndex = 0; foundationIndex < _game._foundations.Count; foundationIndex++)
             {
@@ -160,6 +178,11 @@ internal sealed partial class SolitaireGame
             if (_game._optionsOpen)
             {
                 DrawAccessibilityOptions();
+            }
+
+            if (_game.IsNewGamePromptOpen)
+            {
+                DrawNewGameVariantPrompt();
             }
 
             _game._spriteBatch.End();
@@ -297,6 +320,17 @@ internal sealed partial class SolitaireGame
             if (_game._cardTransitions.Count > 0)
             {
                 return;
+            }
+
+            if (_game._variant == SolitaireVariant.FreeCell)
+            {
+                for (var freeCellIndex = 0; freeCellIndex < _game._freeCells.Count; freeCellIndex++)
+                {
+                    if (_game.CanMoveToFreeCell(freeCellIndex))
+                    {
+                        DrawTargetOutline(GetFreeCellBounds(freeCellIndex), MintHighlight);
+                    }
+                }
             }
 
             for (var foundationIndex = 0; foundationIndex < _game._foundations.Count; foundationIndex++)
@@ -454,6 +488,41 @@ internal sealed partial class SolitaireGame
                 FocusCornerLength), Color.White);
             Fill(new Rectangle(bounds.Right - FocusCornerThickness, bounds.Bottom - FocusCornerLength,
                 FocusCornerThickness, FocusCornerLength), Color.White);
+        }
+
+        /// <summary>Draws the modal variant picker shown before starting a new deal.</summary>
+        private void DrawNewGameVariantPrompt()
+        {
+            Fill(GetBoardBounds(), Color.Black * 0.7f);
+            var panelBounds = GetNewGamePromptPanelBounds();
+            Fill(panelBounds, Color.Black);
+            DrawTargetOutline(panelBounds, Color.White);
+
+            DrawText(NewGameVariantPromptTitle, panelBounds.X + 110, panelBounds.Y + 22, 2, GoldHighlight);
+
+            var klondikeBounds = GetNewGamePromptKlondikeBounds();
+            var freeCellBounds = GetNewGamePromptFreeCellBounds();
+            var confirmBounds = GetNewGamePromptConfirmBounds();
+            var cancelBounds = GetNewGamePromptCancelBounds();
+
+            var klondikeSelected = _game._newGamePromptVariant == SolitaireVariant.Klondike;
+            var freeCellSelected = _game._newGamePromptVariant == SolitaireVariant.FreeCell;
+
+            Fill(klondikeBounds, klondikeSelected ? GoldHighlight : OptionsRowFill);
+            Fill(freeCellBounds, freeCellSelected ? GoldHighlight : OptionsRowFill);
+            DrawTargetOutline(klondikeBounds, Color.White);
+            DrawTargetOutline(freeCellBounds, Color.White);
+
+            DrawText(NewGameVariantKlondikeLabel, klondikeBounds.X + 34, klondikeBounds.Y + 18, 2,
+                klondikeSelected ? Color.Black : Color.White, preserveColor: true);
+            DrawText(NewGameVariantFreeCellLabel, freeCellBounds.X + 40, freeCellBounds.Y + 18, 2,
+                freeCellSelected ? Color.Black : Color.White, preserveColor: true);
+
+            DrawFocusCorners(klondikeSelected ? klondikeBounds : freeCellBounds);
+            DrawTargetOutline(confirmBounds, Color.White);
+            DrawTargetOutline(cancelBounds, Color.White);
+            DrawText(NewGameVariantConfirmLabel, confirmBounds.X + 6, confirmBounds.Y + 2, 2, Color.White);
+            DrawText(NewGameVariantCancelLabel, cancelBounds.X + 6, cancelBounds.Y + 2, 2, Color.White);
         }
 
         /// <summary>Draws a pile's top non-dragged card, or an outlined slot when no card remains visible.</summary>

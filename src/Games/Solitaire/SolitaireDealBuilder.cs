@@ -49,6 +49,27 @@ internal static class SolitaireDealBuilder
         }
     }
 
+    /// <summary>Deals eight FreeCell cascades from the end of the deck and removes dealt cards from it.</summary>
+    /// <param name="deck">The deck to deal from.</param>
+    /// <param name="cascades">The FreeCell cascades collection to populate.</param>
+    public static void DealFreeCellCascades(List<SolitaireCard> deck, List<List<SolitaireCard>> cascades)
+    {
+        for (var cascadeIndex = 0; cascadeIndex < 8; cascadeIndex++)
+        {
+            cascades.Add(new List<SolitaireCard>());
+        }
+
+        var dealIndex = 0;
+        while (deck.Count > 0)
+        {
+            var card = deck[^1];
+            deck.RemoveAt(deck.Count - 1);
+            card.FaceUp = true;
+            cascades[dealIndex % cascades.Count].Add(card);
+            dealIndex++;
+        }
+    }
+
     /// <summary>Creates an ordered standard deck from Ace through King in each suit.</summary>
     /// <returns>The ordered deck.</returns>
     private static List<SolitaireCard> CreateOrderedDeck()

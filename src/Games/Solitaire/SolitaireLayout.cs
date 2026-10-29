@@ -282,6 +282,37 @@ internal static class SolitaireLayout
     /// <returns>The waste pile rectangle.</returns>
     internal static Rectangle GetWasteBounds() => new(WasteX, StockWasteY, CardWidth, CardHeight);
 
+    /// <summary>Calculates a FreeCell holding slot's bounds in logical board coordinates.</summary>
+    /// <param name="freeCellIndex">The zero-based index of the FreeCell holding slot.</param>
+    /// <returns>The rectangle used to draw and hit-test the FreeCell slot.</returns>
+    internal static Rectangle GetFreeCellBounds(int freeCellIndex) =>
+        new(StockX + freeCellIndex * (CardWidth + CardGap), StockWasteY, CardWidth, CardHeight);
+
+    /// <summary>Gets the outer panel bounds for the new-game variant picker prompt.</summary>
+    /// <returns>The prompt panel bounds.</returns>
+    internal static Rectangle GetNewGamePromptPanelBounds() =>
+        new(BoardWidth / 2 - 260, BoardHeight / 2 - 120, 520, 240);
+
+    /// <summary>Gets the Klondike option bounds within the new-game variant picker prompt.</summary>
+    /// <returns>The Klondike option bounds.</returns>
+    internal static Rectangle GetNewGamePromptKlondikeBounds() =>
+        new(GetNewGamePromptPanelBounds().X + 40, GetNewGamePromptPanelBounds().Y + 82, 200, 52);
+
+    /// <summary>Gets the FreeCell option bounds within the new-game variant picker prompt.</summary>
+    /// <returns>The FreeCell option bounds.</returns>
+    internal static Rectangle GetNewGamePromptFreeCellBounds() =>
+        new(GetNewGamePromptPanelBounds().X + 280, GetNewGamePromptPanelBounds().Y + 82, 200, 52);
+
+    /// <summary>Gets the confirm action bounds for the new-game variant picker prompt.</summary>
+    /// <returns>The confirm action bounds.</returns>
+    internal static Rectangle GetNewGamePromptConfirmBounds() =>
+        new(GetNewGamePromptPanelBounds().X + 114, GetNewGamePromptPanelBounds().Bottom - 76, 286, 24);
+
+    /// <summary>Gets the cancel action bounds for the new-game variant picker prompt.</summary>
+    /// <returns>The cancel action bounds.</returns>
+    internal static Rectangle GetNewGamePromptCancelBounds() =>
+        new(GetNewGamePromptPanelBounds().X + 114, GetNewGamePromptPanelBounds().Bottom - 46, 286, 24);
+
     /// <summary>Calculates a foundation slot's bounds in logical board coordinates.</summary>
     /// <param name="foundationIndex">The zero-based index of the foundation slot.</param>
     /// <returns>The rectangle used to draw and hit-test the foundation.</returns>
