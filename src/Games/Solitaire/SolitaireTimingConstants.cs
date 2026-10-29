@@ -16,4 +16,7 @@ internal static class SolitaireTimingConstants
 
     /// <summary>The duration of an ordinary card slide or flip, in seconds.</summary>
     internal const float MoveDuration = 0.22f;
+
+    /// <summary>The fade-in duration of the card selection highlight, in seconds.</summary>
+    internal const float SelectionHighlightFadeDuration = 0.12f;
 }

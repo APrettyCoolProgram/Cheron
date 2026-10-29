@@ -7,12 +7,12 @@ using System.Collections.Generic;
 namespace Cheron.Games.Solitaire;
 
 /// <summary>Builds shuffled deals and initializes board piles for a new game.</summary>
-internal static class DealBuilder
+internal static class SolitaireDealBuilder
 {
     /// <summary>Creates a shuffled standard deck using the provided random source.</summary>
     /// <param name="random">The random source used to shuffle cards.</param>
     /// <returns>A shuffled deck ordered from first draw at the end of the list.</returns>
-    public static List<Card> CreateShuffledDeck(Random random)
+    public static List<SolitaireCard> CreateShuffledDeck(Random random)
     {
         var deck = CreateOrderedDeck();
         Shuffle(deck, random);
@@ -22,11 +22,11 @@ internal static class DealBuilder
     /// <summary>Deals seven tableau columns from the end of the deck and removes dealt cards from it.</summary>
     /// <param name="deck">The deck to deal from.</param>
     /// <param name="tableau">The tableau collection to populate.</param>
-    public static void DealTableau(List<Card> deck, List<List<Card>> tableau)
+    public static void DealTableau(List<SolitaireCard> deck, List<List<SolitaireCard>> tableau)
     {
         for (var columnIndex = 0; columnIndex < 7; columnIndex++)
         {
-            var tableauPile = new List<Card>();
+            var tableauPile = new List<SolitaireCard>();
             for (var cardIndex = 0; cardIndex <= columnIndex; cardIndex++)
             {
                 var card = deck[^1];
@@ -41,7 +41,7 @@ internal static class DealBuilder
 
     /// <summary>Initializes the four empty foundations for a new deal.</summary>
     /// <param name="foundations">The foundations collection to populate.</param>
-    public static void InitializeFoundations(List<List<Card>> foundations)
+    public static void InitializeFoundations(List<List<SolitaireCard>> foundations)
     {
         for (var foundationIndex = 0; foundationIndex < 4; foundationIndex++)
         {
@@ -51,14 +51,14 @@ internal static class DealBuilder
 
     /// <summary>Creates an ordered standard deck from Ace through King in each suit.</summary>
     /// <returns>The ordered deck.</returns>
-    private static List<Card> CreateOrderedDeck()
+    private static List<SolitaireCard> CreateOrderedDeck()
     {
-        var deck = new List<Card>(52);
-        foreach (var suit in Enum.GetValues<Suit>())
+        var deck = new List<SolitaireCard>(52);
+        foreach (var suit in Enum.GetValues<SolitaireSuit>())
         {
             for (var rank = 1; rank <= 13; rank++)
             {
-                deck.Add(new Card(rank, suit));
+                deck.Add(new SolitaireCard(rank, suit));
             }
         }
 
@@ -68,7 +68,7 @@ internal static class DealBuilder
     /// <summary>Shuffles the deck in place using the Fisher-Yates algorithm.</summary>
     /// <param name="deck">The deck to shuffle.</param>
     /// <param name="random">The random source used to select swap positions.</param>
-    private static void Shuffle(List<Card> deck, Random random)
+    private static void Shuffle(List<SolitaireCard> deck, Random random)
     {
         for (var cardIndex = deck.Count - 1; cardIndex > 0; cardIndex--)
         {

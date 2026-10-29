@@ -50,6 +50,10 @@ internal static class SolitaireOptionsLayout
     /// <summary>The vertical offset between accessibility help lines.</summary>
     internal const int HelpLineStep = 30;
 
+    /// <summary>Gets the accessibility options panel frame bounds.</summary>
+    /// <returns>The panel frame rectangle.</returns>
+    internal static Rectangle GetPanelBounds() => new(PanelX, PanelY, PanelWidth, PanelHeight);
+
     /// <summary>Gets a settings row's shared drawing and hit-test bounds.</summary>
     /// <param name="index">The row index.</param>
     /// <returns>The row bounds in logical board coordinates.</returns>

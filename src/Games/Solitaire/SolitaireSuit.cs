@@ -4,7 +4,7 @@
 namespace Cheron.Games.Solitaire;
 
 /// <summary>Identifies the four suits in a standard playing-card deck.</summary>
-internal enum Suit
+internal enum SolitaireSuit
 {
     /// <summary>The black clubs suit.</summary>
     Clubs,
