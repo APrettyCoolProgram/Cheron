@@ -236,4 +236,16 @@ public sealed class SolitaireVariantPromptTests
         Assert.False(game.TestIsSmokePassOverlayOpen());
         Assert.Equal(initialTransitionCount, game.TestGetCardTransitionCount());
     }
+
+    [Fact]
+    public void FreeCell_EighthTableauColumn_FitsWithinBoardWidth()
+    {
+        var game = new SolitaireGame();
+
+        game.TestSetVariant(SolitaireVariant.FreeCell);
+        game.TestStartNewGame();
+
+        var eighthColumnTopCardBounds = game.TestGetTableauCardBounds(7, 0);
+        Assert.True(eighthColumnTopCardBounds.Right <= SolitaireLayout.BoardWidth);
+    }
 }

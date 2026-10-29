@@ -221,6 +221,12 @@ internal sealed partial class SolitaireGame : IGameModule
         return _foundations.Select(pile => pile.Count).ToArray();
     }
 
+    /// <summary>Gets one tableau card bounds for tests.</summary>
+    internal Rectangle TestGetTableauCardBounds(int columnIndex, int cardIndex)
+    {
+        return GetTableauCardBounds(columnIndex, cardIndex);
+    }
+
     /// <summary>Gets the number of active card transitions for tests.</summary>
     internal int TestGetCardTransitionCount() => _cardTransitions.Count;
 
