@@ -8,16 +8,16 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Cheron.Games.Solitaire;
 
-/// <summary>Fits the logical card table to the current drawable area and maps pointer input consistently.</summary>
+/// <summary>Fits the logical card table to the drawable area and maps pointer input consistently.</summary>
 public sealed partial class SolitaireGame
 {
-    /// <summary>The current host-supplied viewport, initially matching the unscaled board.</summary>
+    /// <summary>Stores the current host-supplied viewport, initially matching the unscaled board.</summary>
     private GameViewport _viewport = new(new Point(1100, 800), new Point(1100, 800), new Point(1100, 800));
 
-    /// <summary>The owned rasterizer state used to keep board artwork out of centered window margins.</summary>
+    /// <summary>Stores the owned rasterizer state that keeps board artwork out of centered window margins.</summary>
     private RasterizerState _boardRasterizerState = null!;
 
-    /// <summary>Applies window or DPI changes without modifying the deal or interrupting existing card transitions.</summary>
+    /// <summary>Applies window or DPI changes without modifying the deal or interrupting card transitions.</summary>
     /// <remarks>
     /// A pending pointer gesture is cancelled to prevent a resize from turning a held press into an unintended move.
     /// A dragged stack returns to its source; elapsed time, history, hints, and ordinary selection are preserved.
@@ -42,7 +42,7 @@ public sealed partial class SolitaireGame
         _pointerPosition = new Point(-1, -1);
     }
 
-    /// <summary>Maps client-space pointer updates to the board before applying any gesture or hit test.</summary>
+    /// <summary>Maps client-space pointer updates to board space before applying gestures or hit tests.</summary>
     /// <param name="clientPosition">The pointer position in window client units.</param>
     /// <param name="isDown">Whether the left button is currently down.</param>
     /// <param name="time">The monotonically increasing game time used for double-clicks.</param>
@@ -51,7 +51,7 @@ public sealed partial class SolitaireGame
         UpdatePointer(_viewport.ToLogical(clientPosition), isDown, time);
     }
 
-    /// <summary>Starts a clipped batch, composing local animation transforms before viewport scaling.</summary>
+    /// <summary>Starts a clipped sprite batch, composing local animation transforms before viewport scaling.</summary>
     /// <param name="localTransform">The optional board-space transform used for a card flip.</param>
     private void BeginBoardDrawing(Matrix? localTransform = null)
     {
