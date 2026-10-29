@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Cheron.Games.Solitaire;
 
 /// <summary>Fits the logical card table to the drawable area and maps pointer input consistently.</summary>
-public sealed partial class SolitaireGame
+internal sealed partial class SolitaireGame
 {
     /// <summary>Stores the current host-supplied viewport, initially matching the unscaled board.</summary>
     private GameViewport _viewport = new(new Point(1100, 800), new Point(1100, 800), new Point(1100, 800));

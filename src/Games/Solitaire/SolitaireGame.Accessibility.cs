@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Input;
 namespace Cheron.Games.Solitaire;
 
 /// <summary>Provides session-local accessibility options and a keyboard-operable settings panel.</summary>
-public sealed partial class SolitaireGame
+internal sealed partial class SolitaireGame
 {
     /// <summary>The always-available settings button in logical board coordinates.</summary>
     private static readonly Rectangle OptionsButtonBounds = new(882, 742, 186, 40);

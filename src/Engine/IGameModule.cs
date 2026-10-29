@@ -12,7 +12,7 @@ namespace Cheron.Engine;
 /// The host invokes lifecycle members on the game thread and disposes the module before disposing
 /// the graphics device. Implementations borrow the graphics device and own any resources they create.
 /// </remarks>
-public interface IGameModule : IDisposable
+internal interface IGameModule : IDisposable
 {
     /// <summary>Gets the title displayed in the application window.</summary>
     string Title { get; }

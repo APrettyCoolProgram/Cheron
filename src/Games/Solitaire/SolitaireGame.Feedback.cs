@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Audio;
 namespace Cheron.Games.Solitaire;
 
 /// <summary>Provides optional synthesized sounds, rejected-move feedback, and a brief win celebration.</summary>
-public sealed partial class SolitaireGame
+internal sealed partial class SolitaireGame
 {
     /// <summary>The sound button bounds, shared by drawing and pointer input.</summary>
     private static readonly Rectangle SoundButtonBounds = new(1008, 20, 68, 44);

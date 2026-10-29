@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Input;
 namespace Cheron.Games.Solitaire;
 
 /// <summary>Provides toolbar controls, reversible board history, one-step hints, and game statistics.</summary>
-public sealed partial class SolitaireGame
+internal sealed partial class SolitaireGame
 {
     /// <summary>The new-game button bounds shared by drawing and pointer handling.</summary>
     private static readonly Rectangle NewGameButtonBounds = new(32, 20, 132, 44);
@@ -142,7 +142,7 @@ public sealed partial class SolitaireGame
     /// <param name="keyboardState">The current keyboard state.</param>
     private void HandleControlKeys(KeyboardState keyboardState)
     {
-        if (keyboardState.IsKeyDown(Keys.M) && !_previousKeyboardState.IsKeyDown(Keys.M))
+        if (IsNewKey(keyboardState, Keys.M))
         {
             ToggleSound();
         }
@@ -152,11 +152,11 @@ public sealed partial class SolitaireGame
             return;
         }
 
-        if (keyboardState.IsKeyDown(Keys.U) && !_previousKeyboardState.IsKeyDown(Keys.U))
+        if (IsNewKey(keyboardState, Keys.U))
         {
             UndoLastAction();
         }
-        else if (keyboardState.IsKeyDown(Keys.H) && !_previousKeyboardState.IsKeyDown(Keys.H))
+        else if (IsNewKey(keyboardState, Keys.H))
         {
             ShowHint();
         }

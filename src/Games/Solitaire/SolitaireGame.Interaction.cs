@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework;
 namespace Cheron.Games.Solitaire;
 
 /// <summary>Provides pointer gestures and destination feedback for the Solitaire board.</summary>
-public sealed partial class SolitaireGame
+internal sealed partial class SolitaireGame
 {
     /// <summary>The minimum pointer movement in logical board units required to start dragging.</summary>
     private const int DragThreshold = 6;
@@ -26,7 +26,7 @@ public sealed partial class SolitaireGame
     private Point _dragOffset;
 
     /// <summary>The pile pressed as a potential drag source, or null when no face-up card was pressed.</summary>
-    private List<Card> _pressedPile = null!;
+    private List<Card>? _pressedPile;
 
     /// <summary>The index of the pressed card within the potential source pile.</summary>
     private int _pressedCardIndex;
@@ -41,7 +41,7 @@ public sealed partial class SolitaireGame
     private bool _ignoreUntilRelease;
 
     /// <summary>The card last clicked without moving it, or null when no double-click is pending.</summary>
-    private Card _lastClickedCard = null!;
+    private Card? _lastClickedCard;
 
     /// <summary>The position of the last click used for double-click detection.</summary>
     private Point _lastClickPosition;

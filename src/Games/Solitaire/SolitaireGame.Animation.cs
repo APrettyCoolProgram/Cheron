@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework;
 namespace Cheron.Games.Solitaire;
 
 /// <summary>Provides presentation-only transitions while keeping card rules and pile ownership immediate.</summary>
-public sealed partial class SolitaireGame
+internal sealed partial class SolitaireGame
 {
     /// <summary>The duration of an ordinary card slide or flip, in seconds.</summary>
     private const float MoveDuration = 0.22f;

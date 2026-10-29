@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Input;
 namespace Cheron.Engine;
 
 /// <summary>Owns the MonoGame application lifecycle and delegates game-specific work to a module.</summary>
-public sealed class GameHost : Game
+internal sealed class GameHost : Game
 {
     private readonly GraphicsDeviceManager _graphicsDeviceManager;
 
@@ -57,8 +57,7 @@ public sealed class GameHost : Game
     /// <param name="gameTime">The timing information supplied by MonoGame.</param>
     protected override void Update(GameTime gameTime)
     {
-        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
-            Keyboard.GetState().IsKeyDown(Keys.Escape))
+        if (ShouldExitGame())
         {
             Exit();
         }
@@ -87,22 +86,65 @@ public sealed class GameHost : Game
     /// <returns>Whether the current surface has positive dimensions and can be used.</returns>
     private bool RefreshViewport()
     {
-        var clientSize = Window.ClientBounds.Size;
-        var presentation = GraphicsDevice.PresentationParameters;
-        var backBufferSize = new Point(presentation.BackBufferWidth, presentation.BackBufferHeight);
-        if (clientSize.X <= 0 || clientSize.Y <= 0 || backBufferSize.X <= 0 || backBufferSize.Y <= 0)
+        if (!TryGetCurrentSurfaceSizes(out var clientSize, out var backBufferSize))
         {
             return false;
         }
 
-        var viewport = new GameViewport(_gameModule.PreferredWindowSize, clientSize, backBufferSize);
-        if (viewport != _viewport)
-        {
-            _viewport = viewport;
-            _gameModule.SetViewport(viewport);
-        }
+        NotifyModuleViewport(clientSize, backBufferSize);
 
         return true;
+    }
+
+    /// <summary>Gets the current client and back-buffer sizes when both are valid for rendering.</summary>
+    /// <param name="clientSize">When this method returns, contains the current client size.</param>
+    /// <param name="backBufferSize">When this method returns, contains the current back-buffer size.</param>
+    /// <returns><see langword="true"/> when both sizes are valid; otherwise, <see langword="false"/>.</returns>
+    private bool TryGetCurrentSurfaceSizes(out Point clientSize, out Point backBufferSize)
+    {
+        clientSize = Window.ClientBounds.Size;
+        backBufferSize = GetBackBufferSize();
+        return HasValidDimensions(clientSize, backBufferSize);
+    }
+
+    /// <summary>Builds a viewport from current sizes and notifies the module when it changes.</summary>
+    /// <param name="clientSize">The current client area size.</param>
+    /// <param name="backBufferSize">The current back-buffer size.</param>
+    private void NotifyModuleViewport(Point clientSize, Point backBufferSize)
+    {
+        var viewport = new GameViewport(_gameModule.PreferredWindowSize, clientSize, backBufferSize);
+        if (viewport == _viewport)
+        {
+            return;
+        }
+
+        _viewport = viewport;
+        _gameModule.SetViewport(viewport);
+    }
+
+    /// <summary>Gets whether host-level input requests the application to exit.</summary>
+    /// <returns><see langword="true"/> when the back button or escape key is pressed; otherwise, <see langword="false"/>.</returns>
+    private static bool ShouldExitGame()
+    {
+        return GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
+            Keyboard.GetState().IsKeyDown(Keys.Escape);
+    }
+
+    /// <summary>Gets the current back-buffer dimensions from the active graphics presentation parameters.</summary>
+    /// <returns>The current back-buffer size.</returns>
+    private Point GetBackBufferSize()
+    {
+        var presentation = GraphicsDevice.PresentationParameters;
+        return new Point(presentation.BackBufferWidth, presentation.BackBufferHeight);
+    }
+
+    /// <summary>Gets whether client and back-buffer dimensions are positive and usable for rendering.</summary>
+    /// <param name="clientSize">The current client area size.</param>
+    /// <param name="backBufferSize">The current back-buffer size.</param>
+    /// <returns><see langword="true"/> when both sizes are usable; otherwise, <see langword="false"/>.</returns>
+    private static bool HasValidDimensions(Point clientSize, Point backBufferSize)
+    {
+        return clientSize.X > 0 && clientSize.Y > 0 && backBufferSize.X > 0 && backBufferSize.Y > 0;
     }
 
     /// <summary>Disposes the module once before releasing the host's resources.</summary>

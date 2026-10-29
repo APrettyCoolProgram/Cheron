@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Input;
 namespace Cheron.Games.Solitaire;
 
 /// <summary>Provides keyboard focus, card-stack selection, and legal moves using the existing board rules.</summary>
-public sealed partial class SolitaireGame
+internal sealed partial class SolitaireGame
 {
     /// <summary>The focused control or pile: five controls, stock, waste, four foundations, then seven columns.</summary>
     private int _keyboardFocus = -1;

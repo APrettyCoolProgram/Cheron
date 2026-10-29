@@ -33,10 +33,18 @@ public readonly record struct GameViewport
         Matrix.CreateTranslation(Offset.X, Offset.Y, 0);
 
     /// <summary>Gets the pixel rectangle enclosing the canvas, clipped to valid drawable pixels.</summary>
-    public Rectangle ScissorBounds => Rectangle.Intersect(new Rectangle(0, 0, BackBufferSize.X, BackBufferSize.Y),
-        new Rectangle((int)MathF.Floor(Offset.X), (int)MathF.Floor(Offset.Y),
-            (int)MathF.Ceiling(Offset.X + LogicalSize.X * Scale) - (int)MathF.Floor(Offset.X),
-            (int)MathF.Ceiling(Offset.Y + LogicalSize.Y * Scale) - (int)MathF.Floor(Offset.Y)));
+    public Rectangle ScissorBounds
+    {
+        get
+        {
+            var left = (int)MathF.Floor(Offset.X);
+            var top = (int)MathF.Floor(Offset.Y);
+            var right = (int)MathF.Ceiling(Offset.X + LogicalSize.X * Scale);
+            var bottom = (int)MathF.Ceiling(Offset.Y + LogicalSize.Y * Scale);
+            var canvasBounds = new Rectangle(left, top, right - left, bottom - top);
+            return Rectangle.Intersect(new Rectangle(0, 0, BackBufferSize.X, BackBufferSize.Y), canvasBounds);
+        }
+    }
 
     /// <summary>Creates a viewport from logical, client, and drawable sizes without assuming a DPI scale.</summary>
     /// <param name="logicalSize">The fixed logical canvas dimensions.</param>

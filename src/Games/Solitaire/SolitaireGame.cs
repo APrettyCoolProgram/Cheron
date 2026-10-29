@@ -12,7 +12,7 @@ using Microsoft.Xna.Framework.Input;
 namespace Cheron.Games.Solitaire;
 
 /// <summary>Implements Klondike rules, state, interaction, and rendering independently of the application host.</summary>
-public sealed partial class SolitaireGame : IGameModule
+internal sealed partial class SolitaireGame : IGameModule
 {
     /// <summary>The width of a card or empty pile slot, in logical board units.</summary>
     private const int CardWidth = 78;
@@ -90,7 +90,7 @@ public sealed partial class SolitaireGame : IGameModule
     private KeyboardState _previousKeyboardState;
 
     /// <summary>The source pile for a pending move, or <see langword="null"/> when no cards are selected.</summary>
-    private List<Card> _selectedPile = null!;
+    private List<Card>? _selectedPile;
 
     /// <summary>The index of the first selected card; subsequent cards in the same pile move with it.</summary>
     private int _selectedCardIndex;
@@ -513,7 +513,7 @@ public sealed partial class SolitaireGame : IGameModule
     {
         var before = CaptureCardPresentation();
         RecordAction();
-        var sourcePile = _selectedPile!;
+        var sourcePile = _selectedPile ?? throw new InvalidOperationException("No cards are selected.");
         var selectedCardCount = sourcePile.Count - _selectedCardIndex;
 
         destinationPile.AddRange(sourcePile.GetRange(_selectedCardIndex, selectedCardCount));
