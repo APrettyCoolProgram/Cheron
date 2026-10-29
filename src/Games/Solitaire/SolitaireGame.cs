@@ -563,21 +563,22 @@ internal sealed class SolitaireGame : IGameModule
             return;
         }
 
-        var seconds = (float)_celebrationElapsed.TotalSeconds;
-        var opacity = Math.Clamp(3 - seconds, 0, 1);
+        var elapsedSeconds = (float)_celebrationElapsed.TotalSeconds;
+        var opacity = Math.Clamp(3 - elapsedSeconds, 0, 1);
         for (var particleIndex = 0; particleIndex < 28; particleIndex++)
         {
-            var direction = particleIndex % 2 == 0 ? -1 : 1;
-            var speed = 42 + particleIndex * 5;
-            var x = 550 + direction * (80 + speed * seconds);
-            var y = 410 - (145 + particleIndex % 7 * 18) * seconds + 100 * seconds * seconds;
-            if (x < 32 || x > 1062 || y < 82 || y > 714)
+            var horizontalDirection = particleIndex % 2 == 0 ? -1 : 1;
+            var horizontalSpeed = 42 + particleIndex * 5;
+            var particleX = 550 + horizontalDirection * (80 + horizontalSpeed * elapsedSeconds);
+            var particleY = 410 - (145 + particleIndex % 7 * 18) * elapsedSeconds +
+                100 * elapsedSeconds * elapsedSeconds;
+            if (particleX < 32 || particleX > 1062 || particleY < 82 || particleY > 714)
             {
                 continue;
             }
 
-            var color = particleIndex % 3 == 0 ? new Color(112, 220, 182) : new Color(251, 219, 148);
-            Fill(new Rectangle((int)x, (int)y, 4, 6), color * opacity);
+            var particleColor = particleIndex % 3 == 0 ? new Color(112, 220, 182) : new Color(251, 219, 148);
+            Fill(new Rectangle((int)particleX, (int)particleY, 4, 6), particleColor * opacity);
         }
     }
 
@@ -1644,9 +1645,9 @@ internal sealed class SolitaireGame : IGameModule
 
         if (IsNewKey(keyboard, Keys.Tab) || IsNewKey(keyboard, Keys.Down) || IsNewKey(keyboard, Keys.Up))
         {
-            var backwards = IsNewKey(keyboard, Keys.Up) || keyboard.IsKeyDown(Keys.LeftShift) ||
+            var navigateBackward = IsNewKey(keyboard, Keys.Up) || keyboard.IsKeyDown(Keys.LeftShift) ||
                 keyboard.IsKeyDown(Keys.RightShift);
-            _optionIndex = (_optionIndex + (backwards ? 3 : 1)) % 4;
+            _optionIndex = (_optionIndex + (navigateBackward ? 3 : 1)) % 4;
         }
         else if (IsNewKey(keyboard, Keys.Enter) || IsNewKey(keyboard, Keys.Space))
         {
@@ -2420,8 +2421,10 @@ internal sealed class SolitaireGame : IGameModule
         for (var cardIndex = 0; cardIndex < tableauPile.Count; cardIndex++)
         {
             var card = tableauPile[cardIndex];
-            var cardBottom = cardY + (cardIndex == tableauPile.Count - 1
-                ? CardHeight : card.FaceUp ? TableauStep : 22);
+            var exposedHeight = cardIndex == tableauPile.Count - 1
+                ? CardHeight
+                : card.FaceUp ? TableauStep : 22;
+            var cardBottom = cardY + exposedHeight;
 
             if (mouseY >= cardY && mouseY < cardBottom)
             {

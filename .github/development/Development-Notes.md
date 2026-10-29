@@ -8,7 +8,7 @@
 
 ## Versions
 
-* Abram (R26.10)
+* Abram - R26.10 - Solitaire v1
 * Adjudicator
 * Akira
 * Ares

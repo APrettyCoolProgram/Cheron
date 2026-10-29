@@ -92,10 +92,10 @@ public readonly record struct GameViewport
     /// <returns>The corresponding logical point, rounded down to preserve negative margin coordinates.</returns>
     public Point ToLogical(Point clientPosition)
     {
-        var drawablePosition = new Vector2(
+        var drawablePoint = new Vector2(
             (float)clientPosition.X * BackBufferSize.X / ClientSize.X,
             (float)clientPosition.Y * BackBufferSize.Y / ClientSize.Y);
-        var logicalPosition = (drawablePosition - Offset) / Scale;
-        return new Point((int)MathF.Floor(logicalPosition.X), (int)MathF.Floor(logicalPosition.Y));
+        var logicalPoint = (drawablePoint - Offset) / Scale;
+        return new Point((int)MathF.Floor(logicalPoint.X), (int)MathF.Floor(logicalPoint.Y));
     }
 }

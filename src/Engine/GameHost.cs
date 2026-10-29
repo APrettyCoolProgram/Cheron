@@ -86,12 +86,12 @@ internal sealed class GameHost : Game
     /// <returns>Whether the current surface has positive dimensions and can be used.</returns>
     private bool RefreshViewport()
     {
-        if (!TryGetCurrentSurfaceSizes(out var clientSize, out var backBufferSize))
+        if (!TryGetCurrentSurfaceSizes(out var clientAreaSize, out var drawableSize))
         {
             return false;
         }
 
-        NotifyModuleViewport(clientSize, backBufferSize);
+        NotifyModuleViewport(clientAreaSize, drawableSize);
 
         return true;
     }
@@ -100,19 +100,19 @@ internal sealed class GameHost : Game
     /// <param name="clientSize">When this method returns, contains the current client size.</param>
     /// <param name="backBufferSize">When this method returns, contains the current back-buffer size.</param>
     /// <returns><see langword="true"/> when both sizes are valid; otherwise, <see langword="false"/>.</returns>
-    private bool TryGetCurrentSurfaceSizes(out Point clientSize, out Point backBufferSize)
+    private bool TryGetCurrentSurfaceSizes(out Point clientAreaSize, out Point drawableSize)
     {
-        clientSize = Window.ClientBounds.Size;
-        backBufferSize = GetBackBufferSize();
-        return HasValidDimensions(clientSize, backBufferSize);
+        clientAreaSize = Window.ClientBounds.Size;
+        drawableSize = GetBackBufferSize();
+        return HasValidDimensions(clientAreaSize, drawableSize);
     }
 
     /// <summary>Builds a viewport from current sizes and notifies the module when it changes.</summary>
     /// <param name="clientSize">The current client area size.</param>
     /// <param name="backBufferSize">The current back-buffer size.</param>
-    private void NotifyModuleViewport(Point clientSize, Point backBufferSize)
+    private void NotifyModuleViewport(Point clientAreaSize, Point drawableSize)
     {
-        var viewport = new GameViewport(_gameModule.PreferredWindowSize, clientSize, backBufferSize);
+        var viewport = new GameViewport(_gameModule.PreferredWindowSize, clientAreaSize, drawableSize);
         if (viewport == _viewport)
         {
             return;
@@ -134,17 +134,17 @@ internal sealed class GameHost : Game
     /// <returns>The current back-buffer size.</returns>
     private Point GetBackBufferSize()
     {
-        var presentation = GraphicsDevice.PresentationParameters;
-        return new Point(presentation.BackBufferWidth, presentation.BackBufferHeight);
+        var presentationParameters = GraphicsDevice.PresentationParameters;
+        return new Point(presentationParameters.BackBufferWidth, presentationParameters.BackBufferHeight);
     }
 
     /// <summary>Gets whether client and back-buffer dimensions are positive and usable for rendering.</summary>
     /// <param name="clientSize">The current client area size.</param>
     /// <param name="backBufferSize">The current back-buffer size.</param>
     /// <returns><see langword="true"/> when both sizes are usable; otherwise, <see langword="false"/>.</returns>
-    private static bool HasValidDimensions(Point clientSize, Point backBufferSize)
+    private static bool HasValidDimensions(Point clientAreaSize, Point drawableSize)
     {
-        return clientSize.X > 0 && clientSize.Y > 0 && backBufferSize.X > 0 && backBufferSize.Y > 0;
+        return clientAreaSize.X > 0 && clientAreaSize.Y > 0 && drawableSize.X > 0 && drawableSize.Y > 0;
     }
 
     /// <summary>Disposes the module once before releasing the host's resources.</summary>
