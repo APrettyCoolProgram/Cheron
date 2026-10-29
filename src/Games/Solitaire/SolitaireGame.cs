@@ -23,7 +23,7 @@ using static Cheron.Games.Solitaire.SolitaireTimingConstants;
 namespace Cheron.Games.Solitaire;
 
 /// <summary>Implements Klondike rules, state, interaction, and rendering independently of the application host.</summary>
-internal sealed class SolitaireGame : IGameModule
+internal sealed partial class SolitaireGame : IGameModule
 {
     /// <summary>The face-down draw pile, with the next card at the end of the list.</summary>
     private readonly List<Card> _stock = new();
@@ -60,6 +60,15 @@ internal sealed class SolitaireGame : IGameModule
 
     /// <summary>Whether the last completed move left all four foundations with thirteen cards each.</summary>
     private bool _hasWon;
+
+    /// <summary>The renderer responsible for drawing the board and UI.</summary>
+    private readonly SolitaireRenderer _renderer;
+
+    /// <summary>Initializes rendering delegation state for this game module.</summary>
+    public SolitaireGame()
+    {
+        _renderer = new SolitaireRenderer(this);
+    }
 
     /// <summary>Gets the Solitaire window title.</summary>
     public string Title => WindowTitle;
@@ -130,117 +139,7 @@ internal sealed class SolitaireGame : IGameModule
     /// <param name="graphicsDevice">The borrowed, host-owned graphics device.</param>
     public void Draw(GameTime gameTime, GraphicsDevice graphicsDevice)
     {
-        graphicsDevice.Clear(BoardClearColor);
-        var previousScissor = graphicsDevice.ScissorRectangle;
-        var previousRasterizer = graphicsDevice.RasterizerState;
-        graphicsDevice.ScissorRectangle = _viewport.ScissorBounds;
-
-        BeginBoardDrawing();
-        if (_highContrast)
-        {
-            Fill(GetBoardBounds(), Color.Black);
-        }
-        else
-        {
-            _spriteBatch.Draw(_artwork.Background, GetBoardBounds(), Color.White);
-        }
-
-        Fill(GetTopBarBounds(), _highContrast ? Color.Black : TopBarTint);
-        Fill(GetTopBarDividerBounds(), BoardSeparatorLine);
-        DrawToolbar();
-
-        var stockBounds = GetStockBounds();
-
-        DrawPile(_stock, stockBounds, faceDown: true);
-
-        if (_stock.Count == 0)
-        {
-            DrawText(BoardDealLabel, _largeText ? DealLabelLargeTextX : DealLabelX, DealLabelY,
-                SmallTextScale, BoardDealPromptText);
-            DrawText(BoardAgainLabel, _largeText ? AgainLabelLargeTextX : AgainLabelX,
-                _largeText ? AgainLabelLargeTextY : AgainLabelY, SmallTextScale, BoardDealPromptText);
-        }
-
-        DrawPile(_waste, GetWasteBounds());
-        DrawText(BoardStockLabel, _largeText ? StockLabelLargeTextX : StockLabelX, PileHeadingY,
-            SmallTextScale, BoardHeadingText);
-        DrawText(BoardWasteLabel, _largeText ? WasteLabelLargeTextX : WasteLabelX, PileHeadingY,
-            SmallTextScale, BoardHeadingText);
-
-        for (var foundationIndex = 0; foundationIndex < _foundations.Count; foundationIndex++)
-        {
-            var foundationBounds = GetFoundationBounds(foundationIndex);
-
-            DrawPile(_foundations[foundationIndex], foundationBounds);
-
-            if (_foundations[foundationIndex].Count == 0)
-            {
-                DrawText(BoardFoundationAceLabel, foundationBounds.X + FoundationAceOffsetX,
-                    foundationBounds.Y + FoundationAceOffsetY, 2, BoardPlaceholderText);
-                DrawText(_largeText ? BoardFoundationToKingCompactLabel : BoardFoundationToKingLabel,
-                    foundationBounds.X + FoundationInstructionOffsetX,
-                    foundationBounds.Y + FoundationInstructionOffsetY, SmallTextScale, BoardPlaceholderText);
-            }
-        }
-
-        DrawText(BoardFoundationsLabel, _largeText ? FoundationsLabelLargeTextX : FoundationsLabelX,
-            PileHeadingY, SmallTextScale, BoardHeadingText);
-
-        for (var columnIndex = 0; columnIndex < _tableau.Count; columnIndex++)
-        {
-            var tableauPile = _tableau[columnIndex];
-            var cardY = TableauTop;
-
-            if (tableauPile.Count == 0)
-            {
-                var slotBounds = new Rectangle(FirstColumnX + columnIndex * ColumnStep, cardY, CardWidth, CardHeight);
-                DrawSlot(slotBounds);
-                DrawText(BoardTableauKingLabel, slotBounds.X + TableauKingOffsetX, slotBounds.Y + TableauKingOffsetY,
-                    2, BoardPlaceholderText);
-            }
-
-            for (var cardIndex = 0; cardIndex < tableauPile.Count; cardIndex++)
-            {
-                var card = tableauPile[cardIndex];
-                var cardBounds = new Rectangle(FirstColumnX + columnIndex * ColumnStep, cardY, CardWidth, CardHeight);
-
-                if (!IsDraggedCard(tableauPile, cardIndex))
-                {
-                    DrawCard(card, cardBounds, IsSelected(tableauPile, cardIndex));
-                }
-
-                cardY += card.FaceUp ? TableauStep : TableauFaceDownStep;
-            }
-        }
-
-        DrawInteractionFeedback();
-        DrawCardTransitions();
-        DrawInvalidFeedback();
-        DrawWinCelebration();
-
-        Fill(GetFooterBounds(), _highContrast ? Color.Black : FooterTint);
-        Fill(GetFooterDividerBounds(), BoardSeparatorLine);
-        DrawAccessibleFooter();
-
-        if (_hasWon && _cardTransitions.Count == 0)
-        {
-            _spriteBatch.Draw(_artwork.Banner, WinBannerBounds, Color.White);
-            DrawText(BoardWinLabel, WinTextX, WinTextY, 3, GoldHighlight);
-        }
-
-        if (_keyboardFocusVisible && !_optionsOpen)
-        {
-            DrawFocusCorners(GetKeyboardBounds());
-        }
-
-        if (_optionsOpen)
-        {
-            DrawAccessibilityOptions();
-        }
-
-        _spriteBatch.End();
-        graphicsDevice.ScissorRectangle = previousScissor;
-        graphicsDevice.RasterizerState = previousRasterizer;
+        _renderer.Draw(gameTime, graphicsDevice);
     }
 
     /// <summary>Releases owned drawing and audio resources without disposing the borrowed graphics device.</summary>
@@ -466,46 +365,6 @@ internal sealed class SolitaireGame : IGameModule
         }
     }
 
-    /// <summary>Draws a theme-aware rejected-move outline, kept static when reduced motion is enabled.</summary>
-    private void DrawInvalidFeedback()
-    {
-        if (_invalidTimeRemaining > TimeSpan.Zero && _invalidBounds != Rectangle.Empty)
-        {
-            var opacity = _reducedMotion ? 1
-                : (float)(_invalidTimeRemaining.TotalSeconds / InvalidFeedbackDuration.TotalSeconds);
-            var color = _highContrast ? Color.White : InvalidFeedbackColor;
-            DrawTargetOutline(_invalidBounds, color * Math.Min(1, opacity * 2));
-        }
-    }
-
-    /// <summary>Draws a small, finite gold-and-mint burst without obscuring controls or changing card ownership.</summary>
-    private void DrawWinCelebration()
-    {
-        if (_reducedMotion || !_hasWon || !_winFeedbackShown || _celebrationElapsed >= CelebrationDuration)
-        {
-            return;
-        }
-
-        var elapsedSeconds = (float)_celebrationElapsed.TotalSeconds;
-        var opacity = Math.Clamp((float)CelebrationDuration.TotalSeconds - elapsedSeconds, 0, 1);
-        for (var particleIndex = 0; particleIndex < ParticleCount; particleIndex++)
-        {
-            var horizontalDirection = particleIndex % 2 == 0 ? -1 : 1;
-            var horizontalSpeed = BaseHorizontalSpeed + particleIndex * HorizontalSpeedStep;
-            var particleX = OriginX + horizontalDirection * (BaseHorizontalOffset + horizontalSpeed * elapsedSeconds);
-            var particleY = OriginY - (BaseRise + particleIndex % RiseVariationCycle * RiseVariationStep) * elapsedSeconds +
-                VerticalAcceleration * elapsedSeconds * elapsedSeconds;
-            if (particleX < MinX || particleX > MaxX || particleY < MinY || particleY > MaxY)
-            {
-                continue;
-            }
-
-            var particleColor = particleIndex % 3 == 0 ? MintHighlight : GoldHighlight;
-            Fill(new Rectangle((int)particleX, (int)particleY, ParticleWidth, ParticleHeight),
-                particleColor * opacity);
-        }
-    }
-
     /// <summary>Advances transitions using elapsed time and removes completed visual overrides.</summary>
     /// <param name="elapsed">The elapsed update time, independent of frame rate.</param>
     private void UpdateAnimations(TimeSpan elapsed)
@@ -621,41 +480,6 @@ internal sealed class SolitaireGame : IGameModule
                 var end = new CardPresentation(GetTableauCardBounds(columnIndex, cardIndex), card.FaceUp);
                 _cardTransitions.Add(card, new CardTransition(start, end, dealIndex++ * 0.025f));
             }
-        }
-    }
-
-    /// <summary>Draws moving cards above the board, compressing their complete artwork horizontally during flips.</summary>
-    private void DrawCardTransitions()
-    {
-        foreach (var entry in _cardTransitions)
-        {
-            var transition = entry.Value;
-            if (_animationElapsed < transition.Delay)
-            {
-                continue;
-            }
-
-            var progress = Math.Clamp((_animationElapsed - transition.Delay) / MoveDuration, 0, 1);
-            var easedProgress = progress * progress * (3 - 2 * progress);
-            var position = Vector2.Lerp(transition.Start.Bounds.Location.ToVector2(),
-                transition.End.Bounds.Location.ToVector2(), easedProgress);
-            var bounds = new Rectangle((int)MathF.Round(position.X), (int)MathF.Round(position.Y), CardWidth, CardHeight);
-            var isFlipping = transition.Start.FaceUp != transition.End.FaceUp;
-            var faceUp = progress < 0.5f ? transition.Start.FaceUp : transition.End.FaceUp;
-            if (!isFlipping || progress >= 1)
-            {
-                DrawCardArtwork(entry.Key, bounds, false, !faceUp);
-                continue;
-            }
-
-            var widthScale = Math.Max(0.02f, Math.Abs(1 - 2 * progress));
-            var centerX = bounds.Center.X;
-            _spriteBatch.End();
-            BeginBoardDrawing(Matrix.CreateTranslation(-centerX, 0, 0) *
-                Matrix.CreateScale(widthScale, 1, 1) * Matrix.CreateTranslation(centerX, 0, 0));
-            DrawCardArtwork(entry.Key, bounds, false, !faceUp);
-            _spriteBatch.End();
-            BeginBoardDrawing();
         }
     }
 
@@ -828,51 +652,6 @@ internal sealed class SolitaireGame : IGameModule
         return false;
     }
 
-    /// <summary>Draws the toolbar and live statistics, including disabled-state and shortcut labels.</summary>
-    private void DrawToolbar()
-    {
-        var canUseBoard = _cardTransitions.Count == 0 && !_isDragging;
-        DrawToolbarButton(NewGameButtonBounds, NewGameLabel, true);
-        DrawToolbarButton(UndoButtonBounds, UndoLabel, canUseBoard && _undoHistory.Count > 0);
-        DrawToolbarButton(HintButtonBounds, HintLabel, canUseBoard && !_hasWon);
-        DrawToolbarButton(SoundButtonBounds,
-            _audioUnavailable ? AudioUnavailableLabel : _soundEnabled ? SoundEnabledLabel : SoundDisabledLabel,
-            !_audioUnavailable);
-        DrawText(ToolbarTitleLabel, ToolbarTitleX, ToolbarTitleY, 2, ToolbarPrimaryText);
-        DrawText(_largeText ? ToolbarShortcutsCompactLabel : ToolbarShortcutsLabel, ToolbarShortcutsX,
-            ToolbarShortcutsY, SmallTextScale, ToolbarSecondaryText);
-        DrawText(ToolbarMovesLabel, ToolbarMovesX, ToolbarStatsCaptionY, SmallTextScale, ToolbarSecondaryText);
-        DrawText(_moveCount.ToString(), ToolbarMovesX, ToolbarStatsValueY, 2, ToolbarPrimaryText);
-        DrawText(ToolbarTimeLabel, ToolbarTimeX, ToolbarStatsCaptionY, SmallTextScale, ToolbarSecondaryText);
-        var totalSeconds = (long)_playingTime.TotalSeconds;
-        DrawText($"{totalSeconds / 60:00}M {totalSeconds % 60:00}S", ToolbarTimeX, ToolbarStatsValueY,
-            SmallTextScale, ToolbarPrimaryText);
-    }
-
-    /// <summary>Draws one themed button with hover feedback only while enabled.</summary>
-    /// <param name="bounds">The shared drawing and hit-test bounds.</param>
-    /// <param name="label">The button text.</param>
-    /// <param name="enabled">Whether the button's action is available.</param>
-    private void DrawToolbarButton(Rectangle bounds, string label, bool enabled)
-    {
-        var isHovered = enabled && bounds.Contains(_pointerPosition);
-        var texture = isHovered ? _artwork.ButtonHover : _artwork.Button;
-        if (_highContrast)
-        {
-            Fill(bounds, enabled ? Color.White : ButtonDisabledHighContrastFill);
-            DrawTargetOutline(bounds, Color.White);
-        }
-        else
-        {
-            _spriteBatch.Draw(texture, bounds, enabled ? Color.White : ButtonDisabledTint);
-        }
-
-        var ink = _highContrast ? (enabled ? Color.Black : Color.White)
-            : enabled ? ButtonEnabledInk : ButtonDisabledInk;
-        DrawText(label, bounds.X + (bounds.Width - label.Length * 12 + 2) / 2, bounds.Y + 15,
-            2, ink, preserveColor: true);
-    }
-
     /// <summary>Clears the current hint without modifying selection, history, or board state.</summary>
     private void ClearHint()
     {
@@ -1013,26 +792,6 @@ internal sealed class SolitaireGame : IGameModule
         _hintDestination = destination;
         _hintMessage = message;
         _hintTimeRemaining = HintDisplayDuration;
-    }
-
-    /// <summary>Draws gold outlines around the suggested source and destination while a hint is active.</summary>
-    private void DrawHintFeedback()
-    {
-        if (_hintTimeRemaining <= TimeSpan.Zero)
-        {
-            return;
-        }
-
-        var color = GoldHighlight;
-        if (_hintSource != Rectangle.Empty)
-        {
-            DrawTargetOutline(_hintSource, color);
-        }
-
-        if (_hintDestination != Rectangle.Empty)
-        {
-            DrawTargetOutline(_hintDestination, color);
-        }
     }
 
     /// <summary>The current pointer position in logical board coordinates.</summary>
@@ -1361,70 +1120,6 @@ internal sealed class SolitaireGame : IGameModule
     private bool IsDraggedCard(List<Card> pile, int cardIndex) =>
         _isDragging && ReferenceEquals(pile, _selectedPile) && cardIndex >= _selectedCardIndex;
 
-    /// <summary>Draws legal destinations, hover feedback, and the floating stack in that order.</summary>
-    private void DrawInteractionFeedback()
-    {
-        if (_cardTransitions.Count > 0)
-        {
-            return;
-        }
-
-        for (var foundationIndex = 0; foundationIndex < _foundations.Count; foundationIndex++)
-        {
-            if (CanMoveToFoundation(foundationIndex))
-            {
-                DrawTargetOutline(GetFoundationBounds(foundationIndex), MintHighlight);
-            }
-        }
-
-        for (var columnIndex = 0; columnIndex < _tableau.Count; columnIndex++)
-        {
-            if (CanMoveToTableau(columnIndex))
-            {
-                var pile = _tableau[columnIndex];
-                var bounds = GetTableauCardBounds(columnIndex, Math.Max(0, pile.Count - 1));
-                DrawTargetOutline(bounds, MintHighlight);
-            }
-        }
-
-        if (!_isDragging && TryGetCardAt(_pointerPosition, out var hoveredPile, out var hoveredIndex, out var hoveredBounds))
-        {
-            if (_tableau.Contains(hoveredPile) && hoveredIndex < hoveredPile.Count - 1)
-            {
-                hoveredBounds.Height = TableauStep;
-            }
-
-            DrawTargetOutline(hoveredBounds, HoverOutline);
-        }
-
-        DrawHintFeedback();
-
-        if (_isDragging && _selectedPile is not null)
-        {
-            var position = _pointerPosition - _dragOffset;
-            for (var cardIndex = _selectedCardIndex; cardIndex < _selectedPile.Count; cardIndex++)
-            {
-                DrawCard(_selectedPile[cardIndex], new Rectangle(position.X, position.Y, CardWidth, CardHeight),
-                    cardIndex == _selectedCardIndex);
-                position.Y += TableauStep;
-            }
-        }
-    }
-
-    /// <summary>Draws a thin, high-contrast outline just outside a card or drop slot.</summary>
-    /// <param name="bounds">The bounds to outline.</param>
-    /// <param name="color">The feedback color.</param>
-    private void DrawTargetOutline(Rectangle bounds, Color color)
-    {
-        bounds.Inflate(TargetOutlineInflate, TargetOutlineInflate);
-        Fill(new Rectangle(bounds.X, bounds.Y, bounds.Width, TargetOutlineThickness), color);
-        Fill(new Rectangle(bounds.X, bounds.Bottom - TargetOutlineThickness, bounds.Width, TargetOutlineThickness),
-            color);
-        Fill(new Rectangle(bounds.X, bounds.Y, TargetOutlineThickness, bounds.Height), color);
-        Fill(new Rectangle(bounds.Right - TargetOutlineThickness, bounds.Y, TargetOutlineThickness, bounds.Height),
-            color);
-    }
-
     /// <summary>Whether small labels and card ranks use the larger text layout.</summary>
     private bool _largeText;
 
@@ -1588,63 +1283,6 @@ internal sealed class SolitaireGame : IGameModule
 
         _ignoreUntilRelease &= isDown;
         _pointerWasDown = isDown;
-    }
-
-    /// <summary>Draws the settings panel with large, always-readable labels and explicit on/off states.</summary>
-    private void DrawAccessibilityOptions()
-    {
-        Fill(GetBoardBounds(), Color.Black * 0.75f);
-        var panelBounds = GetPanelBounds();
-        Fill(panelBounds, Color.Black);
-        DrawTargetOutline(panelBounds, Color.White);
-        DrawText(AccessibilityTitle, FirstRowX, TitleY, 3, Color.White);
-        for (var index = 0; index < OptionCount; index++)
-        {
-            var bounds = GetOptionBounds(index);
-            Fill(bounds, OptionsRowFill);
-            var label = GetOptionLabel(index, _largeText, _highContrast, _reducedMotion);
-            DrawText(label, bounds.X + LabelPaddingX, bounds.Y + LabelPaddingY, 2, Color.White);
-            if (index == _optionIndex)
-            {
-                DrawFocusCorners(bounds);
-            }
-        }
-
-        DrawText(AccessibilityHelpNavigation, FirstRowX, HelpStartY, 2, Color.White);
-        DrawText(AccessibilityHelpPersistence, FirstRowX, HelpStartY + HelpLineStep, 2, Color.White);
-        DrawText(AccessibilityHelpCloseAndExit, FirstRowX, HelpStartY + HelpLineStep * 2, 2, Color.White);
-        DrawText(AccessibilityHelpShortcutsDisabled, FirstRowX, HelpStartY + HelpLineStep * 3, 2, Color.White);
-    }
-
-    /// <summary>Draws an empty pile using either the themed texture or a solid high-contrast surface.</summary>
-    /// <param name="bounds">The logical pile bounds.</param>
-    private void DrawSlot(Rectangle bounds)
-    {
-        if (_highContrast)
-        {
-            Fill(bounds, Color.Black);
-            DrawTargetOutline(bounds, Color.White);
-        }
-        else
-        {
-            _spriteBatch.Draw(_artwork.Slot, bounds, Color.White);
-        }
-    }
-
-    /// <summary>Draws footer status and discoverable access to settings without overlapping larger text.</summary>
-    private void DrawAccessibleFooter()
-    {
-        var message = _invalidTimeRemaining > TimeSpan.Zero
-            ? FooterInvalidMoveMessage
-            : _hintTimeRemaining > TimeSpan.Zero ? _hintMessage
-            : _keyboardFocusVisible ? GetKeyboardDescription() : FooterDefaultMessage;
-        DrawText(message, FooterTextX, FooterStatusY, SmallTextScale, FooterPrimaryText);
-        var instructions = _keyboardFocusVisible
-            ? FooterKeyboardInstructions
-            : _audioUnavailable ? FooterSoundUnavailableInstructions
-            : FooterDefaultInstructions;
-        DrawText(instructions, FooterTextX, FooterInstructionsY, SmallTextScale, ToolbarSecondaryText);
-        DrawToolbarButton(OptionsButtonBounds, FooterOptionsLabel, true);
     }
 
     /// <summary>Processes edge-triggered keyboard navigation without interfering with active pointer gestures.</summary>
@@ -1941,27 +1579,6 @@ internal sealed class SolitaireGame : IGameModule
         }
 
         return label;
-    }
-
-    /// <summary>Draws a static corner-shaped focus indicator distinct from continuous selection outlines.</summary>
-    /// <param name="bounds">The control or exposed card region to mark.</param>
-    private void DrawFocusCorners(Rectangle bounds)
-    {
-        bounds.Inflate(FocusCornerInflate, FocusCornerInflate);
-        Fill(new Rectangle(bounds.X, bounds.Y, FocusCornerLength, FocusCornerThickness), Color.White);
-        Fill(new Rectangle(bounds.Right - FocusCornerLength, bounds.Y, FocusCornerLength, FocusCornerThickness),
-            Color.White);
-        Fill(new Rectangle(bounds.X, bounds.Bottom - FocusCornerThickness, FocusCornerLength, FocusCornerThickness),
-            Color.White);
-        Fill(new Rectangle(bounds.Right - FocusCornerLength, bounds.Bottom - FocusCornerThickness,
-            FocusCornerLength, FocusCornerThickness), Color.White);
-        Fill(new Rectangle(bounds.X, bounds.Y, FocusCornerThickness, FocusCornerLength), Color.White);
-        Fill(new Rectangle(bounds.Right - FocusCornerThickness, bounds.Y, FocusCornerThickness, FocusCornerLength),
-            Color.White);
-        Fill(new Rectangle(bounds.X, bounds.Bottom - FocusCornerLength, FocusCornerThickness, FocusCornerLength),
-            Color.White);
-        Fill(new Rectangle(bounds.Right - FocusCornerThickness, bounds.Bottom - FocusCornerLength,
-            FocusCornerThickness, FocusCornerLength), Color.White);
     }
 
     /// <summary>Stores the current host-supplied viewport, initially matching the unscaled board.</summary>
@@ -2299,112 +1916,6 @@ internal sealed class SolitaireGame : IGameModule
         }
 
         return -1;
-    }
-
-    /// <summary>Draws a pile's top non-dragged card, or an outlined slot when no card remains visible.</summary>
-    /// <param name="pile">The pile to draw.</param>
-    /// <param name="bounds">The card or slot bounds in logical board coordinates.</param>
-    /// <param name="faceDown">Whether to show the card back regardless of its face-up state.</param>
-    private void DrawPile(List<Card> pile, Rectangle bounds, bool faceDown = false)
-    {
-        var visibleCardIndex = pile.Count - 1;
-        if (visibleCardIndex >= 0 && IsDraggedCard(pile, visibleCardIndex))
-        {
-            visibleCardIndex = _selectedCardIndex - 1;
-        }
-
-        while (visibleCardIndex >= 0 && _cardTransitions.ContainsKey(pile[visibleCardIndex]))
-        {
-            visibleCardIndex--;
-        }
-
-        if (visibleCardIndex >= 0)
-        {
-            DrawCard(pile[visibleCardIndex], bounds, IsSelected(pile, visibleCardIndex), faceDown);
-        }
-        else
-        {
-            DrawSlot(bounds);
-        }
-    }
-
-    /// <summary>Draws a rounded card, soft shadow, suit artwork, and optional selection highlight.</summary>
-    /// <param name="card">The card whose rank, suit, and visibility determine its appearance.</param>
-    /// <param name="bounds">The card bounds in logical board coordinates.</param>
-    /// <param name="isSelected">Whether the face-up card should receive a selection border.</param>
-    /// <param name="faceDown">Whether to show the card back regardless of its face-up state.</param>
-    private void DrawCard(Card card, Rectangle bounds, bool isSelected, bool faceDown = false)
-    {
-        if (!_cardTransitions.ContainsKey(card))
-        {
-            DrawCardArtwork(card, bounds, isSelected, faceDown || !card.FaceUp);
-        }
-    }
-
-    /// <summary>Draws a complete card using an explicit presentation face state rather than its logical state.</summary>
-    /// <param name="card">The card whose rank and suit are drawn.</param>
-    /// <param name="bounds">The card rectangle in board coordinates.</param>
-    /// <param name="isSelected">Whether to fade in the selection outline.</param>
-    /// <param name="faceDown">Whether to draw the back instead of the face.</param>
-    private void DrawCardArtwork(Card card, Rectangle bounds, bool isSelected, bool faceDown)
-    {
-        var shadowBounds = new Rectangle(bounds.X + CardShadowOffsetX, bounds.Y + CardShadowOffsetY,
-            bounds.Width + CardShadowExpandWidth, bounds.Height + CardShadowExpandHeight);
-
-        _spriteBatch.Draw(_artwork.CardShadow, shadowBounds, Color.White);
-
-        if (isSelected && !faceDown)
-        {
-            var highlightOpacity = _reducedMotion
-                ? 1
-                : Math.Clamp(_selectionElapsed / SelectionHighlightFadeDuration, 0, 1);
-            _spriteBatch.Draw(_artwork.Selection,
-                new Rectangle(bounds.X - CardSelectionInset, bounds.Y - CardSelectionInset,
-                    bounds.Width + CardSelectionInset * 2, bounds.Height + CardSelectionInset * 2),
-                Color.White * highlightOpacity);
-        }
-
-        if (_highContrast)
-        {
-            Fill(bounds, faceDown ? Color.Black : Color.White);
-            DrawTargetOutline(bounds, isSelected && !faceDown ? Color.Yellow : Color.White);
-            if (faceDown)
-            {
-                DrawText(CardBackLabel, bounds.X + CardBackLabelOffsetX, bounds.Y + CardBackLabelOffsetY,
-                    2, Color.White);
-            }
-        }
-        else
-        {
-            _spriteBatch.Draw(faceDown ? _artwork.CardBack : _artwork.CardFace, bounds, Color.White);
-        }
-
-        if (faceDown)
-        {
-            return;
-        }
-
-        var suitColor = _highContrast ? (card.IsRed ? CardSuitRedHighContrast : Color.Black)
-            : card.IsRed ? CardSuitRed : CardSuitBlack;
-        var rankLabel = SolitaireCardLabels.GetShortRankLabel(card.Rank);
-
-        var suitTexture = _artwork.Suits[(int)card.Suit];
-
-        var rankScale = _largeText ? 3 : 2;
-        DrawText(rankLabel, bounds.X + CardRankTopOffsetX,
-            bounds.Y + (_largeText ? CardRankTopOffsetYLarge : CardRankTopOffsetY), rankScale, suitColor,
-            preserveColor: true);
-        _spriteBatch.Draw(suitTexture,
-            new Rectangle(bounds.Right - CardSuitTopRightOffset, bounds.Y + CardSuitTopOffsetY,
-                CardSuitTopSize, CardSuitTopSize), suitColor);
-        _spriteBatch.Draw(suitTexture,
-            new Rectangle(bounds.X + CardSuitCenterOffsetX, bounds.Y + CardSuitCenterOffsetY,
-                CardSuitCenterSize, CardSuitCenterSize), suitColor);
-        _spriteBatch.Draw(suitTexture,
-            new Rectangle(bounds.X + CardSuitBottomOffsetX, bounds.Bottom - CardSuitBottomOffset,
-                CardSuitBottomSize, CardSuitBottomSize), suitColor);
-        DrawText(rankLabel, bounds.Right - (rankLabel.Length * 6 * rankScale) - CardRankBottomPaddingX,
-            bounds.Bottom - (7 * rankScale) - CardRankBottomPaddingY, rankScale, suitColor, preserveColor: true);
     }
 
     /// <summary>Fills a rectangle using the module's single-pixel texture.</summary>
