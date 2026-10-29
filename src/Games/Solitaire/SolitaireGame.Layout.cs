@@ -12,7 +12,8 @@ namespace Cheron.Games.Solitaire;
 internal sealed partial class SolitaireGame
 {
     /// <summary>Stores the current host-supplied viewport, initially matching the unscaled board.</summary>
-    private GameViewport _viewport = new(new Point(1100, 800), new Point(1100, 800), new Point(1100, 800));
+    private GameViewport _viewport = new(new Point(BoardWidth, BoardHeight), new Point(BoardWidth, BoardHeight),
+        new Point(BoardWidth, BoardHeight));
 
     /// <summary>Stores the owned rasterizer state that keeps board artwork out of centered window margins.</summary>
     private RasterizerState _boardRasterizerState = null!;

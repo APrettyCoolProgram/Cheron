@@ -55,17 +55,17 @@ public readonly record struct GameViewport
     /// </exception>
     public GameViewport(Point logicalSize, Point clientSize, Point backBufferSize)
     {
-        if (logicalSize.X <= 0 || logicalSize.Y <= 0)
+        if (!HasPositiveDimensions(logicalSize))
         {
             throw new ArgumentOutOfRangeException(nameof(logicalSize), "Canvas dimensions must be positive.");
         }
 
-        if (clientSize.X <= 0 || clientSize.Y <= 0)
+        if (!HasPositiveDimensions(clientSize))
         {
             throw new ArgumentOutOfRangeException(nameof(clientSize), "Client dimensions must be positive.");
         }
 
-        if (backBufferSize.X <= 0 || backBufferSize.Y <= 0)
+        if (!HasPositiveDimensions(backBufferSize))
         {
             throw new ArgumentOutOfRangeException(nameof(backBufferSize), "Drawable dimensions must be positive.");
         }
@@ -77,6 +77,11 @@ public readonly record struct GameViewport
         Offset = new Vector2((backBufferSize.X - logicalSize.X * Scale) / 2,
             (backBufferSize.Y - logicalSize.Y * Scale) / 2);
     }
+
+    /// <summary>Gets whether both dimensions of a size are positive.</summary>
+    /// <param name="size">The size to validate.</param>
+    /// <returns><see langword="true"/> when both dimensions are greater than zero; otherwise, <see langword="false"/>.</returns>
+    private static bool HasPositiveDimensions(Point size) => size.X > 0 && size.Y > 0;
 
     /// <summary>Converts mouse coordinates to logical coordinates without clamping margins onto the canvas.</summary>
     /// <remarks>

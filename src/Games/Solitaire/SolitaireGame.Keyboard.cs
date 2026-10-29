@@ -291,7 +291,7 @@ internal sealed partial class SolitaireGame
             else
             {
                 var card = pile[_keyboardFocus >= 11 ? _keyboardCardIndex : pile.Count - 1];
-                var rank = card.Rank switch { 1 => "ACE", 11 => "JACK", 12 => "QUEEN", 13 => "KING", _ => card.Rank.ToString() };
+                var rank = GetLongRankLabel(card.Rank);
                 label += card.FaceUp ? $"  {rank} OF {card.Suit}" : "  FACE DOWN";
             }
         }

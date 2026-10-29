@@ -35,6 +35,15 @@ internal sealed partial class SolitaireGame : IGameModule
     /// <summary>The horizontal offset between consecutive tableau columns, in logical board units.</summary>
     private const int ColumnStep = 148;
 
+    /// <summary>The logical board width used for viewport fitting and layout math.</summary>
+    private const int BoardWidth = 1100;
+
+    /// <summary>The logical board height used for viewport fitting and layout math.</summary>
+    private const int BoardHeight = 800;
+
+    /// <summary>The title shown in the host window.</summary>
+    private const string GameTitle = "Cheron Solitaire";
+
     /// <summary>Stores seven five-bit bitmap rows for each uppercase letter followed by each decimal digit.</summary>
     /// <remarks>
     /// The first dimension selects A through Z, then 0 through 9. The second selects a glyph row.
@@ -99,10 +108,10 @@ internal sealed partial class SolitaireGame : IGameModule
     private bool _hasWon;
 
     /// <summary>Gets the Solitaire window title.</summary>
-    public string Title => "Cheron Solitaire";
+    public string Title => GameTitle;
 
     /// <summary>Gets the logical card-table size, also used to request the initial window size.</summary>
-    public Point PreferredWindowSize => new(1100, 800);
+    public Point PreferredWindowSize => new(BoardWidth, BoardHeight);
 
     /// <summary>Deals a shuffled game before graphics resources are loaded.</summary>
     public void Initialize()
@@ -160,7 +169,7 @@ internal sealed partial class SolitaireGame : IGameModule
 
     /// <summary>Draws the proportionally scaled board, cards, controls, and win message.</summary>
     /// <remarks>
-    /// Fits the 1100-by-800 logical canvas into the host viewport with centered margins.
+    /// Fits the fixed logical canvas into the host viewport with centered margins.
     /// Draws directly at drawable resolution and requires loaded drawing resources.
     /// </remarks>
     /// <param name="gameTime">The host-supplied timing information; animation progress is advanced during updates.</param>
@@ -175,15 +184,15 @@ internal sealed partial class SolitaireGame : IGameModule
         BeginBoardDrawing();
         if (_highContrast)
         {
-            Fill(new Rectangle(0, 0, 1100, 800), Color.Black);
+            Fill(new Rectangle(0, 0, BoardWidth, BoardHeight), Color.Black);
         }
         else
         {
-            _spriteBatch.Draw(_artwork.Background, new Rectangle(0, 0, 1100, 800), Color.White);
+            _spriteBatch.Draw(_artwork.Background, new Rectangle(0, 0, BoardWidth, BoardHeight), Color.White);
         }
 
-        Fill(new Rectangle(0, 0, 1100, 72), _highContrast ? Color.Black : new Color(12, 31, 37, 220));
-        Fill(new Rectangle(0, 71, 1100, 1), new Color(67, 102, 102));
+        Fill(new Rectangle(0, 0, BoardWidth, 72), _highContrast ? Color.Black : new Color(12, 31, 37, 220));
+        Fill(new Rectangle(0, 71, BoardWidth, 1), new Color(67, 102, 102));
         DrawToolbar();
 
         var stockBounds = new Rectangle(32, 82, CardWidth, CardHeight);
@@ -247,8 +256,8 @@ internal sealed partial class SolitaireGame : IGameModule
         DrawInvalidFeedback();
         DrawWinCelebration();
 
-        Fill(new Rectangle(0, 728, 1100, 72), _highContrast ? Color.Black : new Color(12, 31, 37, 230));
-        Fill(new Rectangle(0, 728, 1100, 1), new Color(67, 102, 102));
+        Fill(new Rectangle(0, 728, BoardWidth, 72), _highContrast ? Color.Black : new Color(12, 31, 37, 230));
+        Fill(new Rectangle(0, 728, BoardWidth, 1), new Color(67, 102, 102));
         DrawAccessibleFooter();
 
         if (_hasWon && _cardTransitions.Count == 0)
@@ -609,7 +618,7 @@ internal sealed partial class SolitaireGame : IGameModule
     /// <param name="foundationIndex">The zero-based index of the foundation slot.</param>
     /// <returns>The rectangle used to draw and hit-test the foundation.</returns>
     private Rectangle GetFoundationBounds(int foundationIndex) =>
-        new(1100 - 32 - (4 - foundationIndex) * (CardWidth + CardGap), 82, CardWidth, CardHeight);
+        new(BoardWidth - 32 - (4 - foundationIndex) * (CardWidth + CardGap), 82, CardWidth, CardHeight);
 
     /// <summary>Draws a pile's top non-dragged card, or an outlined slot when no card remains visible.</summary>
     /// <param name="pile">The pile to draw.</param>
@@ -691,14 +700,7 @@ internal sealed partial class SolitaireGame : IGameModule
 
         var suitColor = _highContrast ? (card.IsRed ? new Color(145, 0, 20) : Color.Black)
             : card.IsRed ? new Color(180, 51, 65) : new Color(36, 57, 66);
-        var rankLabel = card.Rank switch
-        {
-            1 => "A",
-            11 => "J",
-            12 => "Q",
-            13 => "K",
-            _ => card.Rank.ToString()
-        };
+        var rankLabel = GetShortRankLabel(card.Rank);
 
         var suitTexture = _artwork.Suits[(int)card.Suit];
 
@@ -710,6 +712,30 @@ internal sealed partial class SolitaireGame : IGameModule
         DrawText(rankLabel, bounds.Right - (rankLabel.Length * 6 * rankScale) - 7,
             bounds.Bottom - (7 * rankScale) - 8, rankScale, suitColor, preserveColor: true);
     }
+
+    /// <summary>Gets the short rank text used for card faces.</summary>
+    /// <param name="rank">The card rank from one (ace) through thirteen (king).</param>
+    /// <returns>The short rank label.</returns>
+    private static string GetShortRankLabel(int rank) => rank switch
+    {
+        1 => "A",
+        11 => "J",
+        12 => "Q",
+        13 => "K",
+        _ => rank.ToString()
+    };
+
+    /// <summary>Gets the spoken-style rank text used by keyboard descriptions.</summary>
+    /// <param name="rank">The card rank from one (ace) through thirteen (king).</param>
+    /// <returns>The long rank label.</returns>
+    private static string GetLongRankLabel(int rank) => rank switch
+    {
+        1 => "ACE",
+        11 => "JACK",
+        12 => "QUEEN",
+        13 => "KING",
+        _ => rank.ToString()
+    };
 
     /// <summary>Fills a rectangle using the module's single-pixel texture.</summary>
     /// <param name="bounds">The rectangle to fill in logical board coordinates.</param>

@@ -177,7 +177,7 @@ internal sealed partial class SolitaireGame
     /// <summary>Draws the settings panel with large, always-readable labels and explicit on/off states.</summary>
     private void DrawAccessibilityOptions()
     {
-        Fill(new Rectangle(0, 0, 1100, 800), Color.Black * 0.75f);
+        Fill(new Rectangle(0, 0, BoardWidth, BoardHeight), Color.Black * 0.75f);
         Fill(new Rectangle(160, 180, 780, 444), Color.Black);
         DrawTargetOutline(new Rectangle(160, 180, 780, 444), Color.White);
         DrawText("ACCESSIBILITY", 196, 202, 3, Color.White);

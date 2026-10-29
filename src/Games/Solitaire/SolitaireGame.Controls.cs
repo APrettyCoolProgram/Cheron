@@ -21,6 +21,39 @@ internal sealed partial class SolitaireGame
     /// <summary>The hint button bounds in logical board coordinates.</summary>
     private static readonly Rectangle HintButtonBounds = new(300, 20, 104, 44);
 
+    /// <summary>The toolbar label for starting a new deal.</summary>
+    private const string NewGameLabel = "NEW GAME";
+
+    /// <summary>The toolbar label for undoing the last action.</summary>
+    private const string UndoLabel = "UNDO";
+
+    /// <summary>The toolbar label for requesting a one-step hint.</summary>
+    private const string HintLabel = "HINT";
+
+    /// <summary>The toolbar status label when sound cannot be used.</summary>
+    private const string AudioUnavailableLabel = "NA";
+
+    /// <summary>The toolbar status label when sound is enabled.</summary>
+    private const string SoundEnabledLabel = "SND";
+
+    /// <summary>The toolbar status label when sound is disabled.</summary>
+    private const string SoundDisabledLabel = "OFF";
+
+    /// <summary>Hint text for moving a card to a foundation.</summary>
+    private const string HintToFoundationMessage = "HINT  MOVE GOLD CARD TO GOLD FOUNDATION";
+
+    /// <summary>Hint text for moving a card to a tableau column.</summary>
+    private const string HintToTableauMessage = "HINT  MOVE GOLD CARD TO GOLD TABLEAU";
+
+    /// <summary>Hint text for drawing from a non-empty stock.</summary>
+    private const string HintDrawFromStockMessage = "HINT  CLICK STOCK TO DRAW";
+
+    /// <summary>Hint text for recycling when stock is empty.</summary>
+    private const string HintRecycleStockMessage = "HINT  CLICK EMPTY STOCK TO RECYCLE";
+
+    /// <summary>Hint text shown when no immediate suggestion exists.</summary>
+    private const string HintNoSuggestionMessage = "HINT  NO SUGGESTED MOVE  TRY UNDO OR NEW GAME";
+
     /// <summary>The board states saved before successful actions, newest first.</summary>
     private readonly Stack<BoardSnapshot> _undoHistory = new();
 
@@ -204,10 +237,11 @@ internal sealed partial class SolitaireGame
     private void DrawToolbar()
     {
         var canUseBoard = _cardTransitions.Count == 0 && !_isDragging;
-        DrawToolbarButton(NewGameButtonBounds, "NEW GAME", true);
-        DrawToolbarButton(UndoButtonBounds, "UNDO", canUseBoard && _undoHistory.Count > 0);
-        DrawToolbarButton(HintButtonBounds, "HINT", canUseBoard && !_hasWon);
-        DrawToolbarButton(SoundButtonBounds, _audioUnavailable ? "NA" : _soundEnabled ? "SND" : "OFF",
+        DrawToolbarButton(NewGameButtonBounds, NewGameLabel, true);
+        DrawToolbarButton(UndoButtonBounds, UndoLabel, canUseBoard && _undoHistory.Count > 0);
+        DrawToolbarButton(HintButtonBounds, HintLabel, canUseBoard && !_hasWon);
+        DrawToolbarButton(SoundButtonBounds,
+            _audioUnavailable ? AudioUnavailableLabel : _soundEnabled ? SoundEnabledLabel : SoundDisabledLabel,
             !_audioUnavailable);
         DrawText("SOLITAIRE", 440, 26, 2, new Color(246, 239, 218));
         DrawText(_largeText ? "F1 OPTIONS" : "R NEW GAME  U UNDO  H HINT  M SOUND", 440, 51,
@@ -285,7 +319,7 @@ internal sealed partial class SolitaireGame
                     if (CanMoveToFoundation(foundationIndex))
                     {
                         SetHint(GetHintCardBounds(pile, _selectedCardIndex), GetFoundationBounds(foundationIndex),
-                            "HINT  MOVE GOLD CARD TO GOLD FOUNDATION");
+                            HintToFoundationMessage);
                         return;
                     }
                 }
@@ -318,7 +352,7 @@ internal sealed partial class SolitaireGame
                                 var destinationIndex = Math.Max(0, _tableau[columnIndex].Count - 1);
                                 SetHint(GetHintCardBounds(pile, cardIndex),
                                     GetTableauCardBounds(columnIndex, destinationIndex),
-                                    "HINT  MOVE GOLD CARD TO GOLD TABLEAU");
+                                    HintToTableauMessage);
                                 return;
                             }
                         }
@@ -329,11 +363,11 @@ internal sealed partial class SolitaireGame
             if (_stock.Count > 0 || _waste.Count > 0)
             {
                 SetHint(new Rectangle(32, 82, CardWidth, CardHeight), Rectangle.Empty,
-                    _stock.Count > 0 ? "HINT  CLICK STOCK TO DRAW" : "HINT  CLICK EMPTY STOCK TO RECYCLE");
+                    _stock.Count > 0 ? HintDrawFromStockMessage : HintRecycleStockMessage);
             }
             else
             {
-                SetHint(Rectangle.Empty, Rectangle.Empty, "HINT  NO SUGGESTED MOVE  TRY UNDO OR NEW GAME");
+                SetHint(Rectangle.Empty, Rectangle.Empty, HintNoSuggestionMessage);
             }
         }
         finally
