@@ -10,68 +10,18 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using static Cheron.Games.Solitaire.SolitaireLayout;
+using static Cheron.Games.Solitaire.SolitaireOptionsLayout;
+using static Cheron.Games.Solitaire.SolitaireTextConstants;
+using static Cheron.Games.Solitaire.SolitaireTimingConstants;
 
 namespace Cheron.Games.Solitaire;
 
 /// <summary>Implements Klondike rules, state, interaction, and rendering independently of the application host.</summary>
 internal sealed class SolitaireGame : IGameModule
 {
-    /// <summary>The width of a card or empty pile slot, in logical board units.</summary>
-    private const int CardWidth = 78;
-
-    /// <summary>The height of a card or empty pile slot, in logical board units.</summary>
-    private const int CardHeight = 108;
-
-    /// <summary>The horizontal space between adjacent foundation slots, in logical board units.</summary>
-    private const int CardGap = 18;
-
-    /// <summary>The vertical position of the first card in every tableau column, in logical board units.</summary>
-    private const int TableauTop = 218;
-
-    /// <summary>The vertical offset between consecutive tableau cards when the preceding card is face up.</summary>
-    private const int TableauStep = 29;
-
-    /// <summary>The horizontal position of the first tableau column, in logical board units.</summary>
-    private const int FirstColumnX = 32;
-
-    /// <summary>The horizontal offset between consecutive tableau columns, in logical board units.</summary>
-    private const int ColumnStep = 148;
-
-    /// <summary>The logical board width used for viewport fitting and layout math.</summary>
-    private const int BoardWidth = 1100;
-
-    /// <summary>The logical board height used for viewport fitting and layout math.</summary>
-    private const int BoardHeight = 800;
-
     /// <summary>The title shown in the host window.</summary>
     private const string GameTitle = "Cheron Solitaire";
-
-    /// <summary>Stores seven five-bit bitmap rows for each uppercase letter followed by each decimal digit.</summary>
-    /// <remarks>
-    /// The first dimension selects A through Z, then 0 through 9. The second selects a glyph row.
-    /// Bits four through zero represent pixels from left to right; exclamation marks are generated separately.
-    /// </remarks>
-    private static readonly int[,] Glyphs =
-    {
-        { 14, 17, 17, 31, 17, 17, 17 }, { 30, 17, 17, 30, 17, 17, 30 },
-        { 14, 17, 16, 16, 16, 17, 14 }, { 30, 17, 17, 17, 17, 17, 30 },
-        { 31, 16, 16, 30, 16, 16, 31 }, { 31, 16, 16, 30, 16, 16, 16 },
-        { 14, 17, 16, 23, 17, 17, 15 }, { 17, 17, 17, 31, 17, 17, 17 },
-        { 14, 4, 4, 4, 4, 4, 14 }, { 7, 2, 2, 2, 18, 18, 12 },
-        { 17, 18, 20, 24, 20, 18, 17 }, { 16, 16, 16, 16, 16, 16, 31 },
-        { 17, 27, 21, 21, 17, 17, 17 }, { 17, 25, 21, 19, 17, 17, 17 },
-        { 14, 17, 17, 17, 17, 17, 14 }, { 30, 17, 17, 30, 16, 16, 16 },
-        { 14, 17, 17, 17, 21, 18, 13 }, { 30, 17, 17, 30, 20, 18, 17 },
-        { 15, 16, 16, 14, 1, 1, 30 }, { 31, 4, 4, 4, 4, 4, 4 },
-        { 17, 17, 17, 17, 17, 17, 14 }, { 17, 17, 17, 17, 17, 10, 4 },
-        { 17, 17, 17, 21, 21, 21, 10 }, { 17, 17, 10, 4, 10, 17, 17 },
-        { 17, 17, 10, 4, 4, 4, 4 }, { 31, 1, 2, 4, 8, 16, 31 },
-        { 14, 17, 19, 21, 25, 17, 14 }, { 4, 12, 4, 4, 4, 4, 14 },
-        { 14, 17, 1, 2, 4, 8, 31 }, { 30, 1, 1, 14, 1, 1, 30 },
-        { 2, 6, 10, 18, 31, 2, 2 }, { 31, 16, 16, 30, 1, 1, 30 },
-        { 14, 16, 16, 30, 17, 17, 14 }, { 31, 1, 2, 4, 8, 8, 8 },
-        { 14, 17, 17, 14, 17, 17, 14 }, { 14, 17, 17, 15, 1, 1, 14 }
-    };
 
     /// <summary>The face-down draw pile, with the next card at the end of the list.</summary>
     private readonly List<Card> _stock = new();
@@ -133,7 +83,7 @@ internal sealed class SolitaireGame : IGameModule
         _spriteBatch = new SpriteBatch(graphicsDevice);
         _pixelTexture = new Texture2D(graphicsDevice, 1, 1);
         _pixelTexture.SetData([Color.White]);
-        _glyphTexture = CreateGlyphTexture(graphicsDevice);
+        _glyphTexture = SolitaireBitmapFont.CreateGlyphTexture(graphicsDevice);
         _artwork = new SolitaireArtwork(graphicsDevice);
         _boardRasterizerState = new RasterizerState { ScissorTestEnable = true };
         LoadFeedbackSounds();
@@ -294,18 +244,6 @@ internal sealed class SolitaireGame : IGameModule
         _spriteBatch?.Dispose();
     }
 
-    /// <summary>The sound button bounds, shared by drawing and pointer input.</summary>
-    private static readonly Rectangle SoundButtonBounds = new(1008, 20, 68, 44);
-
-    /// <summary>The lifetime of rejected-move outlines and instructions.</summary>
-    private static readonly TimeSpan InvalidFeedbackDuration = TimeSpan.FromSeconds(1.4);
-
-    /// <summary>The duration of the nonblocking win celebration.</summary>
-    private static readonly TimeSpan CelebrationDuration = TimeSpan.FromSeconds(3);
-
-    /// <summary>The duration of an ordinary card slide or flip, in seconds.</summary>
-    private const float MoveDuration = 0.22f;
-
     /// <summary>The module-owned sounds, ordered by <see cref="FeedbackSound"/>.</summary>
     private readonly List<SoundEffect> _feedbackSounds = new();
 
@@ -338,30 +276,6 @@ internal sealed class SolitaireGame : IGameModule
 
     /// <summary>The elapsed time since the current win celebration began.</summary>
     private TimeSpan _celebrationElapsed;
-
-    /// <summary>Identifies the cached sound associated with a player-visible outcome.</summary>
-    private enum FeedbackSound
-    {
-        /// <summary>A soft tone for drawing, recycling, moving, and undoing cards.</summary>
-        Move,
-        /// <summary>A rising pair of tones for advancing a foundation.</summary>
-        Foundation,
-        /// <summary>A quiet low tone for a rejected move.</summary>
-        Invalid,
-        /// <summary>A short ascending phrase after the final card settles.</summary>
-        Win
-    }
-
-    /// <summary>Describes a card's position and visibility before a logical operation.</summary>
-    /// <param name="Bounds">The full card rectangle in board coordinates.</param>
-    /// <param name="FaceUp">Whether the card face was visible.</param>
-    private readonly record struct CardPresentation(Rectangle Bounds, bool FaceUp);
-
-    /// <summary>Describes the endpoints and delay of one presentation-only card transition.</summary>
-    /// <param name="Start">The source position and face state.</param>
-    /// <param name="End">The destination position and face state.</param>
-    /// <param name="Delay">The delay before this transition begins, in seconds.</param>
-    private readonly record struct CardTransition(CardPresentation Start, CardPresentation End, float Delay);
 
     /// <summary>Creates original, short PCM sounds and playback instances without external assets.</summary>
     private void LoadFeedbackSounds()
@@ -735,48 +649,6 @@ internal sealed class SolitaireGame : IGameModule
         }
     }
 
-    /// <summary>The new-game button bounds shared by drawing and pointer handling.</summary>
-    private static readonly Rectangle NewGameButtonBounds = new(32, 20, 132, 44);
-
-    /// <summary>The undo button bounds in logical board coordinates.</summary>
-    private static readonly Rectangle UndoButtonBounds = new(180, 20, 104, 44);
-
-    /// <summary>The hint button bounds in logical board coordinates.</summary>
-    private static readonly Rectangle HintButtonBounds = new(300, 20, 104, 44);
-
-    /// <summary>The toolbar label for starting a new deal.</summary>
-    private const string NewGameLabel = "NEW GAME";
-
-    /// <summary>The toolbar label for undoing the last action.</summary>
-    private const string UndoLabel = "UNDO";
-
-    /// <summary>The toolbar label for requesting a one-step hint.</summary>
-    private const string HintLabel = "HINT";
-
-    /// <summary>The toolbar status label when sound cannot be used.</summary>
-    private const string AudioUnavailableLabel = "NA";
-
-    /// <summary>The toolbar status label when sound is enabled.</summary>
-    private const string SoundEnabledLabel = "SND";
-
-    /// <summary>The toolbar status label when sound is disabled.</summary>
-    private const string SoundDisabledLabel = "OFF";
-
-    /// <summary>Hint text for moving a card to a foundation.</summary>
-    private const string HintToFoundationMessage = "HINT  MOVE GOLD CARD TO GOLD FOUNDATION";
-
-    /// <summary>Hint text for moving a card to a tableau column.</summary>
-    private const string HintToTableauMessage = "HINT  MOVE GOLD CARD TO GOLD TABLEAU";
-
-    /// <summary>Hint text for drawing from a non-empty stock.</summary>
-    private const string HintDrawFromStockMessage = "HINT  CLICK STOCK TO DRAW";
-
-    /// <summary>Hint text for recycling when stock is empty.</summary>
-    private const string HintRecycleStockMessage = "HINT  CLICK EMPTY STOCK TO RECYCLE";
-
-    /// <summary>Hint text shown when no immediate suggestion exists.</summary>
-    private const string HintNoSuggestionMessage = "HINT  NO SUGGESTED MOVE  TRY UNDO OR NEW GAME";
-
     /// <summary>The board states saved before successful actions, newest first.</summary>
     private readonly Stack<BoardSnapshot> _undoHistory = new();
 
@@ -800,16 +672,6 @@ internal sealed class SolitaireGame : IGameModule
 
     /// <summary>The concise hint message shown in the footer.</summary>
     private string _hintMessage = string.Empty;
-
-    /// <summary>Stores one card reference and its face state independently of subsequent mutations.</summary>
-    /// <param name="Card">The original card identity.</param>
-    /// <param name="FaceUp">The saved visibility of the card face.</param>
-    private readonly record struct SavedCard(Card Card, bool FaceUp);
-
-    /// <summary>Stores every pile's order, face states, and move count before a successful action.</summary>
-    /// <param name="Piles">Stock, waste, tableau, and foundation contents in enumeration order.</param>
-    /// <param name="MoveCount">The move count before the action.</param>
-    private sealed record BoardSnapshot(SavedCard[][] Piles, int MoveCount);
 
     /// <summary>Enumerates the existing pile objects in a stable order for history capture and restoration.</summary>
     /// <returns>Stock, waste, tableau columns, then foundations.</returns>
@@ -1557,9 +1419,6 @@ internal sealed class SolitaireGame : IGameModule
         Fill(new Rectangle(bounds.Right - 2, bounds.Y, 2, bounds.Height), color);
     }
 
-    /// <summary>The always-available settings button in logical board coordinates.</summary>
-    private static readonly Rectangle OptionsButtonBounds = new(882, 742, 186, 40);
-
     /// <summary>Whether small labels and card ranks use the larger text layout.</summary>
     private bool _largeText;
 
@@ -1690,11 +1549,6 @@ internal sealed class SolitaireGame : IGameModule
         }
     }
 
-    /// <summary>Gets a settings row's shared drawing and hit-test bounds.</summary>
-    /// <param name="index">The row index.</param>
-    /// <returns>The row bounds in logical board coordinates.</returns>
-    private static Rectangle GetOptionBounds(int index) => new(196, 250 + index * 56, 708, 44);
-
     /// <summary>Consumes settings pointer input, requiring press and release on the same row.</summary>
     /// <param name="position">The logical pointer position.</param>
     /// <param name="isDown">Whether the left button is down.</param>
@@ -1734,8 +1588,9 @@ internal sealed class SolitaireGame : IGameModule
     private void DrawAccessibilityOptions()
     {
         Fill(new Rectangle(0, 0, BoardWidth, BoardHeight), Color.Black * 0.75f);
-        Fill(new Rectangle(160, 180, 780, 444), Color.Black);
-        DrawTargetOutline(new Rectangle(160, 180, 780, 444), Color.White);
+        var panelBounds = new Rectangle(PanelX, PanelY, PanelWidth, PanelHeight);
+        Fill(panelBounds, Color.Black);
+        DrawTargetOutline(panelBounds, Color.White);
         DrawText("ACCESSIBILITY", 196, 202, 3, Color.White);
         for (var index = 0; index < 4; index++)
         {
@@ -2063,7 +1918,7 @@ internal sealed class SolitaireGame : IGameModule
             else
             {
                 var card = pile[_keyboardFocus >= 11 ? _keyboardCardIndex : pile.Count - 1];
-                var rank = GetLongRankLabel(card.Rank);
+                var rank = SolitaireCardLabels.GetLongRankLabel(card.Rank);
                 label += card.FaceUp ? $"  {rank} OF {card.Suit}" : "  FACE DOWN";
             }
         }
@@ -2437,12 +2292,6 @@ internal sealed class SolitaireGame : IGameModule
         return -1;
     }
 
-    /// <summary>Calculates a foundation slot's bounds in logical board coordinates.</summary>
-    /// <param name="foundationIndex">The zero-based index of the foundation slot.</param>
-    /// <returns>The rectangle used to draw and hit-test the foundation.</returns>
-    private Rectangle GetFoundationBounds(int foundationIndex) =>
-        new(BoardWidth - 32 - (4 - foundationIndex) * (CardWidth + CardGap), 82, CardWidth, CardHeight);
-
     /// <summary>Draws a pile's top non-dragged card, or an outlined slot when no card remains visible.</summary>
     /// <param name="pile">The pile to draw.</param>
     /// <param name="bounds">The card or slot bounds in logical board coordinates.</param>
@@ -2523,7 +2372,7 @@ internal sealed class SolitaireGame : IGameModule
 
         var suitColor = _highContrast ? (card.IsRed ? new Color(145, 0, 20) : Color.Black)
             : card.IsRed ? new Color(180, 51, 65) : new Color(36, 57, 66);
-        var rankLabel = GetShortRankLabel(card.Rank);
+        var rankLabel = SolitaireCardLabels.GetShortRankLabel(card.Rank);
 
         var suitTexture = _artwork.Suits[(int)card.Suit];
 
@@ -2536,63 +2385,10 @@ internal sealed class SolitaireGame : IGameModule
             bounds.Bottom - (7 * rankScale) - 8, rankScale, suitColor, preserveColor: true);
     }
 
-    /// <summary>Gets the short rank text used for card faces.</summary>
-    /// <param name="rank">The card rank from one (ace) through thirteen (king).</param>
-    /// <returns>The short rank label.</returns>
-    private static string GetShortRankLabel(int rank) => rank switch
-    {
-        1 => "A",
-        11 => "J",
-        12 => "Q",
-        13 => "K",
-        _ => rank.ToString()
-    };
-
-    /// <summary>Gets the spoken-style rank text used by keyboard descriptions.</summary>
-    /// <param name="rank">The card rank from one (ace) through thirteen (king).</param>
-    /// <returns>The long rank label.</returns>
-    private static string GetLongRankLabel(int rank) => rank switch
-    {
-        1 => "ACE",
-        11 => "JACK",
-        12 => "QUEEN",
-        13 => "KING",
-        _ => rank.ToString()
-    };
-
     /// <summary>Fills a rectangle using the module's single-pixel texture.</summary>
     /// <param name="bounds">The rectangle to fill in logical board coordinates.</param>
     /// <param name="color">The fill color.</param>
     private void Fill(Rectangle bounds, Color color) => _spriteBatch.Draw(_pixelTexture, bounds, color);
-
-    /// <summary>Builds a padded atlas of the existing five-by-seven glyphs for smoothly scaled lettering.</summary>
-    /// <param name="graphicsDevice">The borrowed device that creates the owned texture.</param>
-    /// <returns>The glyph atlas, which the module must dispose.</returns>
-    private static Texture2D CreateGlyphTexture(GraphicsDevice graphicsDevice)
-    {
-        const int atlasWidth = 37 * 7;
-        var pixels = new Color[atlasWidth * 9];
-        for (var glyphIndex = 0; glyphIndex < 37; glyphIndex++)
-        {
-            for (var glyphRow = 0; glyphRow < 7; glyphRow++)
-            {
-                var rowBits = glyphIndex == 36
-                    ? (glyphRow < 5 || glyphRow == 6 ? 4 : 0)
-                    : Glyphs[glyphIndex, glyphRow];
-                for (var glyphColumn = 0; glyphColumn < 5; glyphColumn++)
-                {
-                    if ((rowBits & (1 << (4 - glyphColumn))) != 0)
-                    {
-                        pixels[(glyphRow + 1) * atlasWidth + glyphIndex * 7 + glyphColumn + 1] = Color.White;
-                    }
-                }
-            }
-        }
-
-        var texture = new Texture2D(graphicsDevice, atlasWidth, 9);
-        texture.SetData(pixels);
-        return texture;
-    }
 
     /// <summary>Draws uppercase bitmap text, leaving blank character widths for unsupported characters.</summary>
     /// <param name="text">The text to draw; letters, digits, spaces, and exclamation marks are supported.</param>
@@ -2603,175 +2399,8 @@ internal sealed class SolitaireGame : IGameModule
     /// <param name="preserveColor">Whether to retain contrasting card or button ink in high-contrast mode.</param>
     private void DrawText(string text, int textX, int textY, int scale, Color color, bool preserveColor = false)
     {
-        if (_highContrast && !preserveColor)
-        {
-            color = Color.White;
-        }
-
-        foreach (var character in text.ToUpperInvariant())
-        {
-            if (character == ' ')
-            {
-                textX += 4 * scale;
-                continue;
-            }
-
-            var glyphIndex = character switch
-            {
-                >= 'A' and <= 'Z' => character - 'A',
-                >= '0' and <= '9' => character - '0' + 26,
-                '!' => 36,
-                _ => -1
-            };
-
-            if (glyphIndex >= 0)
-            {
-                _spriteBatch.Draw(_glyphTexture, new Rectangle(textX, textY, 5 * scale, 7 * scale),
-                    new Rectangle(glyphIndex * 7 + 1, 1, 5, 7), color);
-            }
-
-            textX += 6 * scale;
-        }
+        SolitaireBitmapFont.DrawText(_spriteBatch, _glyphTexture, _highContrast, text, textX, textY, scale, color,
+            preserveColor);
     }
 
-    /// <summary>Builds shuffled deals and initializes board piles for a new game.</summary>
-    private static class DealBuilder
-    {
-        /// <summary>Creates a shuffled standard deck using the provided random source.</summary>
-        /// <param name="random">The random source used to shuffle cards.</param>
-        /// <returns>A shuffled deck ordered from first draw at the end of the list.</returns>
-        public static List<Card> CreateShuffledDeck(Random random)
-        {
-            var deck = CreateOrderedDeck();
-            Shuffle(deck, random);
-            return deck;
-        }
-
-        /// <summary>Deals seven tableau columns from the end of the deck and removes dealt cards from it.</summary>
-        /// <param name="deck">The deck to deal from.</param>
-        /// <param name="tableau">The tableau collection to populate.</param>
-        public static void DealTableau(List<Card> deck, List<List<Card>> tableau)
-        {
-            for (var columnIndex = 0; columnIndex < 7; columnIndex++)
-            {
-                var tableauPile = new List<Card>();
-                for (var cardIndex = 0; cardIndex <= columnIndex; cardIndex++)
-                {
-                    var card = deck[^1];
-                    deck.RemoveAt(deck.Count - 1);
-                    card.FaceUp = cardIndex == columnIndex;
-                    tableauPile.Add(card);
-                }
-
-                tableau.Add(tableauPile);
-            }
-        }
-
-        /// <summary>Initializes the four empty foundations for a new deal.</summary>
-        /// <param name="foundations">The foundations collection to populate.</param>
-        public static void InitializeFoundations(List<List<Card>> foundations)
-        {
-            for (var foundationIndex = 0; foundationIndex < 4; foundationIndex++)
-            {
-                foundations.Add(new List<Card>());
-            }
-        }
-
-        /// <summary>Creates an ordered standard deck from Ace through King in each suit.</summary>
-        /// <returns>The ordered deck.</returns>
-        private static List<Card> CreateOrderedDeck()
-        {
-            var deck = new List<Card>(52);
-            foreach (var suit in Enum.GetValues<Suit>())
-            {
-                for (var rank = 1; rank <= 13; rank++)
-                {
-                    deck.Add(new Card(rank, suit));
-                }
-            }
-
-            return deck;
-        }
-
-        /// <summary>Shuffles the deck in place using the Fisher-Yates algorithm.</summary>
-        /// <param name="deck">The deck to shuffle.</param>
-        /// <param name="random">The random source used to select swap positions.</param>
-        private static void Shuffle(List<Card> deck, Random random)
-        {
-            for (var cardIndex = deck.Count - 1; cardIndex > 0; cardIndex--)
-            {
-                var swapIndex = random.Next(cardIndex + 1);
-                (deck[cardIndex], deck[swapIndex]) = (deck[swapIndex], deck[cardIndex]);
-            }
-        }
     }
-
-    /// <summary>Evaluates legal move targets for selected cards without mutating board state.</summary>
-    private static class MoveRules
-    {
-        /// <summary>Checks whether a card can be placed onto a tableau column.</summary>
-        /// <param name="movingCard">The selected card that would be placed.</param>
-        /// <param name="destination">The destination tableau pile.</param>
-        /// <returns><see langword="true"/> when the move is legal; otherwise, <see langword="false"/>.</returns>
-        public static bool CanMoveToTableau(Card movingCard, List<Card> destination)
-        {
-            if (destination.Count == 0)
-            {
-                return movingCard.Rank == 13;
-            }
-
-            var destinationTop = destination[^1];
-            return destinationTop.FaceUp && destinationTop.Rank == movingCard.Rank + 1 &&
-                destinationTop.IsRed != movingCard.IsRed;
-        }
-
-        /// <summary>Checks whether a card can be placed onto a foundation pile.</summary>
-        /// <param name="movingCard">The selected card that would be placed.</param>
-        /// <param name="destination">The destination foundation pile.</param>
-        /// <returns><see langword="true"/> when the move is legal; otherwise, <see langword="false"/>.</returns>
-        public static bool CanMoveToFoundation(Card movingCard, List<Card> destination)
-        {
-            if (destination.Count == 0)
-            {
-                return movingCard.Rank == 1;
-            }
-
-            var destinationTop = destination[^1];
-            return destinationTop.Suit == movingCard.Suit && destinationTop.Rank + 1 == movingCard.Rank;
-        }
-    }
-
-    /// <summary>Identifies the four suits in a standard playing-card deck.</summary>
-    private enum Suit
-    {
-        /// <summary>The black clubs suit.</summary>
-        Clubs,
-
-        /// <summary>The red diamonds suit.</summary>
-        Diamonds,
-
-        /// <summary>The red hearts suit.</summary>
-        Hearts,
-
-        /// <summary>The black spades suit.</summary>
-        Spades
-    }
-
-    /// <summary>Stores a playing card's identity and face-up state.</summary>
-    /// <param name="rank">The card rank, using 1 for Ace through 13 for King.</param>
-    /// <param name="suit">The card's suit.</param>
-    private sealed class Card(int rank, Suit suit)
-    {
-        /// <summary>Gets the card rank, using 1 for Ace through 13 for King.</summary>
-        public int Rank { get; } = rank;
-
-        /// <summary>Gets the card's suit.</summary>
-        public Suit Suit { get; } = suit;
-
-        /// <summary>Gets or sets whether the card's face is visible.</summary>
-        public bool FaceUp { get; set; }
-
-        /// <summary>Gets whether the card belongs to a red suit.</summary>
-        public bool IsRed => Suit is Suit.Diamonds or Suit.Hearts;
-    }
-}
