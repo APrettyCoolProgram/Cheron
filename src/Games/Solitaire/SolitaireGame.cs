@@ -1591,7 +1591,7 @@ internal sealed class SolitaireGame : IGameModule
         var panelBounds = new Rectangle(PanelX, PanelY, PanelWidth, PanelHeight);
         Fill(panelBounds, Color.Black);
         DrawTargetOutline(panelBounds, Color.White);
-        DrawText("ACCESSIBILITY", 196, 202, 3, Color.White);
+        DrawText(AccessibilityTitle, 196, 202, 3, Color.White);
         for (var index = 0; index < 4; index++)
         {
             var bounds = GetOptionBounds(index);
@@ -1601,7 +1601,7 @@ internal sealed class SolitaireGame : IGameModule
                 0 => $"F2  LARGER TEXT  {(_largeText ? "ON" : "OFF")}",
                 1 => $"F3  HIGH CONTRAST  {(_highContrast ? "ON" : "OFF")}",
                 2 => $"F4  REDUCED MOTION  {(_reducedMotion ? "ON" : "OFF")}",
-                _ => "F1  CLOSE OPTIONS"
+                _ => AccessibilityCloseOptionsLabel
             };
             DrawText(label, bounds.X + 18, bounds.Y + 15, 2, Color.White);
             if (index == _optionIndex)
@@ -1610,10 +1610,10 @@ internal sealed class SolitaireGame : IGameModule
             }
         }
 
-        DrawText("TAB OR UP DOWN  CHOOSE   ENTER OR SPACE  TOGGLE", 196, 500, 2, Color.White);
-        DrawText("SETTINGS LAST UNTIL THE APPLICATION CLOSES", 196, 530, 2, Color.White);
-        DrawText("F1 CLOSES OPTIONS   ESC EXITS THE GAME", 196, 560, 2, Color.White);
-        DrawText("BOARD SHORTCUTS ARE DISABLED WHILE OPTIONS ARE OPEN", 196, 590, 2, Color.White);
+        DrawText(AccessibilityHelpNavigation, 196, 500, 2, Color.White);
+        DrawText(AccessibilityHelpPersistence, 196, 530, 2, Color.White);
+        DrawText(AccessibilityHelpCloseAndExit, 196, 560, 2, Color.White);
+        DrawText(AccessibilityHelpShortcutsDisabled, 196, 590, 2, Color.White);
     }
 
     /// <summary>Draws an empty pile using either the themed texture or a solid high-contrast surface.</summary>
@@ -1635,16 +1635,16 @@ internal sealed class SolitaireGame : IGameModule
     private void DrawAccessibleFooter()
     {
         var message = _invalidTimeRemaining > TimeSpan.Zero
-            ? "MOVE NOT ALLOWED  TRY ANOTHER TARGET OR USE HINT"
+            ? FooterInvalidMoveMessage
             : _hintTimeRemaining > TimeSpan.Zero ? _hintMessage
-            : _keyboardFocusVisible ? GetKeyboardDescription() : "BUILD DOWN IN ALTERNATING COLORS";
+            : _keyboardFocusVisible ? GetKeyboardDescription() : FooterDefaultMessage;
         DrawText(message, 32, 741, SmallTextScale, new Color(207, 220, 207));
         var instructions = _keyboardFocusVisible
-            ? "TAB FOCUS  ARROWS NAVIGATE  ENTER ACT  F BUILD  BACKSPACE CLEAR"
-            : _audioUnavailable ? "SOUND UNAVAILABLE  TAB KEYBOARD PLAY  ESC EXIT"
-            : "DRAG OR CLICK TO MOVE  TAB KEYBOARD PLAY  ESC EXIT";
+            ? FooterKeyboardInstructions
+            : _audioUnavailable ? FooterSoundUnavailableInstructions
+            : FooterDefaultInstructions;
         DrawText(instructions, 32, 767, SmallTextScale, new Color(153, 183, 176));
-        DrawToolbarButton(OptionsButtonBounds, "OPTIONS F1", true);
+        DrawToolbarButton(OptionsButtonBounds, FooterOptionsLabel, true);
     }
 
     /// <summary>Processes edge-triggered keyboard navigation without interfering with active pointer gestures.</summary>
@@ -1897,29 +1897,34 @@ internal sealed class SolitaireGame : IGameModule
         NormalizeKeyboardCard();
         var label = _keyboardFocus switch
         {
-            0 => "NEW GAME  R",
-            1 => _undoHistory.Count == 0 || _cardTransitions.Count > 0 ? "UNDO UNAVAILABLE" : "UNDO  U",
-            2 => _hasWon || _cardTransitions.Count > 0 ? "HINT UNAVAILABLE" : "HINT  H",
-            3 => _audioUnavailable ? "SOUND UNAVAILABLE" : _soundEnabled ? "SOUND ON  M" : "SOUND OFF  M",
-            4 => "OPTIONS  F1",
-            5 => _stock.Count > 0 ? $"STOCK  {_stock.Count} CARDS  ENTER DRAW"
-                : _waste.Count > 0 ? "STOCK EMPTY  ENTER RECYCLE" : "STOCK AND WASTE EMPTY",
-            6 => "WASTE",
-            >= 7 and <= 10 => $"FOUNDATION {_keyboardFocus - 6}",
-            _ => $"TABLEAU {_keyboardFocus - 10}"
+            0 => KeyboardDescriptionNewGame,
+            1 => _undoHistory.Count == 0 || _cardTransitions.Count > 0
+                ? KeyboardDescriptionUndoUnavailable : KeyboardDescriptionUndoAvailable,
+            2 => _hasWon || _cardTransitions.Count > 0
+                ? KeyboardDescriptionHintUnavailable : KeyboardDescriptionHintAvailable,
+            3 => _audioUnavailable
+                ? KeyboardDescriptionSoundUnavailable
+                : _soundEnabled ? KeyboardDescriptionSoundOn : KeyboardDescriptionSoundOff,
+            4 => KeyboardDescriptionOptions,
+            5 => _stock.Count > 0
+                ? $"{KeyboardDescriptionStockPrefix}  {_stock.Count} {KeyboardDescriptionStockDrawSuffix}"
+                : _waste.Count > 0 ? KeyboardDescriptionStockEmptyRecycle : KeyboardDescriptionStockAndWasteEmpty,
+            6 => KeyboardDescriptionWaste,
+            >= 7 and <= 10 => $"{KeyboardDescriptionFoundationPrefix} {_keyboardFocus - 6}",
+            _ => $"{KeyboardDescriptionTableauPrefix} {_keyboardFocus - 10}"
         };
         var pile = GetKeyboardPile();
         if (pile is not null)
         {
             if (pile.Count == 0)
             {
-                label += " EMPTY";
+                label += KeyboardDescriptionEmptySuffix;
             }
             else
             {
                 var card = pile[_keyboardFocus >= 11 ? _keyboardCardIndex : pile.Count - 1];
                 var rank = SolitaireCardLabels.GetLongRankLabel(card.Rank);
-                label += card.FaceUp ? $"  {rank} OF {card.Suit}" : "  FACE DOWN";
+                label += card.FaceUp ? $"  {rank} OF {card.Suit}" : KeyboardDescriptionFaceDownSuffix;
             }
         }
 
@@ -1929,10 +1934,10 @@ internal sealed class SolitaireGame : IGameModule
             {
                 var canMove = _keyboardFocus >= 11 ? CanMoveToTableau(_keyboardFocus - 11)
                     : CanMoveToFoundation(_keyboardFocus - 7);
-                label += canMove ? "  LEGAL TARGET" : "  INVALID TARGET";
+                label += canMove ? KeyboardDescriptionLegalTargetSuffix : KeyboardDescriptionInvalidTargetSuffix;
             }
 
-            label += $"  SELECTED {_selectedPile.Count - _selectedCardIndex} CARDS";
+            label += $"{KeyboardDescriptionSelectedPrefix} {_selectedPile.Count - _selectedCardIndex} {KeyboardDescriptionSelectedSuffix}";
         }
 
         return label;
