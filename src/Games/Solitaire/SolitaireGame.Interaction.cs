@@ -241,9 +241,7 @@ internal sealed partial class SolitaireGame
         }
 
         var movingCard = _selectedPile[_selectedCardIndex];
-        return destination.Count == 0 ? movingCard.Rank == 13 :
-            destination[^1].FaceUp && destination[^1].Rank == movingCard.Rank + 1 &&
-            destination[^1].IsRed != movingCard.IsRed;
+        return MoveRules.CanMoveToTableau(movingCard, destination);
     }
 
     /// <summary>Checks foundation legality without changing selection or card state.</summary>
@@ -259,8 +257,7 @@ internal sealed partial class SolitaireGame
         }
 
         var movingCard = _selectedPile[_selectedCardIndex];
-        return destination.Count == 0 ? movingCard.Rank == 1 :
-            destination[^1].Suit == movingCard.Suit && destination[^1].Rank + 1 == movingCard.Rank;
+        return MoveRules.CanMoveToFoundation(movingCard, destination);
     }
 
     /// <summary>Gets the complete visible tableau hit area, excluding the footer.</summary>
