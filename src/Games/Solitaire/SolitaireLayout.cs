@@ -240,13 +240,13 @@ internal static class SolitaireLayout
     internal static readonly Rectangle HintButtonBounds = new(180, 20, 60, 44);
 
     /// <summary>The help button bounds in logical board coordinates.</summary>
-    internal static readonly Rectangle HelpButtonBounds = new(860, 20, 72, 44);
+    internal static readonly Rectangle HelpButtonBounds = new(830, 20, 72, 44);
 
     /// <summary>The footer sound toggle bounds, shared by drawing and pointer input.</summary>
     internal static readonly Rectangle SoundButtonBounds = new(902, 20, 186, 44);
 
     /// <summary>The footer options action bounds in logical board coordinates.</summary>
-    internal static readonly Rectangle OptionsButtonBounds = new(750, 20, 96, 44);
+    internal static readonly Rectangle OptionsButtonBounds = new(734, 20, 96, 44);
 
     /// <summary>The win banner bounds in logical board coordinates.</summary>
     internal static readonly Rectangle WinBannerBounds = new(370, 376, 360, 56);

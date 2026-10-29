@@ -196,6 +196,15 @@ internal sealed partial class SolitaireGame : IGameModule
     /// <summary>Gets whether the Help overlay is open for tests.</summary>
     internal bool TestIsHelpOverlayOpen() => _helpOpen;
 
+    /// <summary>Gets whether session-local sound is currently enabled for tests.</summary>
+    internal bool TestIsSoundEnabled() => _soundEnabled;
+
+    /// <summary>Sets the audio-unavailable state for tests.</summary>
+    internal void TestSetAudioUnavailable(bool unavailable)
+    {
+        _audioUnavailable = unavailable;
+    }
+
     /// <summary>Gets the current Help overlay scroll offset for tests.</summary>
     internal int TestGetHelpScrollOffset() => _helpScrollOffset;
 
@@ -279,6 +288,25 @@ internal sealed partial class SolitaireGame : IGameModule
         return handled;
     }
 
+    /// <summary>Processes one keyboard frame through normal update shortcut routing for tests.</summary>
+    internal void TestHandleKeyboardFrame(KeyboardState keyboard)
+    {
+        if (!HandleAccessibilityKeys(keyboard))
+        {
+            if (IsNewKey(keyboard, Keys.N))
+            {
+                OpenNewGamePrompt();
+            }
+            else
+            {
+                HandleControlKeys(keyboard);
+                HandleBoardKeyboard(keyboard);
+            }
+        }
+
+        _previousKeyboardState = keyboard;
+    }
+
     /// <summary>Resets keyboard edge-detection state for tests.</summary>
     internal void TestResetPreviousKeyboardState()
     {
@@ -289,6 +317,24 @@ internal sealed partial class SolitaireGame : IGameModule
     internal void TestUpdatePointer(Point position, bool isDown, TimeSpan time)
     {
         UpdatePointer(position, isDown, time);
+    }
+
+    /// <summary>Sets keyboard focus target index for tests.</summary>
+    internal void TestFocusKeyboardTarget(int index)
+    {
+        FocusKeyboardTarget(index);
+    }
+
+    /// <summary>Gets focused keyboard bounds for tests.</summary>
+    internal Rectangle TestGetKeyboardBounds()
+    {
+        return GetKeyboardBounds();
+    }
+
+    /// <summary>Gets focused keyboard description for tests.</summary>
+    internal string TestGetKeyboardDescription()
+    {
+        return GetKeyboardDescription();
     }
 
     /// <summary>Starts a new game for tests using the currently selected variant.</summary>
@@ -1736,5 +1782,4 @@ internal sealed partial class SolitaireGame : IGameModule
 
         return -1;
     }
-
-    }
+}

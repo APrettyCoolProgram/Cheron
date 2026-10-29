@@ -183,7 +183,7 @@ internal static class SolitaireTextConstants
     internal const string FooterOptionsLabel = "OPTIONS";
 
     /// <summary>The keyboard-focus description for the New Game control.</summary>
-    internal const string KeyboardDescriptionNewGame = "NEW GAME  R";
+    internal const string KeyboardDescriptionNewGame = "NEW GAME  N";
 
     /// <summary>The keyboard-focus description when Undo cannot be used.</summary>
     internal const string KeyboardDescriptionUndoUnavailable = "UNDO UNAVAILABLE";

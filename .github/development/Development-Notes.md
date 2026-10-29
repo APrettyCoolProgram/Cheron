@@ -10,18 +10,27 @@ Let's create a new game type: Memory Tiles
 
 Create a new folder/namespace for this game type called `Games.MemoryTile`
 
-Are there any other tests we should create for the Solitaire component?
+***
 
+## Before release
 
+- Are there any other tests we should create for the %Component% component?
 
-
-Let's do a pass over all of the project code and:
-- Confirm everything is human readable
+Let's do a pass over all of the project code, and using the guidelines in `.github/agents/AGENT-CSharp-DotNet-Janitor.md`, `.github/agents/AGENT-CSharp-ExpertDeveloper.md`, and `.github/agents/AGENT-MonoGame-Engine.md` and:
+- Confirm all project source code is human readable
 - Confirm all variables/methods/etc. have descriptive names
-- Formatting is correct
+- Confirm source code formatting is correct
 
+- Confirm all source code in the entire solution has accurate XML documentation, according to the guidelines in `.github/agents/AGENT-CSharp-XmlDocumentation.md`
 
+- Update the repository README.md according to the guidelines in `.github/agents/AGENT-Repository-Readme.md`
 
-Let's do a pass over all of the project code and:
+- Update the `docs/rn/rn26-10.md` release notes file according to the guidelines in `.github/agents/AGENT-ReleaseNotes.md`
+
+***
+
+## Start of new release
+
+Let's do a pass over all of the project code, and using the guidelines in `.github/agents/AGENT-CSharp-DotNet-Janitor.md`, `.github/agents/AGENT-CSharp-ExpertDeveloper.md`, and `.github/agents/AGENT-MonoGame-Engine.md` and:
 - Redundant code is refactored
 - Unnecessary code is removed

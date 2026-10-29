@@ -9,6 +9,7 @@
 ## Engine
 
 * New fonts
+* Class libraries for game types?
 
 ### Start screen
 
@@ -27,5 +28,14 @@
 * Better options and help text
 * Better way to exit back to the console
 * Better spacing for top/bottom bar components
+* Tighten up classes/methods
 
 ### Memory Tiles
+
+### CCG
+
+### Text Adventure
+
+### Platformer
+
+
