@@ -69,6 +69,9 @@ internal sealed partial class SolitaireGame : IGameModule
     /// <summary>The currently active solitaire variant.</summary>
     private SolitaireVariant _variant = SolitaireVariant.Klondike;
 
+    /// <summary>The variant-behavior strategy map used to reduce shared branching.</summary>
+    private readonly Dictionary<SolitaireVariant, ISolitaireVariantBehavior> _variantBehaviors = new();
+
     /// <summary>The variant currently highlighted by the new-game picker prompt.</summary>
     private SolitaireVariant _newGamePromptVariant = SolitaireVariant.Klondike;
 
@@ -84,12 +87,17 @@ internal sealed partial class SolitaireGame : IGameModule
     /// <summary>Initializes rendering and interaction delegation state for this game module.</summary>
     public SolitaireGame()
     {
+        _variantBehaviors[SolitaireVariant.Klondike] = new KlondikeVariantBehavior();
+        _variantBehaviors[SolitaireVariant.FreeCell] = new FreeCellVariantBehavior();
         _renderer = new SolitaireRenderer(this);
         _interactionController = new SolitaireInteractionController(this);
     }
 
     /// <summary>Whether the new-game variant picker prompt is currently visible.</summary>
     private bool IsNewGamePromptOpen => _newGamePromptOpen;
+
+    /// <summary>Gets the strategy object for the active variant.</summary>
+    private ISolitaireVariantBehavior ActiveVariantBehavior => _variantBehaviors[_variant];
 
     /// <summary>Gets the Solitaire window title.</summary>
     public string Title => WindowTitle;
@@ -108,6 +116,28 @@ internal sealed partial class SolitaireGame : IGameModule
     {
         _newGamePromptVariant = _variant;
         _newGamePromptOpen = true;
+    }
+
+    /// <summary>Applies the currently highlighted new-game prompt selection and starts a deal.</summary>
+    private void ConfirmNewGamePromptSelection()
+    {
+        _variant = _newGamePromptVariant;
+        _newGamePromptOpen = false;
+        StartNewGame();
+    }
+
+    /// <summary>Applies a specific prompt variant and starts a deal immediately.</summary>
+    /// <param name="variant">The variant to start.</param>
+    private void StartNewGameFromPromptVariant(SolitaireVariant variant)
+    {
+        _newGamePromptVariant = variant;
+        ConfirmNewGamePromptSelection();
+    }
+
+    /// <summary>Cancels the current new-game prompt without changing the active deal.</summary>
+    private void CancelNewGamePrompt()
+    {
+        _newGamePromptOpen = false;
     }
 
     /// <summary>Gets whether the new-game prompt is open for tests.</summary>
@@ -152,22 +182,19 @@ internal sealed partial class SolitaireGame : IGameModule
     /// <summary>Toggles prompt variant for tests.</summary>
     internal void TestTogglePromptVariant()
     {
-        _newGamePromptVariant = _newGamePromptVariant == SolitaireVariant.Klondike
-            ? SolitaireVariant.FreeCell
-            : SolitaireVariant.Klondike;
+        _newGamePromptVariant = _newGamePromptVariant.ToggleVariant();
     }
 
     /// <summary>Confirms the prompt selection for tests.</summary>
     internal void TestConfirmNewGamePromptSelection()
     {
-        _variant = _newGamePromptVariant;
-        _newGamePromptOpen = false;
+        ConfirmNewGamePromptSelection();
     }
 
     /// <summary>Cancels the prompt selection for tests.</summary>
     internal void TestCancelNewGamePromptSelection()
     {
-        _newGamePromptOpen = false;
+        CancelNewGamePrompt();
     }
 
     /// <summary>Processes one accessibility keyboard frame for tests and advances key-edge state.</summary>
@@ -661,9 +688,7 @@ internal sealed partial class SolitaireGame : IGameModule
     /// <returns>Variant-dependent piles, then tableau columns, then foundations.</returns>
     private IEnumerable<List<Card>> EnumeratePiles()
     {
-        var leadingPiles = _variant.IsFreeCell()
-            ? FreeCellGameplay.EnumerateLeadingPiles(_freeCells)
-            : KlondikeGameplay.EnumerateLeadingPiles(_stock, _waste);
+        var leadingPiles = ActiveVariantBehavior.EnumerateLeadingPiles(_stock, _waste, _freeCells);
 
         foreach (var pile in leadingPiles)
         {
@@ -1019,12 +1044,8 @@ internal sealed partial class SolitaireGame : IGameModule
     /// <returns>Whether a variant-specific top-row drop was handled.</returns>
     private bool TryDropToVariantTopRow(Point position)
     {
-        if (_variant.IsFreeCell())
-        {
-            return FreeCellGameplay.TryDropToCell(position, _freeCells, GetFreeCellBounds, TryMoveToFreeCell);
-        }
-
-        return false;
+        return ActiveVariantBehavior.TryDropToVariantTopRow(position, _freeCells, GetFreeCellBounds,
+            TryMoveToFreeCell);
     }
 
     /// <summary>Checks tableau legality without changing selection or card state.</summary>
@@ -1033,17 +1054,15 @@ internal sealed partial class SolitaireGame : IGameModule
     private bool CanMoveToTableau(int columnIndex)
     {
         var destination = _tableau[columnIndex];
-        return _variant.IsFreeCell()
-            ? FreeCellGameplay.CanMoveToTableau(_selectedPile, _selectedCardIndex, destination, _tableau, _freeCells,
-                _stock, _waste)
-            : KlondikeGameplay.CanMoveToTableau(_selectedPile, _selectedCardIndex, destination);
+        return ActiveVariantBehavior.CanMoveToTableau(_selectedPile, _selectedCardIndex, destination, _tableau,
+            _freeCells, _stock, _waste);
     }
 
     /// <summary>Checks FreeCell holding-cell legality without changing selection or card state.</summary>
     /// <param name="freeCellIndex">The destination FreeCell holding-cell index.</param>
     /// <returns>Whether the selection can move to the target holding cell.</returns>
     private bool CanMoveToFreeCell(int freeCellIndex) =>
-        FreeCellGameplay.CanMoveToCell(_variant, _selectedPile, _selectedCardIndex, _freeCells, freeCellIndex);
+        ActiveVariantBehavior.CanMoveToFreeCell(_selectedPile, _selectedCardIndex, _freeCells, freeCellIndex);
 
     /// <summary>Checks foundation legality without changing selection or card state.</summary>
     /// <param name="foundationIndex">The destination foundation index.</param>
@@ -1066,12 +1085,7 @@ internal sealed partial class SolitaireGame : IGameModule
     /// <returns>The left edge of the column in logical board coordinates.</returns>
     private int GetTableauColumnX(int columnIndex)
     {
-        if (_variant.IsFreeCell())
-        {
-            return FreeCellLayout.GetCascadeColumnX(columnIndex, _tableau.Count);
-        }
-
-        return KlondikeLayout.GetTableauColumnX(columnIndex);
+        return ActiveVariantBehavior.GetTableauColumnX(columnIndex, _tableau.Count);
     }
 
     /// <summary>Gets the complete visible tableau hit area, excluding the footer.</summary>
@@ -1108,23 +1122,11 @@ internal sealed partial class SolitaireGame : IGameModule
     /// <returns>Whether a selectable card was hit.</returns>
     private bool TryGetCardAt(Point position, out List<Card> pile, out int cardIndex, out Rectangle bounds)
     {
-        if (_variant.IsFreeCell())
+        if (ActiveVariantBehavior.TryGetTopRowCardAt(position, _waste, GetWasteBounds, _freeCells,
+                GetFreeCellBounds, out var topRowPile, out cardIndex, out bounds))
         {
-            if (FreeCellGameplay.TryGetCardAtCell(position, _freeCells, GetFreeCellBounds,
-                    out var freeCellPile, out cardIndex, out bounds))
-            {
-                pile = freeCellPile!;
-                return true;
-            }
-        }
-        else
-        {
-            if (KlondikeGameplay.TryGetCardAtWaste(position, _waste, GetWasteBounds(),
-                    out var wastePile, out cardIndex, out bounds))
-            {
-                pile = wastePile!;
-                return true;
-            }
+            pile = topRowPile!;
+            return true;
         }
 
         for (var foundationIndex = 0; foundationIndex < _foundations.Count; foundationIndex++)
@@ -1351,18 +1353,7 @@ internal sealed partial class SolitaireGame : IGameModule
         _hasWon = false;
 
         var deck = SolitaireDealBuilder.CreateShuffledDeck(new Random());
-        if (_variant.IsFreeCell())
-        {
-            FreeCellDealBuilder.DealCascades(deck, _tableau);
-            SolitaireDealBuilder.InitializeFoundations(_foundations);
-            FreeCellDealBuilder.InitializeCells(_freeCells);
-        }
-        else
-        {
-            KlondikeDealBuilder.DealTableau(deck, _tableau);
-            _stock.AddRange(deck);
-            SolitaireDealBuilder.InitializeFoundations(_foundations);
-        }
+        ActiveVariantBehavior.InitializeDeal(deck, _tableau, _stock, _waste, _foundations, _freeCells);
 
         AnimateDeal();
     }
@@ -1377,11 +1368,9 @@ internal sealed partial class SolitaireGame : IGameModule
         }
 
         ClearHint();
-        var handledTopRowClick = _variant.IsFreeCell()
-            ? FreeCellGameplay.TryHandleTopRowClick(clickPosition, _freeCells, GetFreeCellBounds, _selectedPile,
-                TryMoveToFreeCell, ShowInvalidMove, SelectTop)
-            : KlondikeGameplay.TryHandleTopRowClick(clickPosition, GetStockBounds(), GetWasteBounds(), _waste,
-                DrawFromStock, SelectTop);
+        var handledTopRowClick = ActiveVariantBehavior.TryHandleTopRowClick(clickPosition, _freeCells,
+            GetFreeCellBounds, _selectedPile, TryMoveToFreeCell, ShowInvalidMove, SelectTop, GetStockBounds,
+            GetWasteBounds, _waste, DrawFromStock);
         if (handledTopRowClick)
         {
             return;
@@ -1511,25 +1500,8 @@ internal sealed partial class SolitaireGame : IGameModule
     /// <returns>Whether the selected card was moved to the FreeCell holding cell.</returns>
     private bool TryMoveToFreeCell(int freeCellIndex)
     {
-        if (!_variant.IsFreeCell() || _selectedPile is null)
-        {
-            return false;
-        }
-
-        var destination = _freeCells[freeCellIndex];
-        if (ReferenceEquals(_selectedPile, destination))
-        {
-            ClearSelection();
-            return true;
-        }
-
-        if (!CanMoveToFreeCell(freeCellIndex))
-        {
-            return false;
-        }
-
-        MoveSelectedCards(destination);
-        return true;
+        return FreeCellGameplay.TryMoveToCell(_variant, _selectedPile, _selectedCardIndex, _freeCells, freeCellIndex,
+            CanMoveToFreeCell, () => MoveSelectedCards(_freeCells[freeCellIndex]), ClearSelection);
     }
 
     /// <summary>Attempts to move a single selected top card to a same-suit, ascending foundation.</summary>

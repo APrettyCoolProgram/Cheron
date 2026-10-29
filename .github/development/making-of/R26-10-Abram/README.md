@@ -294,3 +294,31 @@ Do not immediately generate a large engine architecture. First:
 
 </details>
 
+## Plans
+
+- [Add FreeCell variant to Solitaire with options selector and reset prompt](./plan-add-freecell-variant-to-solitaire-with-options-selector-and-reset-prompt.md)
+- [Add xUnit tests for new game variant prompt flow](./plan-add-xunit-tests-for-new-game-variant-prompt-flow.md)
+- [Complete remaining follow-up steps for Solitaire variant work](./plan-complete-remaining-follow-up-steps-for-solitaire-variant-work.md)
+- [Continue Solitaire modularization with accessibility layout extraction](./plan-continue-solitaire-modularization-with-accessibility-layout-extraction.md)
+- [Continue Solitaire modularization with accessibility option text helper](./plan-continue-solitaire-modularization-with-accessibility-option-text-helper.md)
+- [Continue Solitaire modularization with accessibility footer text extraction](./plan-continue-solitaire-modularization-with-accessibilityfooter-text-extraction.md)
+- [Continue Solitaire modularization with bitmap font extraction](./plan-continue-solitaire-modularization-with-bitmap-font-extraction.md)
+- [Continue Solitaire modularization with card rank label extraction](./plan-continue-solitaire-modularization-with-card-rank-label-extraction.md)
+- [Continue Solitaire modularization with feedback animation type extraction](./plan-continue-solitaire-modularization-with-feedbackanimation-type-extraction.md)
+- [Continue Solitaire modularization with interaction constants extraction](./plan-continue-solitaire-modularization-with-interaction-constants-extraction.md)
+- [Continue Solitaire modularization with keyboard description text extraction](./plan-continue-solitaire-modularization-with-keyboard-description-text-extraction.md)
+- [Continue Solitaire modularization with layout extraction](./plan-continue-solitaire-modularization-with-layout-extraction.md)
+- [Continue Solitaire modularization with remaining UI label extraction](./plan-continue-solitaire-modularization-with-remaining-ui-label-extraction.md)
+- [Continue Solitaire modularization with stock/waste layout extraction](./plan-continue-solitaire-modularization-with-stockwaste-layout-extraction.md)
+- [Continue Solitaire modularization with timing constants extraction](./plan-continue-solitaire-modularization-with-timing-constants-extraction.md)
+- [Continue Solitaire modularization with UI text constants extraction](./plan-continue-solitaire-modularization-with-ui-text-constants-extraction.md)
+- [Continue Solitaire modularization with undo snapshot extraction](./plan-continue-solitaire-modularization-with-undo-snapshot-extraction.md)
+- [ExpertDeveloper guideline refactor pass 2](./plan-expertdeveloper-guideline-refactor-pass-2.md)
+- [Extract Solitaire input/interaction class](./plan-extract-solitaire-inputinteraction-class.md)
+- [Extract Solitaire rendering into a separate class](./plan-extract-solitaire-rendering-into-a-separate-class.md)
+- [Modularize SolitaireGame core types](./plan-modularize-solitairegame-core-types.md)
+- [Move variant selection to new game flow](./plan-move-variant-selection-to-new-game-flow.md)
+- [Project-wide C# ExpertDeveloper refactor](./plan-project-wide-c-expertdeveloper-refactor.md)
+- [Readability refactor pass (behavior-preserving)](<./plan-readability-refactor-pass-(behavior-preserving).md>)
+- [Solitaire decomposition refactor](./plan-solitaire-decomposition-refactor.md)
+

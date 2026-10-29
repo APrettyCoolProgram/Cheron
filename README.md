@@ -1,106 +1,115 @@
-<div align="center">
+# Cheron
 
-  <img src="./.github/logo/Cheron-Logo-512x512.png" alt="Cheron">
+A desktop card game project currently focused on Solitaire, implemented with C# on .NET 10 and MonoGame DesktopGL. Cheron is intended for contributors and players who want a lightweight, code-first game module with clear architecture, variant support, and test coverage.
 
-  ![RELEASE](https://img.shields.io/badge/release-XX.XX-teal)&nbsp;
-  ![STAGE](https://img.shields.io/badge/ALPHA-red)&nbsp; <!-- Alpha = Red, Beta = Yellow, Stable = Green -->
-  ![LICENSE](https://img.shields.io/badge/License-apache-blue)&nbsp;
-  ![Platform](https://img.shields.io/badge/platform-windows-lightgrey)&nbsp;
+## 1. Project Header & Description
 
-</div>
+- **Project Title:** Cheron
+- **Short Description:** Cheron is a .NET 10 desktop game project with a modular game host and a Solitaire implementation. It currently includes Klondike and FreeCell variants, with shared orchestration and variant-specific logic separated into dedicated namespaces.
+- **Badges:**
+  - ![License](https://img.shields.io/badge/License-Apache%202.0-blue)
+  - ![Framework](https://img.shields.io/badge/.NET-10.0-purple)
 
-***
+## 2. Key Features
 
-<!--
+- **Dual Solitaire Variants:** Supports both **Klondike** and **FreeCell** gameplay.
+- **Variant Picker Flow:** New game flow includes an in-app prompt to choose the variant.
+- **Shared + Variant Architecture:** Common orchestration lives under `Cheron.Games.Solitaire`, with variant-specific behavior in `Cheron.Games.Solitaire.Klondike` and `Cheron.Games.Solitaire.FreeCell`.
+- **Input and UX Coverage:** Keyboard and pointer interactions are implemented and tested, including prompt flow behavior.
+- **Automated Tests:** xUnit-based test project validates deal setup, prompt behavior, and variant helper logic.
 
-<h6 align="center">
+## 3. Tech Stack & Prerequisites
 
-  [MANUAL](docs/man/README.md)&nbsp;&bull;&nbsp;[CHANGELOG](docs/CHANGELOG.md)&nbsp;&bull;&nbsp;[ROADMAP](docs/ROADMAP.md)&nbsp;&bull;&nbsp;[KNOWN ISSUES](docs/KNOWN-ISSUES.md)
+- **Language:** C#
+- **Runtime/SDK:** .NET 10 (`net10.0`)
+- **Rendering/Game Framework:** MonoGame DesktopGL (`MonoGame.Framework.DesktopGL`)
+- **Content Pipeline:** `MonoGame.Content.Builder.Task`
+- **Testing:** xUnit + Microsoft.NET.Test.Sdk
 
-</h6>
+Prerequisites:
+- .NET 10 SDK
+- A desktop environment supported by MonoGame DesktopGL (current project output type is desktop `WinExe`)
 
-| CONTENTS                                    |
-|---------------------------------------------|
-| [About Cheron](#about-%ProjectName%) |
-| [How it works](#how-it-works)               |
-| [Getting started](#getting-started)         |
-| [Installing](#installing)                   |
-| [Usage](#usage)                             |
-| [Acknowledgements](#acknowledgements)       |
-| [Related projects](#related-projects)       |
-| [License](#license)                         |
+## 4. Getting Started / Installation
 
-***
+```bash
+git clone https://github.com/APrettyCoolProgram/Cheron.git
+cd Cheron
+```
 
-## About Cheron
+Build the solution:
 
-A brief description of the project, what it does, and who it's for. This should
-be a concise summary that gives readers a clear understanding of the project's
-purpose and value proposition.
+```bash
+dotnet build src/Cheron.slnx
+```
 
-### Features
+Run the app:
 
-* Feature — What it does and why it matters.
-* Feature — What it does and why it matters.
-* Feature — What it does and why it matters.
+```bash
+dotnet run --project src/Cheron.csproj
+```
 
-## How it works
+## 5. Usage Examples
 
-A blurb describing how the project works at a high level.
+Run the game directly:
 
-## Getting started
+```bash
+dotnet run --project src/Cheron.csproj
+```
 
-A quick overview of how to get started with the project.
+Run tests for the Solitaire test project:
 
-### Before you begin
+```bash
+dotnet test src/Solitaire.Tests/Solitaire.Tests.csproj
+```
 
-Any assumptions, or other information a user should know before
+Useful docs:
+- Manual index: [docs/man/README.md](docs/man/README.md)
+- Solitaire manual: [docs/man/Solitaire.md](docs/man/Solitaire.md)
+- API docs index: [docs/api/README.md](docs/api/README.md)
 
-### Requirements
+## 6. Architecture & File Structure
 
-| Requirement | Minimum version | Notes |
-|-------------|-----------------|-------|
-| Requirement |                 |       |
-| Requirement |                 |       |
-| Requirement |                 |       |
+```text
+Cheron/
+├─ src/
+│  ├─ Program.cs
+│  ├─ Engine/
+│  │  └─ GameHost.cs
+│  ├─ Games/
+│  │  └─ Solitaire/
+│  │     ├─ SolitaireGame.cs
+│  │     ├─ Klondike/
+│  │     └─ FreeCell/
+│  └─ Solitaire.Tests/
+├─ docs/
+│  ├─ man/
+│  ├─ api/
+│  └─ dev/
+└─ README.md
+```
 
-## Installing
+## 7. Development & Testing
 
-Quick summary of installation instructions, or link to the Installing documentation.
+Build:
 
-## Usage
+```bash
+dotnet build src/Cheron.slnx
+```
 
-Step-by-step instructions for using the project on supported platforms.
+Run all tests in the test project:
 
-## Documentation
+```bash
+dotnet test src/Solitaire.Tests/Solitaire.Tests.csproj
+```
 
-Documentation is available.
+Additional references:
+- Development docs: [docs/dev/README.md](docs/dev/README.md)
+- Changelog: [docs/CHANGELOG.md](docs/CHANGELOG.md)
+- Roadmap: [docs/ROADMAP.md](docs/ROADMAP.md)
+- Known issues: [docs/KNOWN-ISSUES.md](docs/KNOWN-ISSUES.md)
 
-## Acknowledgements
+## 8. License & Contributions
 
-None.
-
-## Built with
-
-* [Technology or framework](URL)  - Role it plays in the project.
-* [Technology or framework](URL)  - Role it plays in the project.
-* [Technology or framework](URL)  - Role it plays in the project.
-
-## Related projects
-
-None.
-
-## License
-
-Copyright &copy; 2026 [A Pretty Cool Program](https://github.com/APrettyCoolProgram)  
-Distributed under the [Apache 2.0 License](LICENSE)  
-
-***
-
-<h6 align="center">
-
-  [FAQ](docs/FAQ.md)&nbsp;&bull;&nbsp;[DEVELOPMENT](docs/DEVELOPMENT.md)&nbsp;&bull;&nbsp;[API](docs/api/README.md)&nbsp;&bull;&nbsp;[SUPPORT](docs/SUPPORT.md)&nbsp;&bull;&nbsp;[NOTICES](docs/NOTICES.md)
-
-</h6>
-
--->
+- **License:** Apache 2.0 ([LICENSE](LICENSE))
+- **Contributions:** Use the repository issue tracker and documentation in `docs/` for contribution context. A dedicated `CONTRIBUTING.md` file is not currently present.

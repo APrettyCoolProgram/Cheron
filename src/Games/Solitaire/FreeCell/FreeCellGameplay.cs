@@ -53,7 +53,7 @@ internal static class FreeCellGameplay
     public static bool CanMoveToCell(SolitaireVariant variant, List<SolitaireCard>? selectedPile, int selectedCardIndex,
         List<List<SolitaireCard>> freeCells, int freeCellIndex)
     {
-        if (variant != SolitaireVariant.FreeCell || selectedPile is null)
+        if (!variant.IsFreeCell() || selectedPile is null)
         {
             return false;
         }
@@ -133,5 +133,40 @@ internal static class FreeCellGameplay
         cardIndex = -1;
         bounds = Rectangle.Empty;
         return false;
+    }
+
+    /// <summary>Initializes a new FreeCell deal from the shared shuffled deck.</summary>
+    public static void InitializeDeal(List<SolitaireCard> deck, List<List<SolitaireCard>> tableau,
+        List<List<SolitaireCard>> foundations, List<List<SolitaireCard>> freeCells)
+    {
+        FreeCellDealBuilder.DealCascades(deck, tableau);
+        SolitaireFoundationRules.InitializeFoundations(foundations);
+        FreeCellDealBuilder.InitializeCells(freeCells);
+    }
+
+    /// <summary>Attempts to move a selected card to one FreeCell holding cell.</summary>
+    public static bool TryMoveToCell(SolitaireVariant variant, List<SolitaireCard>? selectedPile, int selectedCardIndex,
+        List<List<SolitaireCard>> freeCells, int freeCellIndex, Func<int, bool> canMoveToCell,
+        Action moveSelectedCards, Action clearSelection)
+    {
+        if (!variant.IsFreeCell() || selectedPile is null)
+        {
+            return false;
+        }
+
+        var destination = freeCells[freeCellIndex];
+        if (ReferenceEquals(selectedPile, destination))
+        {
+            clearSelection();
+            return true;
+        }
+
+        if (!canMoveToCell(freeCellIndex))
+        {
+            return false;
+        }
+
+        moveSelectedCards();
+        return true;
     }
 }

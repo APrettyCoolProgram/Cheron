@@ -283,23 +283,19 @@ internal sealed partial class SolitaireGame
                 if (IsNewKey(keyboard, Keys.Left) || IsNewKey(keyboard, Keys.Right) ||
                     IsNewKey(keyboard, Keys.Up) || IsNewKey(keyboard, Keys.Down))
                 {
-                    _game._newGamePromptVariant = _game._newGamePromptVariant == SolitaireVariant.Klondike
-                        ? SolitaireVariant.FreeCell
-                        : SolitaireVariant.Klondike;
+                    _game._newGamePromptVariant = _game._newGamePromptVariant.ToggleVariant();
                     return true;
                 }
 
                 if (IsNewKey(keyboard, Keys.Enter) || IsNewKey(keyboard, Keys.Space))
                 {
-                    _game._variant = _game._newGamePromptVariant;
-                    _game._newGamePromptOpen = false;
-                    _game.StartNewGame();
+                    _game.ConfirmNewGamePromptSelection();
                     return true;
                 }
 
                 if (IsNewKey(keyboard, Keys.Back) || IsNewKey(keyboard, Keys.Escape))
                 {
-                    _game._newGamePromptOpen = false;
+                    _game.CancelNewGamePrompt();
                     return true;
                 }
 
@@ -409,28 +405,20 @@ internal sealed partial class SolitaireGame
 
                 if (klondikeBounds.Contains(position) && klondikeBounds.Contains(_game._pressPosition))
                 {
-                    _game._newGamePromptVariant = SolitaireVariant.Klondike;
-                    _game._variant = SolitaireVariant.Klondike;
-                    _game._newGamePromptOpen = false;
-                    _game.StartNewGame();
+                    _game.StartNewGameFromPromptVariant(SolitaireVariant.Klondike);
                 }
                 else if (freeCellBounds.Contains(position) && freeCellBounds.Contains(_game._pressPosition))
                 {
-                    _game._newGamePromptVariant = SolitaireVariant.FreeCell;
-                    _game._variant = SolitaireVariant.FreeCell;
-                    _game._newGamePromptOpen = false;
-                    _game.StartNewGame();
+                    _game.StartNewGameFromPromptVariant(SolitaireVariant.FreeCell);
                 }
                 else if (confirmBounds.Contains(position) && confirmBounds.Contains(_game._pressPosition))
                 {
-                    _game._variant = _game._newGamePromptVariant;
-                    _game._newGamePromptOpen = false;
-                    _game.StartNewGame();
+                    _game.ConfirmNewGamePromptSelection();
                 }
                 else if ((cancelBounds.Contains(position) && cancelBounds.Contains(_game._pressPosition)) ||
                     (!panelBounds.Contains(position) && !panelBounds.Contains(_game._pressPosition)))
                 {
-                    _game._newGamePromptOpen = false;
+                    _game.CancelNewGamePrompt();
                 }
             }
 

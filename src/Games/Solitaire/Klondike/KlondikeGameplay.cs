@@ -57,4 +57,13 @@ internal static class KlondikeGameplay
         bounds = wasteBounds;
         return cardIndex >= 0 && bounds.Contains(position);
     }
+
+    /// <summary>Initializes a new Klondike deal from the shared shuffled deck.</summary>
+    public static void InitializeDeal(List<SolitaireCard> deck, List<List<SolitaireCard>> tableau,
+        List<SolitaireCard> stock, List<List<SolitaireCard>> foundations)
+    {
+        KlondikeDealBuilder.DealTableau(deck, tableau);
+        stock.AddRange(deck);
+        SolitaireFoundationRules.InitializeFoundations(foundations);
+    }
 }

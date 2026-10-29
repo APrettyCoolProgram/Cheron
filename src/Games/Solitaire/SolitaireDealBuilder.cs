@@ -19,16 +19,6 @@ internal static class SolitaireDealBuilder
         return deck;
     }
 
-    /// <summary>Initializes the four empty foundations for a new deal.</summary>
-    /// <param name="foundations">The foundations collection to populate.</param>
-    public static void InitializeFoundations(List<List<SolitaireCard>> foundations)
-    {
-        for (var foundationIndex = 0; foundationIndex < 4; foundationIndex++)
-        {
-            foundations.Add(new List<Card>());
-        }
-    }
-
     /// <summary>Creates an ordered standard deck from Ace through King in each suit.</summary>
     /// <returns>The ordered deck.</returns>
     private static List<SolitaireCard> CreateOrderedDeck()
