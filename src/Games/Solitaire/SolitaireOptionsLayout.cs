@@ -35,6 +35,21 @@ internal static class SolitaireOptionsLayout
     /// <summary>The height of each option row.</summary>
     internal const int RowHeight = 44;
 
+    /// <summary>The vertical position of the accessibility title text.</summary>
+    internal const int TitleY = 202;
+
+    /// <summary>The horizontal padding applied to option-row labels.</summary>
+    internal const int LabelPaddingX = 18;
+
+    /// <summary>The vertical padding applied to option-row labels.</summary>
+    internal const int LabelPaddingY = 15;
+
+    /// <summary>The vertical position of the first accessibility help line.</summary>
+    internal const int HelpStartY = 500;
+
+    /// <summary>The vertical offset between accessibility help lines.</summary>
+    internal const int HelpLineStep = 30;
+
     /// <summary>Gets a settings row's shared drawing and hit-test bounds.</summary>
     /// <param name="index">The row index.</param>
     /// <returns>The row bounds in logical board coordinates.</returns>

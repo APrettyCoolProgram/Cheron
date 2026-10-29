@@ -6,6 +6,9 @@ namespace Cheron.Games.Solitaire;
 /// <summary>Centralizes toolbar labels and hint text used by the Solitaire UI.</summary>
 internal static class SolitaireTextConstants
 {
+    /// <summary>The title shown in the host window.</summary>
+    internal const string WindowTitle = "Cheron Solitaire";
+
     /// <summary>The toolbar label for starting a new deal.</summary>
     internal const string NewGameLabel = "NEW GAME";
 
@@ -184,4 +187,10 @@ internal static class SolitaireTextConstants
 
     /// <summary>Toolbar label for elapsed time.</summary>
     internal const string ToolbarTimeLabel = "TIME";
+
+    /// <summary>Banner text shown after a completed win.</summary>
+    internal const string BoardWinLabel = "YOU WIN!";
+
+    /// <summary>Card-back caption used in high-contrast mode.</summary>
+    internal const string CardBackLabel = "BACK";
 }

@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using static Cheron.Games.Solitaire.SolitaireAccessibilityOptions;
+using static Cheron.Games.Solitaire.SolitaireColors;
 using static Cheron.Games.Solitaire.SolitaireInteractionConstants;
 using static Cheron.Games.Solitaire.SolitaireLayout;
 using static Cheron.Games.Solitaire.SolitaireOptionsLayout;
@@ -22,9 +23,6 @@ namespace Cheron.Games.Solitaire;
 /// <summary>Implements Klondike rules, state, interaction, and rendering independently of the application host.</summary>
 internal sealed class SolitaireGame : IGameModule
 {
-    /// <summary>The title shown in the host window.</summary>
-    private const string GameTitle = "Cheron Solitaire";
-
     /// <summary>The face-down draw pile, with the next card at the end of the list.</summary>
     private readonly List<Card> _stock = new();
 
@@ -62,7 +60,7 @@ internal sealed class SolitaireGame : IGameModule
     private bool _hasWon;
 
     /// <summary>Gets the Solitaire window title.</summary>
-    public string Title => GameTitle;
+    public string Title => WindowTitle;
 
     /// <summary>Gets the logical card-table size, also used to request the initial window size.</summary>
     public Point PreferredWindowSize => new(BoardWidth, BoardHeight);
@@ -130,7 +128,7 @@ internal sealed class SolitaireGame : IGameModule
     /// <param name="graphicsDevice">The borrowed, host-owned graphics device.</param>
     public void Draw(GameTime gameTime, GraphicsDevice graphicsDevice)
     {
-        graphicsDevice.Clear(new Color(12, 34, 39));
+        graphicsDevice.Clear(BoardClearColor);
         var previousScissor = graphicsDevice.ScissorRectangle;
         var previousRasterizer = graphicsDevice.RasterizerState;
         graphicsDevice.ScissorRectangle = _viewport.ScissorBounds;
@@ -145,8 +143,8 @@ internal sealed class SolitaireGame : IGameModule
             _spriteBatch.Draw(_artwork.Background, new Rectangle(0, 0, BoardWidth, BoardHeight), Color.White);
         }
 
-        Fill(new Rectangle(0, 0, BoardWidth, 72), _highContrast ? Color.Black : new Color(12, 31, 37, 220));
-        Fill(new Rectangle(0, 71, BoardWidth, 1), new Color(67, 102, 102));
+        Fill(new Rectangle(0, 0, BoardWidth, TopBarHeight), _highContrast ? Color.Black : TopBarTint);
+        Fill(new Rectangle(0, TopBarDividerY, BoardWidth, 1), BoardSeparatorLine);
         DrawToolbar();
 
         var stockBounds = GetStockBounds();
@@ -155,13 +153,13 @@ internal sealed class SolitaireGame : IGameModule
 
         if (_stock.Count == 0)
         {
-            DrawText(BoardDealLabel, _largeText ? 35 : 47, 122, SmallTextScale, new Color(156, 186, 178));
-            DrawText(BoardAgainLabel, _largeText ? 38 : 44, _largeText ? 142 : 138, SmallTextScale, new Color(156, 186, 178));
+            DrawText(BoardDealLabel, _largeText ? 35 : 47, 122, SmallTextScale, BoardDealPromptText);
+            DrawText(BoardAgainLabel, _largeText ? 38 : 44, _largeText ? 142 : 138, SmallTextScale, BoardDealPromptText);
         }
 
         DrawPile(_waste, GetWasteBounds());
-        DrawText(BoardStockLabel, _largeText ? 36 : 40, 199, SmallTextScale, new Color(157, 184, 176));
-        DrawText(BoardWasteLabel, _largeText ? 132 : 136, 199, SmallTextScale, new Color(157, 184, 176));
+        DrawText(BoardStockLabel, _largeText ? 36 : 40, 199, SmallTextScale, BoardHeadingText);
+        DrawText(BoardWasteLabel, _largeText ? 132 : 136, 199, SmallTextScale, BoardHeadingText);
 
         for (var foundationIndex = 0; foundationIndex < _foundations.Count; foundationIndex++)
         {
@@ -172,13 +170,13 @@ internal sealed class SolitaireGame : IGameModule
             if (_foundations[foundationIndex].Count == 0)
             {
                 DrawText(BoardFoundationAceLabel, foundationBounds.X + 33, foundationBounds.Y + 24, 2,
-                    new Color(119, 153, 145));
+                    BoardPlaceholderText);
                 DrawText(_largeText ? BoardFoundationToKingCompactLabel : BoardFoundationToKingLabel,
-                    foundationBounds.X + 19, foundationBounds.Y + 65, SmallTextScale, new Color(119, 153, 145));
+                    foundationBounds.X + 19, foundationBounds.Y + 65, SmallTextScale, BoardPlaceholderText);
             }
         }
 
-        DrawText(BoardFoundationsLabel, _largeText ? 802 : 796, 199, SmallTextScale, new Color(157, 184, 176));
+        DrawText(BoardFoundationsLabel, _largeText ? 802 : 796, 199, SmallTextScale, BoardHeadingText);
 
         for (var columnIndex = 0; columnIndex < _tableau.Count; columnIndex++)
         {
@@ -189,7 +187,7 @@ internal sealed class SolitaireGame : IGameModule
             {
                 var slotBounds = new Rectangle(FirstColumnX + columnIndex * ColumnStep, cardY, CardWidth, CardHeight);
                 DrawSlot(slotBounds);
-                DrawText(BoardTableauKingLabel, slotBounds.X + 33, slotBounds.Y + 46, 2, new Color(119, 153, 145));
+                DrawText(BoardTableauKingLabel, slotBounds.X + 33, slotBounds.Y + 46, 2, BoardPlaceholderText);
             }
 
             for (var cardIndex = 0; cardIndex < tableauPile.Count; cardIndex++)
@@ -202,7 +200,7 @@ internal sealed class SolitaireGame : IGameModule
                     DrawCard(card, cardBounds, IsSelected(tableauPile, cardIndex));
                 }
 
-                cardY += card.FaceUp ? TableauStep : 22;
+                cardY += card.FaceUp ? TableauStep : TableauFaceDownStep;
             }
         }
 
@@ -211,14 +209,14 @@ internal sealed class SolitaireGame : IGameModule
         DrawInvalidFeedback();
         DrawWinCelebration();
 
-        Fill(new Rectangle(0, 728, BoardWidth, 72), _highContrast ? Color.Black : new Color(12, 31, 37, 230));
-        Fill(new Rectangle(0, 728, BoardWidth, 1), new Color(67, 102, 102));
+        Fill(new Rectangle(0, FooterY, BoardWidth, FooterHeight), _highContrast ? Color.Black : FooterTint);
+        Fill(new Rectangle(0, FooterY, BoardWidth, 1), BoardSeparatorLine);
         DrawAccessibleFooter();
 
         if (_hasWon && _cardTransitions.Count == 0)
         {
-            _spriteBatch.Draw(_artwork.Banner, new Rectangle(370, 376, 360, 56), Color.White);
-            DrawText("YOU WIN!", 483, 394, 3, new Color(251, 219, 148));
+            _spriteBatch.Draw(_artwork.Banner, WinBannerBounds, Color.White);
+            DrawText(BoardWinLabel, WinTextX, WinTextY, 3, GoldHighlight);
         }
 
         if (_keyboardFocusVisible && !_optionsOpen)
@@ -467,7 +465,7 @@ internal sealed class SolitaireGame : IGameModule
         {
             var opacity = _reducedMotion ? 1
                 : (float)(_invalidTimeRemaining.TotalSeconds / InvalidFeedbackDuration.TotalSeconds);
-            var color = _highContrast ? Color.White : new Color(241, 150, 131);
+            var color = _highContrast ? Color.White : InvalidFeedbackColor;
             DrawTargetOutline(_invalidBounds, color * Math.Min(1, opacity * 2));
         }
     }
@@ -494,7 +492,7 @@ internal sealed class SolitaireGame : IGameModule
                 continue;
             }
 
-            var particleColor = particleIndex % 3 == 0 ? new Color(112, 220, 182) : new Color(251, 219, 148);
+            var particleColor = particleIndex % 3 == 0 ? MintHighlight : GoldHighlight;
             Fill(new Rectangle((int)particleX, (int)particleY, 4, 6), particleColor * opacity);
         }
     }
@@ -831,15 +829,15 @@ internal sealed class SolitaireGame : IGameModule
         DrawToolbarButton(SoundButtonBounds,
             _audioUnavailable ? AudioUnavailableLabel : _soundEnabled ? SoundEnabledLabel : SoundDisabledLabel,
             !_audioUnavailable);
-        DrawText(ToolbarTitleLabel, 440, 26, 2, new Color(246, 239, 218));
+        DrawText(ToolbarTitleLabel, 440, 26, 2, ToolbarPrimaryText);
         DrawText(_largeText ? ToolbarShortcutsCompactLabel : ToolbarShortcutsLabel, 440, 51,
-            SmallTextScale, new Color(153, 183, 176));
-        DrawText(ToolbarMovesLabel, 740, 24, SmallTextScale, new Color(153, 183, 176));
-        DrawText(_moveCount.ToString(), 740, 44, 2, new Color(246, 239, 218));
-        DrawText(ToolbarTimeLabel, 850, 24, SmallTextScale, new Color(153, 183, 176));
+            SmallTextScale, ToolbarSecondaryText);
+        DrawText(ToolbarMovesLabel, 740, 24, SmallTextScale, ToolbarSecondaryText);
+        DrawText(_moveCount.ToString(), 740, 44, 2, ToolbarPrimaryText);
+        DrawText(ToolbarTimeLabel, 850, 24, SmallTextScale, ToolbarSecondaryText);
         var totalSeconds = (long)_playingTime.TotalSeconds;
         DrawText($"{totalSeconds / 60:00}M {totalSeconds % 60:00}S", 850, 44,
-            SmallTextScale, new Color(246, 239, 218));
+            SmallTextScale, ToolbarPrimaryText);
     }
 
     /// <summary>Draws one themed button with hover feedback only while enabled.</summary>
@@ -852,16 +850,16 @@ internal sealed class SolitaireGame : IGameModule
         var texture = isHovered ? _artwork.ButtonHover : _artwork.Button;
         if (_highContrast)
         {
-            Fill(bounds, enabled ? Color.White : new Color(48, 48, 48));
+            Fill(bounds, enabled ? Color.White : ButtonDisabledHighContrastFill);
             DrawTargetOutline(bounds, Color.White);
         }
         else
         {
-            _spriteBatch.Draw(texture, bounds, enabled ? Color.White : new Color(104, 115, 113));
+            _spriteBatch.Draw(texture, bounds, enabled ? Color.White : ButtonDisabledTint);
         }
 
         var ink = _highContrast ? (enabled ? Color.Black : Color.White)
-            : enabled ? new Color(31, 56, 59) : new Color(44, 62, 63);
+            : enabled ? ButtonEnabledInk : ButtonDisabledInk;
         DrawText(label, bounds.X + (bounds.Width - label.Length * 12 + 2) / 2, bounds.Y + 15,
             2, ink, preserveColor: true);
     }
@@ -1016,7 +1014,7 @@ internal sealed class SolitaireGame : IGameModule
             return;
         }
 
-        var color = new Color(251, 219, 148);
+        var color = GoldHighlight;
         if (_hintSource != Rectangle.Empty)
         {
             DrawTargetOutline(_hintSource, color);
@@ -1292,7 +1290,7 @@ internal sealed class SolitaireGame : IGameModule
         var cardY = TableauTop;
         for (var index = 0; index < cardIndex; index++)
         {
-            cardY += _tableau[columnIndex][index].FaceUp ? TableauStep : 22;
+            cardY += _tableau[columnIndex][index].FaceUp ? TableauStep : TableauFaceDownStep;
         }
 
         return new Rectangle(FirstColumnX + columnIndex * ColumnStep, cardY, CardWidth, CardHeight);
@@ -1366,7 +1364,7 @@ internal sealed class SolitaireGame : IGameModule
         {
             if (CanMoveToFoundation(foundationIndex))
             {
-                DrawTargetOutline(GetFoundationBounds(foundationIndex), new Color(112, 220, 182));
+                DrawTargetOutline(GetFoundationBounds(foundationIndex), MintHighlight);
             }
         }
 
@@ -1376,7 +1374,7 @@ internal sealed class SolitaireGame : IGameModule
             {
                 var pile = _tableau[columnIndex];
                 var bounds = GetTableauCardBounds(columnIndex, Math.Max(0, pile.Count - 1));
-                DrawTargetOutline(bounds, new Color(112, 220, 182));
+                DrawTargetOutline(bounds, MintHighlight);
             }
         }
 
@@ -1387,7 +1385,7 @@ internal sealed class SolitaireGame : IGameModule
                 hoveredBounds.Height = TableauStep;
             }
 
-            DrawTargetOutline(hoveredBounds, new Color(191, 215, 227));
+            DrawTargetOutline(hoveredBounds, HoverOutline);
         }
 
         DrawHintFeedback();
@@ -1588,23 +1586,23 @@ internal sealed class SolitaireGame : IGameModule
         var panelBounds = new Rectangle(PanelX, PanelY, PanelWidth, PanelHeight);
         Fill(panelBounds, Color.Black);
         DrawTargetOutline(panelBounds, Color.White);
-        DrawText(AccessibilityTitle, 196, 202, 3, Color.White);
+        DrawText(AccessibilityTitle, FirstRowX, TitleY, 3, Color.White);
         for (var index = 0; index < OptionCount; index++)
         {
             var bounds = GetOptionBounds(index);
-            Fill(bounds, new Color(28, 43, 48));
+            Fill(bounds, OptionsRowFill);
             var label = GetOptionLabel(index, _largeText, _highContrast, _reducedMotion);
-            DrawText(label, bounds.X + 18, bounds.Y + 15, 2, Color.White);
+            DrawText(label, bounds.X + LabelPaddingX, bounds.Y + LabelPaddingY, 2, Color.White);
             if (index == _optionIndex)
             {
                 DrawFocusCorners(bounds);
             }
         }
 
-        DrawText(AccessibilityHelpNavigation, 196, 500, 2, Color.White);
-        DrawText(AccessibilityHelpPersistence, 196, 530, 2, Color.White);
-        DrawText(AccessibilityHelpCloseAndExit, 196, 560, 2, Color.White);
-        DrawText(AccessibilityHelpShortcutsDisabled, 196, 590, 2, Color.White);
+        DrawText(AccessibilityHelpNavigation, FirstRowX, HelpStartY, 2, Color.White);
+        DrawText(AccessibilityHelpPersistence, FirstRowX, HelpStartY + HelpLineStep, 2, Color.White);
+        DrawText(AccessibilityHelpCloseAndExit, FirstRowX, HelpStartY + HelpLineStep * 2, 2, Color.White);
+        DrawText(AccessibilityHelpShortcutsDisabled, FirstRowX, HelpStartY + HelpLineStep * 3, 2, Color.White);
     }
 
     /// <summary>Draws an empty pile using either the themed texture or a solid high-contrast surface.</summary>
@@ -1629,12 +1627,12 @@ internal sealed class SolitaireGame : IGameModule
             ? FooterInvalidMoveMessage
             : _hintTimeRemaining > TimeSpan.Zero ? _hintMessage
             : _keyboardFocusVisible ? GetKeyboardDescription() : FooterDefaultMessage;
-        DrawText(message, 32, 741, SmallTextScale, new Color(207, 220, 207));
+        DrawText(message, FooterTextX, FooterStatusY, SmallTextScale, FooterPrimaryText);
         var instructions = _keyboardFocusVisible
             ? FooterKeyboardInstructions
             : _audioUnavailable ? FooterSoundUnavailableInstructions
             : FooterDefaultInstructions;
-        DrawText(instructions, 32, 767, SmallTextScale, new Color(153, 183, 176));
+        DrawText(instructions, FooterTextX, FooterInstructionsY, SmallTextScale, ToolbarSecondaryText);
         DrawToolbarButton(OptionsButtonBounds, FooterOptionsLabel, true);
     }
 
@@ -2274,7 +2272,7 @@ internal sealed class SolitaireGame : IGameModule
             var card = tableauPile[cardIndex];
             var exposedHeight = cardIndex == tableauPile.Count - 1
                 ? CardHeight
-                : card.FaceUp ? TableauStep : 22;
+                : card.FaceUp ? TableauStep : TableauFaceDownStep;
             var cardBottom = cardY + exposedHeight;
 
             if (mouseY >= cardY && mouseY < cardBottom)
@@ -2282,7 +2280,7 @@ internal sealed class SolitaireGame : IGameModule
                 return cardIndex;
             }
 
-            cardY += card.FaceUp ? TableauStep : 22;
+            cardY += card.FaceUp ? TableauStep : TableauFaceDownStep;
         }
 
         return -1;
@@ -2353,7 +2351,7 @@ internal sealed class SolitaireGame : IGameModule
             DrawTargetOutline(bounds, isSelected && !faceDown ? Color.Yellow : Color.White);
             if (faceDown)
             {
-                DrawText("BACK", bounds.X + 16, bounds.Y + 46, 2, Color.White);
+                DrawText(CardBackLabel, bounds.X + 16, bounds.Y + 46, 2, Color.White);
             }
         }
         else
@@ -2366,8 +2364,8 @@ internal sealed class SolitaireGame : IGameModule
             return;
         }
 
-        var suitColor = _highContrast ? (card.IsRed ? new Color(145, 0, 20) : Color.Black)
-            : card.IsRed ? new Color(180, 51, 65) : new Color(36, 57, 66);
+        var suitColor = _highContrast ? (card.IsRed ? CardSuitRedHighContrast : Color.Black)
+            : card.IsRed ? CardSuitRed : CardSuitBlack;
         var rankLabel = SolitaireCardLabels.GetShortRankLabel(card.Rank);
 
         var suitTexture = _artwork.Suits[(int)card.Suit];

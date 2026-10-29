@@ -23,6 +23,9 @@ internal static class SolitaireLayout
     /// <summary>The vertical offset between consecutive tableau cards when the preceding card is face up.</summary>
     internal const int TableauStep = 29;
 
+    /// <summary>The vertical offset between consecutive tableau cards when the preceding card is face down.</summary>
+    internal const int TableauFaceDownStep = 22;
+
     /// <summary>The horizontal position of the first tableau column, in logical board units.</summary>
     internal const int FirstColumnX = 32;
 
@@ -34,6 +37,27 @@ internal static class SolitaireLayout
 
     /// <summary>The logical board height used for viewport fitting and layout math.</summary>
     internal const int BoardHeight = 800;
+
+    /// <summary>The height of the top toolbar strip.</summary>
+    internal const int TopBarHeight = 72;
+
+    /// <summary>The vertical position of the top toolbar divider line.</summary>
+    internal const int TopBarDividerY = 71;
+
+    /// <summary>The vertical position of the footer strip.</summary>
+    internal const int FooterY = 728;
+
+    /// <summary>The height of the footer strip.</summary>
+    internal const int FooterHeight = 72;
+
+    /// <summary>The horizontal position of footer status/instruction text.</summary>
+    internal const int FooterTextX = 32;
+
+    /// <summary>The vertical position of the footer status text line.</summary>
+    internal const int FooterStatusY = 741;
+
+    /// <summary>The vertical position of the footer instruction text line.</summary>
+    internal const int FooterInstructionsY = 767;
 
     /// <summary>The horizontal position of the stock pile slot.</summary>
     internal const int StockX = 32;
@@ -58,6 +82,15 @@ internal static class SolitaireLayout
 
     /// <summary>The always-available settings button in logical board coordinates.</summary>
     internal static readonly Rectangle OptionsButtonBounds = new(882, 742, 186, 40);
+
+    /// <summary>The win banner bounds in logical board coordinates.</summary>
+    internal static readonly Rectangle WinBannerBounds = new(370, 376, 360, 56);
+
+    /// <summary>The horizontal position of the win text inside the win banner.</summary>
+    internal const int WinTextX = 483;
+
+    /// <summary>The vertical position of the win text inside the win banner.</summary>
+    internal const int WinTextY = 394;
 
     /// <summary>Gets the stock pile bounds in logical board coordinates.</summary>
     /// <returns>The stock pile rectangle.</returns>
