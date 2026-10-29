@@ -294,13 +294,3 @@ Do not immediately generate a large engine architecture. First:
 
 </details>
 
-1.	Replace test-only hooks with cleaner seams (optional)
-•	If preferred, refactor prompt state transitions into an internal service/class so tests target behavior without Test* methods.
-2.	Add integration-level input tests
-•	Cover keyboard/pointer prompt interactions end-to-end (Enter/Space, arrows, Escape/Back, click choices, click cancel).
-3.	Add variant-deal assertions
-•	Verify Klondike and FreeCell initial layouts (pile counts, face-up state, free-cell count, stock behavior).
-4.	Manual smoke pass in app
-•	Validate UX flow and visual prompt behavior at runtime.
-5.	Commit in focused chunks
-•	One commit for test infrastructure, one for behavior tests, one for any cleanup/refactor.

@@ -221,6 +221,9 @@ internal sealed partial class SolitaireGame : IGameModule
         return _foundations.Select(pile => pile.Count).ToArray();
     }
 
+    /// <summary>Gets the number of active card transitions for tests.</summary>
+    internal int TestGetCardTransitionCount() => _cardTransitions.Count;
+
     /// <summary>Creates owned drawing resources, card-table artwork, and optional synthesized sounds.</summary>
     /// <remarks>
     /// Call once on the graphics thread after the device becomes available and before drawing.
@@ -1081,6 +1084,22 @@ internal sealed partial class SolitaireGame : IGameModule
         return MoveRules.CanMoveToFoundation(movingCard, destination);
     }
 
+    /// <summary>Calculates the horizontal position for one tableau column in the active variant.</summary>
+    /// <param name="columnIndex">The tableau column index.</param>
+    /// <returns>The left edge of the column in logical board coordinates.</returns>
+    private int GetTableauColumnX(int columnIndex)
+    {
+        if (_variant != SolitaireVariant.FreeCell || _tableau.Count <= 1)
+        {
+            return FirstColumnX + columnIndex * ColumnStep;
+        }
+
+        var maxRight = BoardWidth - 32 - CardWidth;
+        var availableSpan = Math.Max(0, maxRight - FirstColumnX);
+        var dynamicStep = availableSpan / (_tableau.Count - 1);
+        return FirstColumnX + columnIndex * dynamicStep;
+    }
+
     /// <summary>Gets the complete visible tableau hit area, excluding the footer.</summary>
     /// <param name="columnIndex">The tableau index.</param>
     /// <returns>The union of its cards, or one card-sized slot for an empty column.</returns>
@@ -1088,7 +1107,7 @@ internal sealed partial class SolitaireGame : IGameModule
     {
         var pile = _tableau[columnIndex];
         var bottom = pile.Count == 0 ? TableauTop + CardHeight : GetTableauCardBounds(columnIndex, pile.Count - 1).Bottom;
-        return new Rectangle(FirstColumnX + columnIndex * ColumnStep, TableauTop,
+        return new Rectangle(GetTableauColumnX(columnIndex), TableauTop,
             CardWidth, Math.Min(bottom, FooterY) - TableauTop);
     }
 
@@ -1104,7 +1123,7 @@ internal sealed partial class SolitaireGame : IGameModule
             cardY += _tableau[columnIndex][index].FaceUp ? TableauStep : TableauFaceDownStep;
         }
 
-        return new Rectangle(FirstColumnX + columnIndex * ColumnStep, cardY, CardWidth, CardHeight);
+        return new Rectangle(GetTableauColumnX(columnIndex), cardY, CardWidth, CardHeight);
     }
 
     /// <summary>Finds the visible, face-up card under the pointer, ignoring hidden stock cards.</summary>

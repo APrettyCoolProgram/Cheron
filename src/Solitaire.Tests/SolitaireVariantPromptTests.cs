@@ -215,4 +215,25 @@ public sealed class SolitaireVariantPromptTests
         game.TestHandleAccessibilityKeys(Press(Keys.F1));
         Assert.True(game.TestIsOptionsOpen());
     }
+
+    [Fact]
+    public void SmokePassToggle_DuringDealAnimation_DoesNotClearTransitions()
+    {
+        var game = new SolitaireGame();
+
+        game.TestSetVariant(SolitaireVariant.Klondike);
+        game.TestStartNewGame();
+        var initialTransitionCount = game.TestGetCardTransitionCount();
+        Assert.True(initialTransitionCount > 0);
+
+        game.TestResetPreviousKeyboardState();
+        game.TestHandleAccessibilityKeys(Press(Keys.LeftShift, Keys.F9));
+        Assert.True(game.TestIsSmokePassOverlayOpen());
+        Assert.Equal(initialTransitionCount, game.TestGetCardTransitionCount());
+
+        game.TestHandleAccessibilityKeys(Press());
+        game.TestHandleAccessibilityKeys(Press(Keys.F9));
+        Assert.False(game.TestIsSmokePassOverlayOpen());
+        Assert.Equal(initialTransitionCount, game.TestGetCardTransitionCount());
+    }
 }

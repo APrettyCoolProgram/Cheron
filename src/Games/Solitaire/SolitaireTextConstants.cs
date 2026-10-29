@@ -78,6 +78,9 @@ internal static class SolitaireTextConstants
     /// <summary>The manual smoke-pass overlay step 5.</summary>
     internal const string SmokePassStep5 = "5  CONFIRM PROMPT BLOCKS BOARD/OPTIONS INPUT";
 
+    /// <summary>The manual smoke-pass overlay step 6.</summary>
+    internal const string SmokePassStep6 = "6  DURING DEAL ANIMATION  TOGGLE OVERLAY WITHOUT BREAKING PLAY";
+
     /// <summary>The manual smoke-pass overlay footer.</summary>
     internal const string SmokePassFooter = "SHIFT+F9 TO CLOSE";
 

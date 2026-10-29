@@ -131,11 +131,10 @@ internal sealed partial class SolitaireGame
             for (var columnIndex = 0; columnIndex < _game._tableau.Count; columnIndex++)
             {
                 var tableauPile = _game._tableau[columnIndex];
-                var cardY = TableauTop;
 
                 if (tableauPile.Count == 0)
                 {
-                    var slotBounds = new Rectangle(FirstColumnX + columnIndex * ColumnStep, cardY, CardWidth, CardHeight);
+                    var slotBounds = _game.GetTableauCardBounds(columnIndex, 0);
                     DrawSlot(slotBounds);
                     DrawText(BoardTableauKingLabel, slotBounds.X + TableauKingOffsetX,
                         slotBounds.Y + TableauKingOffsetY, 2, BoardPlaceholderText);
@@ -144,14 +143,12 @@ internal sealed partial class SolitaireGame
                 for (var cardIndex = 0; cardIndex < tableauPile.Count; cardIndex++)
                 {
                     var card = tableauPile[cardIndex];
-                    var cardBounds = new Rectangle(FirstColumnX + columnIndex * ColumnStep, cardY, CardWidth, CardHeight);
+                    var cardBounds = _game.GetTableauCardBounds(columnIndex, cardIndex);
 
                     if (!_game.IsDraggedCard(tableauPile, cardIndex))
                     {
                         DrawCard(card, cardBounds, _game.IsSelected(tableauPile, cardIndex));
                     }
-
-                    cardY += card.FaceUp ? TableauStep : TableauFaceDownStep;
                 }
             }
 
@@ -544,6 +541,7 @@ internal sealed partial class SolitaireGame
             DrawText(SmokePassStep3, panelBounds.X + 42, panelBounds.Y + 192, 2, Color.White);
             DrawText(SmokePassStep4, panelBounds.X + 42, panelBounds.Y + 242, 2, Color.White);
             DrawText(SmokePassStep5, panelBounds.X + 42, panelBounds.Y + 292, 2, Color.White);
+            DrawText(SmokePassStep6, panelBounds.X + 42, panelBounds.Y + 342, 2, Color.White);
             DrawText(SmokePassFooter, panelBounds.X + 42, panelBounds.Bottom - 58, 2, Color.White);
         }
 
