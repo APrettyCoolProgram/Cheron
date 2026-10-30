@@ -1,126 +1,72 @@
-## 1. Project Header & Description
-
 # Cheron
 
-Cheron is a desktop game project built with C# on .NET 10 and MonoGame DesktopGL. It is currently focused on Solitaire and is structured for contributors who want a modular codebase with clear separation between engine hosting and game module logic. The repository includes a startup flow, in-game UX systems, and automated regression tests.
+Cheron is a desktop card game built with C# and MonoGame. It currently includes
+Klondike and FreeCell Solitaire, hosted by a small game engine that separates
+the game lifecycle from individual game modules.
 
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue)
-![Framework](https://img.shields.io/badge/.NET-10.0-purple)
+![.NET](https://img.shields.io/badge/.NET-10.0-purple)
 
-## 2. Key Features
+## Features
 
-- **Modular Game Host:** Uses GameHost and IGameModule so startup and gameplay modules remain decoupled.
-- **Startup Console Flow:** Supports cartridge drag-and-insert behavior, power gating, and transition into Solitaire.
-- **Dual Solitaire Variants:** Includes Klondike and FreeCell with shared orchestration and variant-specific behaviors.
-- **Rich UX and Input Paths:** Includes prompt flow, options, help overlay, smoke-pass overlay, and keyboard and pointer controls.
-- **Sound State Controls:** Supports SOUND ON and SOUND OFF toggling through both keyboard and pointer interactions.
-- **Automated Regression Coverage:** xUnit tests validate variant setup, shortcut routing, modal precedence, and control hit-testing.
+- Modular game host and game-module lifecycle.
+- Start screen that transitions into Solitaire.
+- Klondike and FreeCell variants.
+- Keyboard and pointer controls, help, and options.
+- xUnit regression tests for Solitaire behavior.
 
-## 3. Tech Stack & Prerequisites
+## Requirements
 
-- **Language:** C#
-- **Runtime / Target Framework:** .NET 10 (net10.0)
-- **Game Framework:** MonoGame DesktopGL (MonoGame.Framework.DesktopGL)
-- **Content Pipeline:** MonoGame.Content.Builder.Task
-- **Testing:** xUnit + Microsoft.NET.Test.Sdk
+- .NET 10 SDK.
+- A desktop environment supported by MonoGame DesktopGL.
 
-Prerequisites:
-- .NET 10 SDK
-- Desktop environment that supports MonoGame DesktopGL
+## Build and run
 
-## 4. Getting Started / Installation
+Clone the repository and enter its directory:
 
-~~~bash
+```shell
 git clone https://github.com/APrettyCoolProgram/Cheron.git
 cd Cheron
-~~~
+```
 
 Build the solution:
 
-~~~bash
+```shell
 dotnet build src/Cheron.slnx
-~~~
-
-Run the application:
-
-~~~bash
-dotnet run --project src/Cheron.csproj
-~~~
-
-## 5. Usage Examples
+```
 
 Run the game:
 
-~~~bash
+```shell
 dotnet run --project src/Cheron.csproj
-~~~
+```
+
+## Tests
 
 Run the Solitaire test suite:
 
-~~~bash
+```shell
 dotnet test src/Solitaire.Tests/Solitaire.Tests.csproj
-~~~
+```
 
-Documentation entry points:
-- Manual index: [docs/man/README.md](docs/man/README.md)
-- Solitaire manual: [docs/man/Solitaire.md](docs/man/Solitaire.md)
-- API docs index: [docs/api/README.md](docs/api/README.md)
+## Project layout
 
-## 6. Architecture & File Structure
+```text
+src/
+├── Engine/             Game host, module contract, and start screen
+├── Games/Solitaire/    Shared Solitaire systems and Klondike/FreeCell variants
+├── Solitaire.Tests/    xUnit tests
+├── Program.cs          Application entry point
+└── Cheron.csproj
+```
 
-~~~text
-Cheron/
-├─ src/
-│  ├─ Program.cs
-│  ├─ Engine/
-│  │  ├─ GameHost.cs
-│  │  ├─ GameViewport.cs
-│  │  ├─ IGameModule.cs
-│  │  └─ StartScreenGame.cs
-│  ├─ Games/
-│  │  └─ Solitaire/
-│  │     ├─ SolitaireGame.cs
-│  │     ├─ SolitaireInteractionController.cs
-│  │     ├─ SolitaireRenderer.cs
-│  │     ├─ Klondike/
-│  │     └─ FreeCell/
-│  └─ Solitaire.Tests/
-│     └─ SolitaireVariantPromptTests.cs
-├─ docs/
-│  ├─ api/
-│  ├─ dev/
-│  └─ man/
-├─ LICENSE
-└─ README.md
-~~~
+## Documentation
 
-## 7. Development & Testing
+- [Manual](docs/man/README.md)
+- [Solitaire guide](docs/man/Solitaire.md)
+- [API documentation](docs/api/README.md)
+- [Development notes](docs/dev/README.md)
 
-Build:
+## License
 
-~~~bash
-dotnet build src/Cheron.slnx
-~~~
-
-Run tests:
-
-~~~bash
-dotnet test src/Solitaire.Tests/Solitaire.Tests.csproj
-~~~
-
-Optional formatting check:
-
-~~~bash
-dotnet format whitespace src/Cheron.slnx --verify-no-changes
-~~~
-
-Additional references:
-- Development docs: [docs/dev/README.md](docs/dev/README.md)
-- Changelog: [docs/CHANGELOG.md](docs/CHANGELOG.md)
-- Roadmap: [docs/ROADMAP.md](docs/ROADMAP.md)
-- Known issues: [docs/KNOWN-ISSUES.md](docs/KNOWN-ISSUES.md)
-
-## 8. License & Contributions
-
-- **License:** Apache 2.0 ([LICENSE](LICENSE))
-- **Contributions:** Use repository issues and the docs folder for contribution context. A dedicated CONTRIBUTING.md file is not currently present.
+Cheron is distributed under the [Apache 2.0 License](LICENSE).
