@@ -23,7 +23,7 @@
 
 | CONTENTS                                    |
 |---------------------------------------------|
-| [About Cheron](#about-Cheron) |
+| [About Cheron](#about-Cheron)               |
 | [How it works](#how-it-works)               |
 | [Getting started](#getting-started)         |
 | [Installing](#installing)                   |
@@ -46,12 +46,14 @@ I'm using AI to build Cheron. Why? [Because *experimenting*!](./making-of/README
 
 ## Requirements
 
-- .NET 10 SDK.
+- [.NET 10 SDK](https://dotnet.microsoft.com/en-us/download)
 - A desktop environment supported by MonoGame DesktopGL.
 
 # Documentation
 
+There's a variety of different documentation to peruse:
 
+* The aforementioned [Making Of]()
 
 # Using
 
@@ -94,8 +96,6 @@ src/
 ├── Program.cs          Application entry point
 └── Cheron.csproj
 ```
-
-## Documentation
 
 # License
 
