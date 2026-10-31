@@ -42,7 +42,7 @@ Cheron is:
 The *idea* is to create a game engine that can be used to create and play a variety of different game types.
 
 2. **An experiment**  
-I'm using AI to build Cheron. Why? [Because *experimenting*!](./making-of/README.md)
+I'm using AI to build Cheron. Why? [Because *experimenting*!](./docs/making-of/README.md)
 
 ## Requirements
 
@@ -53,7 +53,9 @@ I'm using AI to build Cheron. Why? [Because *experimenting*!](./making-of/README
 
 There's a variety of different documentation to peruse:
 
-* The aforementioned [Making Of]()
+* The [Cheron manual](./docs/man/README.md)
+* The aforementioned [Making of Cheron](./docs/making-of/README.md)
+* The [development documentation](.github/development/README.md)
 
 # Using
 
