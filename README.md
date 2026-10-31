@@ -2,8 +2,7 @@
 
   <img src=".github/logo/Cheron-Logo-512x512.png" alt="Cheron">
 
-  ![RELEASE](https://img.shields.io/badge/release-26.10-teal)&nbsp;
-  ![STAGE](https://img.shields.io/badge/Development-gold)&nbsp; <!-- Alpha = Red, Beta = Yellow, Stable = Green -->
+  ![RELEASE](https://img.shields.io/badge/release-26.10--dev-teal)&nbsp;
   ![.NET](https://img.shields.io/badge/.NET-10.0-purple)&nbsp;
   ![LANGUAGE](https://img.shields.io/badge/language-C%23-blue)&nbsp;
   ![FRAMEWORK](https://img.shields.io/badge/framwork-MonoGame-orange)
