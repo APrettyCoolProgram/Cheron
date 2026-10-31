@@ -11,14 +11,21 @@
 * New fonts
 * Class libraries for game types?
 
+### Sound
+
+* Put beeps and boops in Cheron.Engine.Sound?
+
 ### Start screen
 
 * About cartridge? Or button on launch screen?
-* Different launch screens
+* Different launch screens/consoles
 * Better animation for inserting cartridges
 * Eject button
 
 ### Cartridge system
+
+### Tests
+
 
 ## Games
 
@@ -32,6 +39,8 @@
 
 ### Memory Tiles
 
+* Better layout for game (centered, etc)
+
 ### CCG
 
 ### Text Adventure
@@ -39,3 +48,5 @@
 ### Platformer
 
 
+MacOS
+Linux

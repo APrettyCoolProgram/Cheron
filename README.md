@@ -1,126 +1,110 @@
-## 1. Project Header & Description
+<div align="center">
 
-# Cheron
+  <img src=".github/logo/Cheron-Logo-512x512.png" alt="Cheron">
 
-Cheron is a desktop game project built with C# on .NET 10 and MonoGame DesktopGL. It is currently focused on Solitaire and is structured for contributors who want a modular codebase with clear separation between engine hosting and game module logic. The repository includes a startup flow, in-game UX systems, and automated regression tests.
+  ![RELEASE](https://img.shields.io/badge/release-26.10--dev-teal)&nbsp;
+  ![.NET](https://img.shields.io/badge/.NET-10.0-purple)&nbsp;
+  ![LANGUAGE](https://img.shields.io/badge/language-C%23-blue)&nbsp;
+  ![FRAMEWORK](https://img.shields.io/badge/framwork-monogame-orange)
+  ![Platform](https://img.shields.io/badge/platform-windows-lightgrey)&nbsp;
 
-![License](https://img.shields.io/badge/License-Apache%202.0-blue)
-![Framework](https://img.shields.io/badge/.NET-10.0-purple)
+</div>
 
-## 2. Key Features
+***
 
-- **Modular Game Host:** Uses GameHost and IGameModule so startup and gameplay modules remain decoupled.
-- **Startup Console Flow:** Supports cartridge drag-and-insert behavior, power gating, and transition into Solitaire.
-- **Dual Solitaire Variants:** Includes Klondike and FreeCell with shared orchestration and variant-specific behaviors.
-- **Rich UX and Input Paths:** Includes prompt flow, options, help overlay, smoke-pass overlay, and keyboard and pointer controls.
-- **Sound State Controls:** Supports SOUND ON and SOUND OFF toggling through both keyboard and pointer interactions.
-- **Automated Regression Coverage:** xUnit tests validate variant setup, shortcut routing, modal precedence, and control hit-testing.
+<h6 align="center">
 
-## 3. Tech Stack & Prerequisites
+  [MANUAL](docs/man/README.md)&nbsp;&bull;&nbsp;[CHANGELOG](docs/CHANGELOG.md)&nbsp;&bull;&nbsp;[ROADMAP](docs/ROADMAP.md)&nbsp;&bull;&nbsp;[KNOWN ISSUES](docs/KNOWN-ISSUES.md)
 
-- **Language:** C#
-- **Runtime / Target Framework:** .NET 10 (net10.0)
-- **Game Framework:** MonoGame DesktopGL (MonoGame.Framework.DesktopGL)
-- **Content Pipeline:** MonoGame.Content.Builder.Task
-- **Testing:** xUnit + Microsoft.NET.Test.Sdk
+</h6>
 
-Prerequisites:
-- .NET 10 SDK
-- Desktop environment that supports MonoGame DesktopGL
+***
 
-## 4. Getting Started / Installation
+| CONTENTS                                    |
+|---------------------------------------------|
+| [About Cheron](#about-Cheron)               |
+| [Documentation](#documentation)             |
+| [Usage](#usage)                             |
+| [License](#license)                         |
 
-~~~bash
+***
+
+# About Cheron
+
+Cheron is:
+
+1. **A game engine**  
+The *idea* is to create a game engine that can be used to create and play a variety of different game types.
+
+Cheron is developed
+
+2. **An experiment**  
+I'm using AI to build Cheron. Why? [Because *experimenting*!](./docs/making-of/README.md)
+
+## Requirements
+
+- [.NET 10 SDK](https://dotnet.microsoft.com/en-us/download)
+- A desktop environment supported by MonoGame DesktopGL.
+
+# Documentation
+
+There's a variety of different documentation to peruse:
+
+* The [Cheron manual](./docs/man/README.md)
+* The aforementioned [Making of Cheron](./docs/making-of/README.md)
+* The [development documentation](.github/development/README.md)
+
+# Using
+
+## Build and run
+
+Clone the repository and enter its directory:
+
+```shell
 git clone https://github.com/APrettyCoolProgram/Cheron.git
 cd Cheron
-~~~
+```
 
 Build the solution:
 
-~~~bash
+```shell
 dotnet build src/Cheron.slnx
-~~~
-
-Run the application:
-
-~~~bash
-dotnet run --project src/Cheron.csproj
-~~~
-
-## 5. Usage Examples
+```
 
 Run the game:
 
-~~~bash
+```shell
 dotnet run --project src/Cheron.csproj
-~~~
+```
+
+## Tests
 
 Run the Solitaire test suite:
 
-~~~bash
+```shell
 dotnet test src/Solitaire.Tests/Solitaire.Tests.csproj
-~~~
+```
 
-Documentation entry points:
-- Manual index: [docs/man/README.md](docs/man/README.md)
-- Solitaire manual: [docs/man/Solitaire.md](docs/man/Solitaire.md)
-- API docs index: [docs/api/README.md](docs/api/README.md)
+## Project layout
 
-## 6. Architecture & File Structure
+```text
+src/
+├── Engine/             Game host, module contract, and start screen
+├── Games/Solitaire/    Shared Solitaire systems and Klondike/FreeCell variants
+├── Solitaire.Tests/    xUnit tests
+├── Program.cs          Application entry point
+└── Cheron.csproj
+```
 
-~~~text
-Cheron/
-├─ src/
-│  ├─ Program.cs
-│  ├─ Engine/
-│  │  ├─ GameHost.cs
-│  │  ├─ GameViewport.cs
-│  │  ├─ IGameModule.cs
-│  │  └─ StartScreenGame.cs
-│  ├─ Games/
-│  │  └─ Solitaire/
-│  │     ├─ SolitaireGame.cs
-│  │     ├─ SolitaireInteractionController.cs
-│  │     ├─ SolitaireRenderer.cs
-│  │     ├─ Klondike/
-│  │     └─ FreeCell/
-│  └─ Solitaire.Tests/
-│     └─ SolitaireVariantPromptTests.cs
-├─ docs/
-│  ├─ api/
-│  ├─ dev/
-│  └─ man/
-├─ LICENSE
-└─ README.md
-~~~
+# License
 
-## 7. Development & Testing
+Copyright &copy; 2026 [A Pretty Cool Program](https://github.com/aprettycoolprogram)  
+Distributed under the [Apache 2.0 License](LICENSE)  
 
-Build:
+***
 
-~~~bash
-dotnet build src/Cheron.slnx
-~~~
+<h6 align="center">
 
-Run tests:
+  [FAQ](docs/FAQ.md)&nbsp;&bull;&nbsp;[DEVELOPMENT](docs/DEVELOPMENT.md)&nbsp;&bull;&nbsp;[API](docs/api/README.md)&nbsp;&bull;&nbsp;[SUPPORT](docs/SUPPORT.md)&nbsp;&bull;&nbsp;[NOTICES](docs/NOTICES.md)
 
-~~~bash
-dotnet test src/Solitaire.Tests/Solitaire.Tests.csproj
-~~~
-
-Optional formatting check:
-
-~~~bash
-dotnet format whitespace src/Cheron.slnx --verify-no-changes
-~~~
-
-Additional references:
-- Development docs: [docs/dev/README.md](docs/dev/README.md)
-- Changelog: [docs/CHANGELOG.md](docs/CHANGELOG.md)
-- Roadmap: [docs/ROADMAP.md](docs/ROADMAP.md)
-- Known issues: [docs/KNOWN-ISSUES.md](docs/KNOWN-ISSUES.md)
-
-## 8. License & Contributions
-
-- **License:** Apache 2.0 ([LICENSE](LICENSE))
-- **Contributions:** Use repository issues and the docs folder for contribution context. A dedicated CONTRIBUTING.md file is not currently present.
+</h6>

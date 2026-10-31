@@ -1,5 +1,5 @@
-// 261029_code
-// 261029_documentation
+// 261031_code
+// 261031_documentation
 
 using System;
 using Microsoft.Xna.Framework;
@@ -16,6 +16,9 @@ internal sealed class GameHost : Game
 
     private bool _isGameModuleDisposed;
 
+    /// <summary>The last preferred window size applied to the graphics device manager.</summary>
+    private Point _appliedPreferredWindowSize;
+
     /// <summary>The last sizing notification sent to the active module.</summary>
     private GameViewport _viewport;
 
@@ -27,16 +30,18 @@ internal sealed class GameHost : Game
 
         _gameModule = gameModule;
 
+        _appliedPreferredWindowSize = gameModule.PreferredWindowSize;
+
         _graphicsDeviceManager = new GraphicsDeviceManager(this)
         {
-            PreferredBackBufferWidth = gameModule.PreferredWindowSize.X,
-            PreferredBackBufferHeight = gameModule.PreferredWindowSize.Y
+            PreferredBackBufferWidth = _appliedPreferredWindowSize.X,
+            PreferredBackBufferHeight = _appliedPreferredWindowSize.Y
         };
 
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
         Window.Title = gameModule.Title;
-        Window.AllowUserResizing = true;
+        Window.AllowUserResizing = false;
     }
 
     /// <summary>Initializes module state before MonoGame loads graphics resources.</summary>
@@ -86,6 +91,8 @@ internal sealed class GameHost : Game
     /// <returns>Whether the current surface has positive dimensions and can be used.</returns>
     private bool RefreshViewport()
     {
+        ApplyPreferredWindowSize();
+
         if (!TryGetCurrentSurfaceSizes(out var clientAreaSize, out var drawableSize))
         {
             return false;
@@ -94,6 +101,21 @@ internal sealed class GameHost : Game
         NotifyModuleViewport(clientAreaSize, drawableSize);
 
         return true;
+    }
+
+    /// <summary>Applies a changed preferred window size from the active module.</summary>
+    private void ApplyPreferredWindowSize()
+    {
+        var preferredWindowSize = _gameModule.PreferredWindowSize;
+        if (preferredWindowSize == _appliedPreferredWindowSize)
+        {
+            return;
+        }
+
+        _appliedPreferredWindowSize = preferredWindowSize;
+        _graphicsDeviceManager.PreferredBackBufferWidth = preferredWindowSize.X;
+        _graphicsDeviceManager.PreferredBackBufferHeight = preferredWindowSize.Y;
+        _graphicsDeviceManager.ApplyChanges();
     }
 
     /// <summary>Gets the current client and back-buffer sizes when both are valid for rendering.</summary>

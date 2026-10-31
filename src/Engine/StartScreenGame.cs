@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using Cheron.Engine;
+using Cheron.Games.Memory;
 using Cheron.Games.Solitaire;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -18,7 +19,8 @@ internal sealed class StartScreenGame : IGameModule
 {
     private readonly List<StartScreenCartridge> _cartridges =
     [
-        new("Solitaire", true, new Point(470, 560))
+        new("Solitaire", StartScreenGameKind.Solitaire, new Point(370, 560)),
+        new("Memory", StartScreenGameKind.Memory, new Point(590, 560))
     ];
 
     private static readonly Rectangle ConsoleBounds = new(260, 140, 580, 260);
@@ -464,7 +466,7 @@ internal sealed class StartScreenGame : IGameModule
         }
 
         var cartridge = _cartridges[_insertedCartridgeIndex];
-        if (!cartridge.LaunchesSolitaire)
+        if (cartridge.GameKind == StartScreenGameKind.None)
         {
             _powerOnRequested = false;
             _powerOnElapsedSeconds = 0;
@@ -472,7 +474,13 @@ internal sealed class StartScreenGame : IGameModule
             return;
         }
 
-        var nextGame = new SolitaireGame();
+        IGameModule nextGame = cartridge.GameKind switch
+        {
+            StartScreenGameKind.Solitaire => new SolitaireGame(),
+            StartScreenGameKind.Memory => new MemoryGame(),
+            _ => throw new InvalidOperationException($"Unsupported game kind: {cartridge.GameKind}.")
+        };
+
         nextGame.Initialize();
         nextGame.SetViewport(_viewport);
         nextGame.LoadContent(_pixel.GraphicsDevice);
@@ -611,19 +619,32 @@ internal sealed class StartScreenGame : IGameModule
 
     private readonly record struct NeonLine(int Y, int Height, int MinAlpha, int MaxAlpha, float PhaseOffset, Color Color);
 
+    /// <summary>Identifies which game module a start-screen cartridge launches.</summary>
+    private enum StartScreenGameKind
+    {
+        /// <summary>The cartridge is not wired to a playable game yet.</summary>
+        None,
+
+        /// <summary>The cartridge launches the Solitaire game module.</summary>
+        Solitaire,
+
+        /// <summary>The cartridge launches the Memory game module.</summary>
+        Memory
+    }
+
     private sealed class StartScreenCartridge
     {
-        public StartScreenCartridge(string label, bool launchesSolitaire, Point position)
+        public StartScreenCartridge(string label, StartScreenGameKind gameKind, Point position)
         {
             Label = label;
-            LaunchesSolitaire = launchesSolitaire;
+            GameKind = gameKind;
             Position = position;
             HomePosition = position;
         }
 
         public string Label { get; }
 
-        public bool LaunchesSolitaire { get; }
+        public StartScreenGameKind GameKind { get; }
 
         public Point Position { get; set; }
 

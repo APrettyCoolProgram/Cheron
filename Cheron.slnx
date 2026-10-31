@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Cheron.csproj" />
+  <Project Path="Cheron.Tests/Cheron.Tests.csproj" />
+</Solution>

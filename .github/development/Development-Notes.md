@@ -6,9 +6,6 @@
 
 </div>
 
-Let's create a new game type: Memory Tiles
-
-Create a new folder/namespace for this game type called `Games.MemoryTile`
 
 ***
 
