@@ -1,0 +1,77 @@
+{
+  "name": "The Haunted Mansion",
+  "description": "A classic text adventure set in a mysterious haunted mansion. Explore the rooms, collect items, and uncover the secrets within.",
+  "author": "TextGame Engine",
+  "version": "1.0.0",
+  "startingRoomId": "entrance",
+  "rooms": [
+    {
+      "id": "entrance",
+      "name": "Entrance Hall",
+      "description": "You are standing in a grand entrance hall. The marble floor gleams in the dim light.",
+      "exits": {
+        "north": "library",
+        "east": "garden",
+        "down": "cellar"
+      },
+      "itemIds": ["key"]
+    },
+    {
+      "id": "library",
+      "name": "Library",
+      "description": "You are in a dusty library. Books line the walls from floor to ceiling.",
+      "exits": {
+        "south": "entrance"
+      },
+      "itemIds": ["book", "statue"]
+    },
+    {
+      "id": "garden",
+      "name": "Garden",
+      "description": "You are in a peaceful garden. Flowers bloom everywhere and birds chirp softly.",
+      "exits": {
+        "west": "entrance"
+      },
+      "itemIds": ["lamp"]
+    },
+    {
+      "id": "cellar",
+      "name": "Cellar",
+      "description": "You are in a dark, damp cellar. The air smells of mold and old wine.",
+      "exits": {
+        "up": "entrance"
+      },
+      "itemIds": []
+    }
+  ],
+  "items": [
+    {
+      "id": "key",
+      "name": "key",
+      "description": "A small brass key with intricate engravings.",
+      "canTake": true,
+      "useDescription": "The key fits into a lock somewhere."
+    },
+    {
+      "id": "lamp",
+      "name": "lamp",
+      "description": "An old oil lamp. It might still work.",
+      "canTake": true,
+      "useDescription": "The lamp flickers to life, illuminating the area."
+    },
+    {
+      "id": "statue",
+      "name": "statue",
+      "description": "A heavy marble statue of a lion.",
+      "canTake": false,
+      "useDescription": "The statue is too heavy to move."
+    },
+    {
+      "id": "book",
+      "name": "book",
+      "description": "An ancient tome with strange symbols on the cover.",
+      "canTake": true,
+      "useDescription": "As you open the book, the symbols seem to shimmer."
+    }
+  ]
+}

@@ -1,0 +1,250 @@
+{
+  "Title": "The Enchanted Forest",
+  "Author": "Ubiquitous Game Engine",
+  "Version": "1.0.0",
+  "Description": "Journey through a magical forest filled with mystical creatures, ancient secrets, and powerful artifacts. Help the forest spirits restore balance to their realm!",
+  "Type": "TextGame",
+  "UIType": "Fancy",
+  "Difficulty": "Intermediate",
+  "Genre": "Fantasy",
+  "StartingRoomId": "forest_entrance",
+  "Rooms": [
+    {
+      "Id": "forest_entrance",
+      "Name": "Forest Entrance",
+      "Description": "You stand at the edge of a mystical forest. Ancient trees tower above you, their branches forming a canopy that filters the sunlight into emerald beams. A worn path leads deeper into the woods to the north, while a babbling brook flows east.",
+      "Exits": [
+        { "Direction": "north", "DestinationRoomId": "ancient_grove" },
+        { "Direction": "east", "DestinationRoomId": "crystal_brook" }
+      ],
+      "ItemIds": ["wooden_staff"]
+    },
+    {
+      "Id": "ancient_grove",
+      "Name": "Ancient Grove",
+      "Description": "You enter a circular clearing surrounded by the oldest trees in the forest. Their trunks are as wide as houses, and their roots create natural benches. A stone altar stands in the center, covered in moss and flowers. Paths lead north to darker woods, east to a mushroom circle, and south back to the entrance.",
+      "Exits": [
+        { "Direction": "south", "DestinationRoomId": "forest_entrance" },
+        { "Direction": "north", "DestinationRoomId": "dark_thicket" },
+        { "Direction": "east", "DestinationRoomId": "fairy_circle" }
+      ],
+      "ItemIds": ["stone_altar", "healing_herb"]
+    },
+    {
+      "Id": "crystal_brook",
+      "Name": "Crystal Brook",
+      "Description": "A crystal-clear stream winds through the forest here. The water sparkles with an otherworldly light, and colorful fish dart beneath the surface. Smooth stones line the banks, and willows dip their branches into the water. The forest entrance is west, and a willow grove lies north.",
+      "Exits": [
+        { "Direction": "west", "DestinationRoomId": "forest_entrance" },
+        { "Direction": "north", "DestinationRoomId": "willow_grove" }
+      ],
+      "ItemIds": ["silver_fish", "smooth_stone"]
+    },
+    {
+      "Id": "willow_grove",
+      "Name": "Willow Grove",
+      "Description": "Graceful willow trees weep over a tranquil pond. Their curtains of leaves create private alcoves around the water's edge. Lily pads float on the surface, and frogs sing their evening chorus. A hollow tree to the east looks like it might hide something interesting.",
+      "Exits": [
+        { "Direction": "south", "DestinationRoomId": "crystal_brook" },
+        { "Direction": "east", "DestinationRoomId": "hollow_tree" }
+      ],
+      "ItemIds": ["lily_pad", "enchanted_flute"]
+    },
+    {
+      "Id": "hollow_tree",
+      "Name": "Hollow Tree",
+      "Description": "You squeeze through an opening in an enormous hollow tree. The interior is surprisingly spacious, with natural shelves carved by time. Soft bioluminescent moss provides gentle light. Tiny fairies have made this their home, leaving behind trinkets and treasures.",
+      "Exits": [
+        { "Direction": "west", "DestinationRoomId": "willow_grove" },
+        { "Direction": "north", "DestinationRoomId": "fairy_circle" }
+      ],
+      "ItemIds": ["fairy_dust", "tiny_crown"]
+    },
+    {
+      "Id": "fairy_circle",
+      "Name": "Fairy Circle",
+      "Description": "A perfect ring of mushrooms glows softly in the twilight. This is a place of powerful magic where the veil between worlds grows thin. Ethereal music seems to come from everywhere and nowhere. Strange symbols are etched into the ground within the circle.",
+      "Exits": [
+        { "Direction": "west", "DestinationRoomId": "ancient_grove" },
+        { "Direction": "south", "DestinationRoomId": "hollow_tree" },
+        { "Direction": "north", "DestinationRoomId": "enchanted_glade" }
+      ],
+      "ItemIds": ["magic_mushroom", "rune_stone"]
+    },
+    {
+      "Id": "dark_thicket",
+      "Name": "Dark Thicket",
+      "Description": "The forest grows darker and denser here. Thorny vines create natural barriers, and the air feels heavy with ancient magic. Strange sounds echo through the undergrowth. A narrow path winds east through the brambles, while the ancient grove lies south.",
+      "Exits": [
+        { "Direction": "south", "DestinationRoomId": "ancient_grove" },
+        { "Direction": "east", "DestinationRoomId": "spider_lair" }
+      ],
+      "ItemIds": ["thorny_vine", "shadow_berry"]
+    },
+    {
+      "Id": "spider_lair",
+      "Name": "Spider's Lair",
+      "Description": "Massive webs stretch between the trees, creating a labyrinth of silvery strands. At the center sits an enormous spider with eyes that gleam with intelligence. Surprisingly, it seems more curious than hostile. Wrapped bundles hang from the webs like macabre ornaments.",
+      "Exits": [
+        { "Direction": "west", "DestinationRoomId": "dark_thicket" },
+        { "Direction": "north", "DestinationRoomId": "enchanted_glade" }
+      ],
+      "ItemIds": ["silk_thread", "wrapped_gift"]
+    },
+    {
+      "Id": "enchanted_glade",
+      "Name": "Enchanted Glade",
+      "Description": "You emerge into a breathtaking glade bathed in golden light. A magnificent unicorn stands at the center, its horn glowing with pure white magic. Flowers of every color imaginable carpet the ground, and butterflies dance through the air. This is the heart of the forest's magic.",
+      "Exits": [
+        { "Direction": "south", "DestinationRoomId": "fairy_circle" },
+        { "Direction": "west", "DestinationRoomId": "spider_lair" },
+        { "Direction": "north", "DestinationRoomId": "spirit_tree" }
+      ],
+      "ItemIds": ["unicorn_horn", "rainbow_flower"]
+    },
+    {
+      "Id": "spirit_tree",
+      "Name": "Ancient Spirit Tree",
+      "Description": "The largest tree you've ever seen dominates this clearing. Its trunk is as wide as a castle tower, and its branches seem to reach the sky. A face is visible in the bark - this tree is alive and aware. It radiates wisdom and power accumulated over thousands of years. This is the guardian of the forest.",
+      "Exits": [
+        { "Direction": "south", "DestinationRoomId": "enchanted_glade" }
+      ],
+      "ItemIds": ["spirit_acorn", "ancient_wisdom"]
+    }
+  ],
+  "Items": [
+    {
+      "Id": "wooden_staff",
+      "Name": "staff",
+      "Description": "A gnarled wooden staff that seems to hum with natural energy. Vines wrap around it in intricate patterns, and a green crystal is set at the top.",
+      "CanTake": true,
+      "UseDescription": "You raise the staff and it glows with emerald light. The forest responds to your presence, revealing hidden paths."
+    },
+    {
+      "Id": "stone_altar",
+      "Name": "altar",
+      "Description": "An ancient stone altar covered in moss and wildflowers. Offerings left by forest creatures surround it. The stone is warm to the touch.",
+      "CanTake": false,
+      "UseDescription": "You place your hands on the altar. Energy flows through you as the ancient spirits acknowledge your presence."
+    },
+    {
+      "Id": "healing_herb",
+      "Name": "herb",
+      "Description": "A sprig of silvery-green leaves that emit a soothing fragrance. This rare herb is known for its powerful healing properties.",
+      "CanTake": true,
+      "UseDescription": "You chew the healing herb. Its bitter taste is quickly replaced by warmth spreading through your body. Your wounds heal and energy returns."
+    },
+    {
+      "Id": "silver_fish",
+      "Name": "fish",
+      "Description": "A magnificent fish with scales that shimmer like liquid silver. It swims in lazy circles, seemingly unafraid of you.",
+      "CanTake": false,
+      "UseDescription": "You reach toward the silver fish and it brushes against your hand, leaving a tingling sensation. You feel blessed."
+    },
+    {
+      "Id": "smooth_stone",
+      "Name": "stone",
+      "Description": "A perfectly smooth river stone that fits comfortably in your palm. It seems to pulse with a gentle rhythm.",
+      "CanTake": true,
+      "UseDescription": "You hold the smooth stone and feel its calming energy. Your mind clears and you see things more clearly."
+    },
+    {
+      "Id": "lily_pad",
+      "Name": "pad",
+      "Description": "A large, sturdy lily pad floating on the pond. It's big enough to sit on and glows faintly in the moonlight.",
+      "CanTake": false,
+      "UseDescription": "You carefully step onto the lily pad. It supports your weight and begins to drift across the pond."
+    },
+    {
+      "Id": "enchanted_flute",
+      "Name": "flute",
+      "Description": "A wooden flute carved from willow wood. Musical notes seem to dance in the air around it even when it's not being played.",
+      "CanTake": true,
+      "UseDescription": "You play the enchanted flute. A hauntingly beautiful melody echoes through the forest, and woodland creatures gather to listen."
+    },
+    {
+      "Id": "fairy_dust",
+      "Name": "dust",
+      "Description": "A small pouch of sparkling, iridescent dust. It shifts colors as it catches the light - purple, blue, gold, and silver.",
+      "CanTake": true,
+      "UseDescription": "You sprinkle the fairy dust around you. You feel lighter than air and your feet lift slightly off the ground!"
+    },
+    {
+      "Id": "tiny_crown",
+      "Name": "crown",
+      "Description": "A delicate crown sized for a fairy, woven from gold thread and set with dewdrop diamonds. It radiates gentle magic.",
+      "CanTake": true,
+      "UseDescription": "Though tiny, when you touch the crown, fairy magic envelops you. You shrink to fairy size for a moment, seeing the world from a new perspective!"
+    },
+    {
+      "Id": "magic_mushroom",
+      "Name": "mushroom",
+      "Description": "A glowing mushroom with a cap that shifts through all the colors of the rainbow. Spores float gently around it.",
+      "CanTake": true,
+      "UseDescription": "You consume a small piece of the magic mushroom. Reality shifts slightly - you can now see magical auras and hidden paths."
+    },
+    {
+      "Id": "rune_stone",
+      "Name": "rune",
+      "Description": "A flat stone carved with ancient symbols that pulse with power. The runes seem to rearrange themselves when you're not looking directly at them.",
+      "CanTake": true,
+      "UseDescription": "You trace the runes with your finger. They flare with light and grant you understanding of the ancient language of the forest."
+    },
+    {
+      "Id": "thorny_vine",
+      "Name": "vine",
+      "Description": "A length of thorny vine that writhes slowly like a sleeping serpent. Despite its menacing appearance, it feels protective rather than dangerous.",
+      "CanTake": true,
+      "UseDescription": "The thorny vine coils around your arm like a bracelet. It will protect you from harm when needed."
+    },
+    {
+      "Id": "shadow_berry",
+      "Name": "berry",
+      "Description": "A cluster of dark berries that absorb light rather than reflect it. They're said to grant the ability to move unseen.",
+      "CanTake": true,
+      "UseDescription": "You eat a shadow berry. Your form becomes hazy and translucent - you can blend into shadows at will."
+    },
+    {
+      "Id": "silk_thread",
+      "Name": "thread",
+      "Description": "A spool of spider silk, stronger than steel yet lighter than air. It shimmers with all the colors of the rainbow.",
+      "CanTake": true,
+      "UseDescription": "The silk thread extends from your hand, creating a rope or web as needed. It can support any weight."
+    },
+    {
+      "Id": "wrapped_gift",
+      "Name": "gift",
+      "Description": "A silk-wrapped bundle left by the spider. Inside you find rare treasures collected from travelers who passed through peacefully.",
+      "CanTake": true,
+      "UseDescription": "You unwrap the gift. Inside are precious gems, magical trinkets, and a note thanking you for your kindness."
+    },
+    {
+      "Id": "unicorn_horn",
+      "Name": "horn",
+      "Description": "Not a real horn, but a crystalline replica shed by the unicorn. It glows with pure, healing magic and can cure any ailment.",
+      "CanTake": false,
+      "UseDescription": "You touch the unicorn horn. Pure white light washes over you, cleansing all poison, disease, and curse. You feel reborn."
+    },
+    {
+      "Id": "rainbow_flower",
+      "Name": "flower",
+      "Description": "A flower with petals that cycle through every color of the rainbow. Its fragrance is intoxicating and fills you with joy.",
+      "CanTake": true,
+      "UseDescription": "You smell the rainbow flower. Pure happiness floods through you, and you see the beauty in all things. Nothing can harm you in this state of bliss."
+    },
+    {
+      "Id": "spirit_acorn",
+      "Name": "acorn",
+      "Description": "A golden acorn from the Ancient Spirit Tree. It contains a seed of the tree's consciousness and incredible power.",
+      "CanTake": true,
+      "UseDescription": "You plant the spirit acorn. A new spirit tree begins to grow, creating a sanctuary wherever you choose. The forest's magic now follows you."
+    },
+    {
+      "Id": "ancient_wisdom",
+      "Name": "wisdom",
+      "Description": "The accumulated knowledge of thousands of years, offered freely by the Spirit Tree. It exists as a glowing orb of golden light.",
+      "CanTake": true,
+      "UseDescription": "You absorb the ancient wisdom. Suddenly you understand the interconnection of all living things, the flow of magic through the world, and your place in it all. You have achieved enlightenment."
+    }
+  ]
+}

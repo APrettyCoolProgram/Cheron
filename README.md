@@ -1,17 +1,16 @@
 <div align="center">
 
-  <img src="./.github/logo/Cheron-Logo-512x512.png" alt="Cheron">
+  <img src=".github/logo/Cheron-Logo-512x512.png" alt="Cheron">
 
-  ![RELEASE](https://img.shields.io/badge/release-XX.XX-teal)&nbsp;
-  ![STAGE](https://img.shields.io/badge/ALPHA-red)&nbsp; <!-- Alpha = Red, Beta = Yellow, Stable = Green -->
-  ![LICENSE](https://img.shields.io/badge/License-apache-blue)&nbsp;
+  ![RELEASE](https://img.shields.io/badge/release-26.10--dev-teal)&nbsp;
+  ![.NET](https://img.shields.io/badge/.NET-10.0-purple)&nbsp;
+  ![LANGUAGE](https://img.shields.io/badge/language-C%23-blue)&nbsp;
+  ![FRAMEWORK](https://img.shields.io/badge/framwork-monogame-orange)
   ![Platform](https://img.shields.io/badge/platform-windows-lightgrey)&nbsp;
 
 </div>
 
 ***
-
-<!--
 
 <h6 align="center">
 
@@ -19,80 +18,87 @@
 
 </h6>
 
+***
+
 | CONTENTS                                    |
 |---------------------------------------------|
-| [About Cheron](#about-%ProjectName%) |
-| [How it works](#how-it-works)               |
-| [Getting started](#getting-started)         |
-| [Installing](#installing)                   |
+| [About Cheron](#about-Cheron)               |
+| [Documentation](#documentation)             |
 | [Usage](#usage)                             |
-| [Acknowledgements](#acknowledgements)       |
-| [Related projects](#related-projects)       |
 | [License](#license)                         |
 
 ***
 
-## About Cheron
+# About Cheron
 
-A brief description of the project, what it does, and who it's for. This should
-be a concise summary that gives readers a clear understanding of the project's
-purpose and value proposition.
+Cheron is:
 
-### Features
+1. **A game engine**  
+The *idea* is to create a game engine that can be used to create and play a variety of different game types.
 
-* Feature — What it does and why it matters.
-* Feature — What it does and why it matters.
-* Feature — What it does and why it matters.
+Cheron is developed
 
-## How it works
+2. **An experiment**  
+I'm using AI to build Cheron. Why? [Because *experimenting*!](./docs/making-of/README.md)
 
-A blurb describing how the project works at a high level.
+## Requirements
 
-## Getting started
+- [.NET 10 SDK](https://dotnet.microsoft.com/en-us/download)
+- A desktop environment supported by MonoGame DesktopGL.
 
-A quick overview of how to get started with the project.
+# Documentation
 
-### Before you begin
+There's a variety of different documentation to peruse:
 
-Any assumptions, or other information a user should know before
+* The [Cheron manual](./docs/man/README.md)
+* The aforementioned [Making of Cheron](./docs/making-of/README.md)
+* The [development documentation](.github/development/README.md)
 
-### Requirements
+# Using
 
-| Requirement | Minimum version | Notes |
-|-------------|-----------------|-------|
-| Requirement |                 |       |
-| Requirement |                 |       |
-| Requirement |                 |       |
+## Build and run
 
-## Installing
+Clone the repository and enter its directory:
 
-Quick summary of installation instructions, or link to the Installing documentation.
+```shell
+git clone https://github.com/APrettyCoolProgram/Cheron.git
+cd Cheron
+```
 
-## Usage
+Build the solution:
 
-Step-by-step instructions for using the project on supported platforms.
+```shell
+dotnet build src/Cheron.slnx
+```
 
-## Documentation
+Run the game:
 
-Documentation is available.
+```shell
+dotnet run --project src/Cheron.csproj
+```
 
-## Acknowledgements
+## Tests
 
-None.
+Run the Solitaire test suite:
 
-## Built with
+```shell
+dotnet test src/Solitaire.Tests/Solitaire.Tests.csproj
+```
 
-* [Technology or framework](URL)  - Role it plays in the project.
-* [Technology or framework](URL)  - Role it plays in the project.
-* [Technology or framework](URL)  - Role it plays in the project.
+## Project layout
 
-## Related projects
+```text
+src/
+├── Engine/             Game host, module contract, and start screen
+├── Games/Solitaire/    Shared Solitaire systems and Klondike/FreeCell variants
+├── Solitaire.Tests/    xUnit tests
+├── Program.cs          Application entry point
+└── Cheron.csproj
+```
 
-None.
+# License
 
-## License
-
-Copyright &copy; 2026 [A Pretty Cool Program](https://github.com/APrettyCoolProgram)  
+Copyright &copy; 2026 [A Pretty Cool Program](https://github.com/aprettycoolprogram)  
 Distributed under the [Apache 2.0 License](LICENSE)  
 
 ***
@@ -102,5 +108,3 @@ Distributed under the [Apache 2.0 License](LICENSE)
   [FAQ](docs/FAQ.md)&nbsp;&bull;&nbsp;[DEVELOPMENT](docs/DEVELOPMENT.md)&nbsp;&bull;&nbsp;[API](docs/api/README.md)&nbsp;&bull;&nbsp;[SUPPORT](docs/SUPPORT.md)&nbsp;&bull;&nbsp;[NOTICES](docs/NOTICES.md)
 
 </h6>
-
--->

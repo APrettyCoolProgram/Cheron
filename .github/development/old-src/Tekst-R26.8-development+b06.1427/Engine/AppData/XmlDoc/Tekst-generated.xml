@@ -1,0 +1,390 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Tekst</name>
+    </assembly>
+    <members>
+        <member name="T:Tekst.Cartridge.CartridgeLoader">
+            <summary>Loads a <c>.cart</c> JSON file and creates the game objects needed to run a session.</summary>
+        </member>
+        <member name="M:Tekst.Cartridge.CartridgeLoader.Load(System.String)">
+            <summary>
+            Loads the cartridge named by <paramref name="cartName"/> and returns the assembled world,
+            initial game state, command processor, and raw cartridge data.
+            </summary>
+            <param name="cartName">The file name of the cartridge to load.</param>
+            <returns>
+            A tuple containing the constructed <see cref="T:Tekst.World.GameWorld"/>, <see cref="T:Tekst.State.GameState"/>,
+            <see cref="T:Tekst.Engine.CommandProcessor"/>, and <see cref="T:Tekst.Cartridge.CartridgeShell"/>.
+            </returns>
+            <exception cref="T:System.IO.FileNotFoundException">Thrown when the .cart file does not exist.</exception>
+            <exception cref="T:System.InvalidOperationException">Thrown when the file cannot be deserialized or the starting room is missing.</exception>
+        </member>
+        <member name="M:Tekst.Cartridge.CartridgeLoader.ValidateCartridge(System.String)">
+            <summary>Checks if the cartridge file exists at the specified path. If it does not exist, a <see cref="T:System.IO.FileNotFoundException"/> is thrown.</summary>
+            <param name="cartPath">The path to the cartridge file.</param>
+            <exception cref="T:System.IO.FileNotFoundException">Thrown when the .cart file does not exist.</exception>
+        </member>
+        <member name="M:Tekst.Cartridge.CartridgeLoader.Deserialize(System.String)">
+            <summary>Reads the cartridge file from the specified path and deserializes it into a <see cref="T:Tekst.Cartridge.CartridgeShell"/> object.</summary>
+            <param name="cartPath">The path to the cartridge file.</param>
+            <returns>The deserialized <see cref="T:Tekst.Cartridge.CartridgeShell"/> object.</returns>
+            <exception cref="T:System.InvalidOperationException">Thrown when the file cannot be deserialized.</exception>
+        </member>
+        <member name="T:Tekst.Cartridge.CartridgeShell">
+            <summary>Root deserialization target for a <c>.cart</c> JSON file.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.CartridgeShell.Title">
+            <summary>Gets or sets the title data displayed at startup.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.CartridgeShell.WinRule">
+            <summary>Gets or sets the rule that determines when the game is won.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.CartridgeShell.StartingRoomId">
+            <summary>Gets or sets the identifier of the room where the player begins.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.CartridgeShell.Rooms">
+            <summary>Gets or sets the rooms defined in the cartridge.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.GameDetailData.GameTitle">
+            <summary>Gets or sets the game title shown in the banner.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.GameDetailData.GameAuthor">
+            <summary>Gets or sets the author of the game.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.GameDetailData.GameVersion">
+            <summary>Gets or sets the game version.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.GameDetailData.GameDescription">
+            <summary>Gets or sets a short description of the game.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.GameDetailData.GameType">
+            <summary>Gets or sets the type of game.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.GameDetailData.GameVariation">
+            <summary>Gets or sets the single-character variation of the game type.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.GameDetailData.GameColorScheme">
+            <summary>Gets or sets the foreground,background color scheme.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.GameDetailData.GameGenre">
+            <summary>Gets or sets the genre of the game.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.GameDetailData.GameDifficulty">
+            <summary>Gets or sets the difficulty level of the game.</summary>
+        </member>
+        <member name="T:Tekst.Cartridge.OpeningCreditData">
+            <summary>Defines the title screen content for the game.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.OpeningCreditData.BannerContents">
+            <summary>The game banner that is displayed on the title screen.</summary>
+            <remarks>
+            Each string in the list represents a line of the banner.<br/>
+            <br/>
+            If the banner == null or empty, GameDetailData.GameTitle is used.<br/>
+            </remarks>
+        </member>
+        <member name="P:Tekst.Cartridge.OpeningCreditData.Story">
+            <summary>Gets or sets the introductory text displayed when the game starts.</summary>
+            <remarks>
+            If Story is null or empty, GameDetailData.GameDescription is used.<br/>
+            </remarks>
+        </member>
+        <member name="P:Tekst.Cartridge.OpeningCreditData.Instructions">
+            <summary>Gets or sets the instructions shown to the player.</summary>
+        </member>
+        <member name="T:Tekst.Cartridge.WinRuleData">
+            <summary>Defines the victory requirements for the game.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.WinRuleData.RequiredItemId">
+            <summary>Gets or sets the identifier of the item required to win.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.WinRuleData.RequiredRoomId">
+            <summary>Gets or sets the identifier of the room where the win condition must be met.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.WinRuleData.VictoryText">
+            <summary>
+            Victory message shown when the win condition is met.
+            Supports <c>{0}</c> = turn count, <c>{1}</c> = "s" or "" for plural.
+            </summary>
+        </member>
+        <member name="T:Tekst.Cartridge.RoomData">
+            <summary>Defines a room in the game world.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.RoomData.Id">
+            <summary>Gets or sets the room identifier.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.RoomData.Title">
+            <summary>Gets or sets the room title shown to the player.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.RoomData.Description">
+            <summary>Gets or sets the room description shown to the player.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.RoomData.Items">
+            <summary>Gets or sets the items available in the room.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.RoomData.Exits">
+            <summary>Gets or sets the exits available from the room.</summary>
+        </member>
+        <member name="T:Tekst.Cartridge.ItemData">
+            <summary>Defines an item that can appear in a room or inventory.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.ItemData.Id">
+            <summary>Gets or sets the item identifier.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.ItemData.Name">
+            <summary>Gets or sets the item display name.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.ItemData.Description">
+            <summary>Gets or sets the item description shown to the player.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.ItemData.CanTake">
+            <summary>Gets or sets a value indicating whether the item can be taken by the player.</summary>
+        </member>
+        <member name="T:Tekst.Cartridge.ExitData">
+            <summary>Defines a directional exit from one room to another.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.ExitData.Direction">
+            <summary>Gets or sets the direction label used to reference the exit.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.ExitData.TargetRoomId">
+            <summary>Gets or sets the identifier of the target room.</summary>
+        </member>
+        <member name="P:Tekst.Cartridge.ExitData.MoveDescription">
+            <summary>Gets or sets the optional text shown when the player moves through the exit.</summary>
+        </member>
+        <member name="T:Tekst.Credits.ClosingCredit">
+            <summary>Handles displaying closing credits and end-of-game information.</summary>
+        </member>
+        <member name="M:Tekst.Credits.ClosingCredit.Fin(Tekst.State.GameState)">
+            <summary>Displays a closing message indicating the game has ended.</summary>
+            <param name="state">The current game state.</param>
+        </member>
+        <member name="T:Tekst.Credits.OpeningCredit">
+            <summary>Handles displaying the opening credits.</summary>
+        </member>
+        <member name="M:Tekst.Credits.OpeningCredit.GameTitle(Tekst.Cartridge.CartridgeShell)">
+            <summary>Displays the game title and introductory information from the cartridge data.</summary>
+            <param name="cartData">The cartridge data containing the title and introductory information.</param>
+        </member>
+        <member name="M:Tekst.Credits.OpeningCredit.DisplayBanner(System.Collections.Generic.List{System.String})">
+            <summary>Displays the banner lines on the console.</summary>
+            <param name="banner">The list of banner lines to display.</param>
+        </member>
+        <member name="M:Tekst.Credits.OpeningCredit.SetColorScheme(System.String)">
+            <summary>Sets the console's foreground and background colors based on a color scheme string.</summary>
+            <param name="colorScheme">A string representing the color scheme in the format "Background,Foreground".</param>
+        </member>
+        <member name="M:Tekst.Credits.OpeningCredit.GetConsoleColor(System.String)">
+            <summary>Converts a single-character color code to the corresponding ConsoleColor. </summary>
+            <param name="colorName">A single-character string representing the color code.</param>
+            <returns>The corresponding ConsoleColor.</returns>
+        </member>
+        <member name="T:Tekst.Engine.CommandProcessor">
+            <summary>Interprets raw player input and mutates <see cref="T:Tekst.State.GameState"/> accordingly.</summary>
+            <remarks>Supports verbs: look, go, take, drop, inventory, examine, quit, help.</remarks>
+        </member>
+        <member name="M:Tekst.Engine.CommandProcessor.#ctor(Tekst.World.GameWorld)">
+            <summary>Initializes a new instance of the <see cref="T:Tekst.Engine.CommandProcessor"/> class.</summary>
+            <param name="world">The world data used to resolve room transitions.</param>
+        </member>
+        <member name="M:Tekst.Engine.CommandProcessor.Process(System.String,Tekst.State.GameState)">
+            <summary>Processes a single line of raw player input.</summary>
+            <param name="raw">The unparsed command text entered by the player.</param>
+            <param name="state">The current game state to inspect and mutate.</param>
+            <returns>The result to present to the player.</returns>
+        </member>
+        <member name="M:Tekst.Engine.CommandProcessor.Look(Tekst.State.GameState)">
+            <summary>Describes the player's current room.</summary>
+            <param name="state">The current game state.</param>
+            <returns>A result containing the room description.</returns>
+        </member>
+        <member name="M:Tekst.Engine.CommandProcessor.Go(System.String,Tekst.State.GameState)">
+            <summary>Moves the player in the specified direction when an exit exists.</summary>
+            <param name="direction">The direction to travel.</param>
+            <param name="state">The current game state.</param>
+            <returns>A result describing the outcome of the movement.</returns>
+        </member>
+        <member name="M:Tekst.Engine.CommandProcessor.Take(System.String,Tekst.State.GameState)">
+            <summary>Takes an item from the current room and adds it to the inventory.</summary>
+            <param name="noun">The item name or identifier to take.</param>
+            <param name="state">The current game state.</param>
+            <returns>A result describing the outcome of the action.</returns>
+        </member>
+        <member name="M:Tekst.Engine.CommandProcessor.Drop(System.String,Tekst.State.GameState)">
+            <summary>Drops an item from the inventory into the current room.</summary>
+            <param name="noun">The item name or identifier to drop.</param>
+            <param name="state">The current game state.</param>
+            <returns>A result describing the outcome of the action.</returns>
+        </member>
+        <member name="M:Tekst.Engine.CommandProcessor.ShowInventory(Tekst.State.GameState)">
+            <summary>Lists the items currently carried by the player.</summary>
+            <param name="state">The current game state.</param>
+            <returns>A result containing the inventory listing.</returns>
+        </member>
+        <member name="M:Tekst.Engine.CommandProcessor.Examine(System.String,Tekst.State.GameState)">
+            <summary>Shows the description of an item visible to the player.</summary>
+            <param name="noun">The item name or identifier to examine.</param>
+            <param name="state">The current game state.</param>
+            <returns>A result containing the item's description.</returns>
+        </member>
+        <member name="M:Tekst.Engine.CommandProcessor.Quit(Tekst.State.GameState)">
+            <summary>Ends the current game session.</summary>
+            <param name="state">The current game state.</param>
+            <returns>A result that confirms the game has ended.</returns>
+        </member>
+        <member name="M:Tekst.Engine.CommandProcessor.Help">
+            <summary>Returns a list of supported commands.</summary>
+            <returns>A result containing the help text.</returns>
+        </member>
+        <member name="M:Tekst.Engine.CommandProcessor.DescribeRoom(Tekst.Models.Room,Tekst.State.GameState)">
+            <summary>Builds the full textual description of a room at the current moment.</summary>
+            <param name="room">The room to describe.</param>
+            <param name="state">The current game state.</param>
+            <returns>The formatted room description.</returns>
+        </member>
+        <member name="M:Tekst.Engine.CommandProcessor.FindItem(System.String,System.Collections.Generic.IEnumerable{Tekst.Models.Item})">
+            <summary>Finds the first item whose identifier or name matches the supplied text.</summary>
+            <param name="noun">The text to match against available items.</param>
+            <param name="items">The items to search.</param>
+            <returns>The matching item, or <see langword="null"/> if no match is found.</returns>
+        </member>
+        <member name="T:Tekst.Engine.CommandResult">
+            <summary>The outcome of processing a single player command.</summary>
+        </member>
+        <member name="P:Tekst.Engine.CommandResult.Message">
+            <summary>Narrative text to display to the player.</summary>
+        </member>
+        <member name="P:Tekst.Engine.CommandResult.ShowRoomDescription">
+            <summary>Whether the room description should be printed after this command.</summary>
+        </member>
+        <member name="M:Tekst.Engine.CommandResult.Say(System.String,System.Boolean)">
+            <summary> Convenience method for creating a CommandResult with a message and optional room description flag.</summary>
+            <param name="message">The message to display to the player.</param>
+            <param name="showRoom">Whether to show the room description after this command.</param>
+            <returns>A new CommandResult instance.</returns>
+        </member>
+        <member name="T:Tekst.Engine.WinEvaluator">
+            <summary>Evaluates the win condition described by a <see cref="T:Tekst.Cartridge.WinRuleData"/> entryagainst the current <see cref="T:Tekst.State.GameState"/>.</summary>
+        </member>
+        <member name="M:Tekst.Engine.WinEvaluator.Check(Tekst.Cartridge.WinRuleData,Tekst.State.GameState)">
+            <summary>Returns a formatted victory message if the win condition is met,otherwise returns <see langword="null"/>.</summary>
+        </member>
+        <member name="T:Tekst.Models.Exit">
+            <summary>A one-way directional link from one room to another.</summary>
+        </member>
+        <member name="P:Tekst.Models.Exit.Direction">
+            <summary>The direction keyword the player types (e.g., "north", "up").</summary>
+        </member>
+        <member name="P:Tekst.Models.Exit.TargetRoomId">
+            <summary>The Id of the destination <see cref="T:Tekst.Models.Room"/>.</summary>
+        </member>
+        <member name="P:Tekst.Models.Exit.MoveDescription">
+            <summary>Optional description shown when the player moves through this exit.</summary>
+        </member>
+        <member name="M:Tekst.Models.Exit.MapExit(Tekst.Cartridge.ExitData)">
+            <summary>Maps an ExitData object into an Exit object.</summary>
+            <param name="exit">The ExitData object to map.</param>
+            <returns>A new Exit object created from the provided data.</returns>
+        </member>
+        <member name="T:Tekst.Models.Item">
+            <summary>An object that exists in a room or in the player's inventory.</summary>
+        </member>
+        <member name="P:Tekst.Models.Item.Id">
+            <summary>Unique identifier used in command parsing (e.g., "torch").</summary>
+        </member>
+        <member name="P:Tekst.Models.Item.Name">
+            <summary>Display name shown to the player (e.g., "a flickering torch").</summary>
+        </member>
+        <member name="P:Tekst.Models.Item.Description">
+            <summary>Text returned when the player examines the item.</summary>
+        </member>
+        <member name="P:Tekst.Models.Item.CanTake">
+            <summary>Whether the player can add this item to their inventory.</summary>
+        </member>
+        <member name="M:Tekst.Models.Item.MapItem(Tekst.Cartridge.ItemData)">
+            <summary>Maps an ItemData object into an Item object.</summary>
+            <param name="item">The ItemData object to map.</param>
+            <returns>A new Item object created from the provided data.</returns>
+        </member>
+        <member name="T:Tekst.Models.Room">
+            <summary>A discrete location in the game world.</summary>
+        </member>
+        <member name="P:Tekst.Models.Room.Id">
+            <summary>Unique identifier for this room (e.g., "great_hall").</summary>
+        </member>
+        <member name="P:Tekst.Models.Room.Title">
+            <summary>Short title shown as a header when the player enters.</summary>
+        </member>
+        <member name="P:Tekst.Models.Room.Description">
+            <summary>Full atmospheric description of the room.</summary>
+        </member>
+        <member name="P:Tekst.Models.Room.Items">
+            <summary>Items currently present in this room.</summary>
+        </member>
+        <member name="P:Tekst.Models.Room.Exits">
+            <summary>Exits available from this room, keyed by direction.</summary>
+        </member>
+        <member name="M:Tekst.Models.Room.MapRoom(Tekst.Cartridge.RoomData)">
+            <summary>Maps a RoomData object into a Room object.</summary>
+            <param name="room">The RoomData object to map.</param>
+            <returns>A new Room object created from the provided data.</returns>
+        </member>
+        <member name="T:Tekst.State.GameState">
+            <summary>Mutable snapshot of all runtime game data.</summary>
+        </member>
+        <member name="P:Tekst.State.GameState.CurrentRoom">
+            <summary>The room the player is currently standing in.</summary>
+        </member>
+        <member name="P:Tekst.State.GameState.Inventory">
+            <summary>Items the player is currently carrying.</summary>
+        </member>
+        <member name="P:Tekst.State.GameState.TurnCount">
+            <summary>Number of turns the player has taken.</summary>
+        </member>
+        <member name="P:Tekst.State.GameState.IsGameWon">
+            <summary>Whether the winning condition has been reached.</summary>
+        </member>
+        <member name="P:Tekst.State.GameState.IsGameOver">
+            <summary>Whether the player has chosen to quit.</summary>
+        </member>
+        <member name="M:Tekst.State.GameState.MainGameLoop(Tekst.State.GameState,Tekst.Engine.CommandProcessor,Tekst.Cartridge.CartridgeShell)">
+            <summary>
+            Main game loop that continues until the game is over. On each iteration, it prompts the player for input,
+            processes the input, and updates the game state accordingly.
+            </summary>
+            <param name="state">The current game state.</param>
+            <param name="processor">The command processor responsible for handling player input.</param>
+            <param name="cartData">The cartridge data containing game rules and content.</param>
+        </member>
+        <member name="M:Tekst.State.GameState.OpeningRoom(Tekst.State.GameState)">
+            <summary>Describes the current room to the player, including its name, description, items present, and available exits.</summary>
+            <param name="state">The current game state.</param>
+        </member>
+        <member name="T:Tekst.World.GameWorld">
+            <summary>Represents the game world and provides access to all rooms by identifier.</summary>
+        </member>
+        <member name="F:Tekst.World.GameWorld._rooms">
+            <summary>A dictionary mapping room identifiers to their corresponding <see cref="T:Tekst.Models.Room"/> objects.</summary>
+        </member>
+        <member name="P:Tekst.World.GameWorld.StartingRoomId">
+            <summary>Gets the identifier of the room where the game begins.</summary>
+        </member>
+        <member name="M:Tekst.World.GameWorld.#ctor(System.Collections.Generic.IEnumerable{Tekst.Models.Room},System.String)">
+            <summary>Initializes a new instance of the <see cref="T:Tekst.World.GameWorld"/> class.</summary>
+            <param name="rooms">The rooms available in the game world.</param>
+            <param name="startingRoomId">The identifier of the starting room.</param>
+        </member>
+        <member name="M:Tekst.World.GameWorld.GetRoom(System.String)">
+            <summary> Gets the room with the specified identifier.</summary>
+            <param name="id">The room identifier to look up.</param>
+            <returns>The matching room, or <see langword="null"/> if no room exists with that identifier.</returns>
+        </member>
+        <member name="P:Tekst.World.GameWorld.StartingRoom">
+            <summary>Gets the room where the game starts.</summary>
+            <remarks>
+            If the configured starting room cannot be found, the first room in the collection is returned.
+            </remarks>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,69 @@
+﻿<Window
+    x:Class="Charon.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Charon"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="MainWindow"
+    Width="1200"
+    Height="700"
+    Background="#f9630f"
+    mc:Ignorable="d">
+    <Grid Width="1200" HorizontalAlignment="Right">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="229*" />
+            <ColumnDefinition Width="171*" />
+        </Grid.ColumnDefinitions>
+        <Canvas x:Name="cnvsLeftColumn" Grid.Column="0">
+            <Image
+                x:Name="imgCheronLogo"
+                Width="685"
+                Height="685"
+                Source="/AppData/Image/Logo/Cheron-1024x1024.png"
+                Stretch="Fill" />
+            <Label
+                x:Name="lblCheronVersion"
+                Canvas.Left="10"
+                Canvas.Top="628"
+                Width="667"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                HorizontalContentAlignment="right"
+                VerticalContentAlignment="Center"
+                Content="Version 0.0.0.0"
+                FontFamily="Barlow"
+                FontSize="14"
+                FontWeight="Regular"
+                Foreground="LightGray" />
+        </Canvas>
+        <Border
+            x:Name="brdrRightColumn"
+            Grid.Column="1"
+            Width="493"
+            Margin="0,10,10,10"
+            HorizontalAlignment="Right"
+            Background="GhostWhite"
+            BorderBrush="#f9c789"
+            BorderThickness="2"
+            CornerRadius="10">
+            <StackPanel x:Name="spnlImageApps">
+                <Button
+                    x:Name="PaletteSwapper"
+                    Width="150"
+                    Height="38"
+                    Click="PaletteSwapper_Click"
+                    Content="Palette Swapper"
+                    FontFamily="Barlow"
+                    FontSize="18"
+                    FontWeight="SemiBold">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="3" />
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
