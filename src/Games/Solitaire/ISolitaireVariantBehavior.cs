@@ -11,7 +11,8 @@ namespace Cheron.Games.Solitaire;
 internal interface ISolitaireVariantBehavior
 {
     /// <summary>Initializes a new deal for the variant.</summary>
-    void InitializeDeal(List<SolitaireCard> deck, List<List<SolitaireCard>> tableau, List<SolitaireCard> stock, List<SolitaireCard> waste, List<List<SolitaireCard>> foundations, List<List<SolitaireCard>> freeCells);
+    void InitializeDeal(List<SolitaireCard> deck, List<List<SolitaireCard>> tableau, List<SolitaireCard> stock,
+        List<SolitaireCard> waste, List<List<SolitaireCard>> foundations, List<List<SolitaireCard>> freeCells);
 
     /// <summary>Enumerates variant-specific leading piles used by history serialization.</summary>
     IEnumerable<List<SolitaireCard>> EnumerateLeadingPiles(List<SolitaireCard> stock, List<SolitaireCard> waste,
