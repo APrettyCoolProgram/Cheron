@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Xunit;
 
-namespace Solitaire.Tests;
+namespace Cheron.Tests;
 
 public sealed class SolitaireVariantPromptTests
 {

@@ -6,7 +6,7 @@ using Cheron.Games.Solitaire.Klondike;
 using Microsoft.Xna.Framework;
 using Xunit;
 
-namespace Solitaire.Tests;
+namespace Cheron.Tests;
 
 public sealed class SolitaireVariantHelpersTests
 {
