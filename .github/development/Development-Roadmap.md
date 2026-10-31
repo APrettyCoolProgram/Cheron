@@ -48,3 +48,5 @@
 ### Platformer
 
 
+MacOS
+Linux

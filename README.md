@@ -1,11 +1,57 @@
-# Cheron
+<div align="center">
+
+  <img src=".github/logo/Cheron-Logo-512x512.png" alt="Cheron">
+
+  ![RELEASE](https://img.shields.io/badge/release-26.10-teal)&nbsp;
+  ![STAGE](https://img.shields.io/badge/Development-red)&nbsp; <!-- Alpha = Red, Beta = Yellow, Stable = Green -->
+  ![.NET](https://img.shields.io/badge/.NET-10.0-purple)
+  ![MonoGame](https://shields.io)
+  ![Platform](https://img.shields.io/badge/platform-windows-lightgrey)&nbsp;
+
+</div>
+
+***
+
+<h6 align="center">
+
+  [MANUAL](docs/man/README.md)&nbsp;&bull;&nbsp;[CHANGELOG](docs/CHANGELOG.md)&nbsp;&bull;&nbsp;[ROADMAP](docs/ROADMAP.md)&nbsp;&bull;&nbsp;[KNOWN ISSUES](docs/KNOWN-ISSUES.md)
+
+</h6>
+
+***
+
+| CONTENTS                                    |
+|---------------------------------------------|
+| [About Cheron](#about-Cheron) |
+| [How it works](#how-it-works)               |
+| [Getting started](#getting-started)         |
+| [Installing](#installing)                   |
+| [Usage](#usage)                             |
+| [Acknowledgements](#acknowledgements)       |
+| [Related projects](#related-projects)       |
+| [License](#license)                         |
+
+***
+
+# About Cheron
+
+Cheron is:
+
+1. **A game engine**  
+The *idea* is to create a game engine that can be used to create and play a variety of different game types.
+
+2. **An experiment**  
+I'm using AI to build Cheron. Why? [Because](./making-of/README.md)
+
+
+
 
 Cheron is a desktop card game built with C# and MonoGame. It currently includes
 Klondike and FreeCell Solitaire, hosted by a small game engine that separates
 the game lifecycle from individual game modules.
 
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue)
-![.NET](https://img.shields.io/badge/.NET-10.0-purple)
+
 
 ## Features
 
