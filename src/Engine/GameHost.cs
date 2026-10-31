@@ -10,6 +10,7 @@ namespace Cheron.Engine;
 /// <summary>Owns the MonoGame application lifecycle and delegates game-specific work to a module.</summary>
 internal sealed class GameHost : Game
 {
+
     private readonly GraphicsDeviceManager _graphicsDeviceManager;
 
     private readonly IGameModule _gameModule;

@@ -1,4 +1,4 @@
-// 261029_code
+// 261031_code
 // 261029_documentation
 
 using System;
@@ -37,6 +37,7 @@ internal sealed partial class SolitaireGame
         internal void UpdatePointer(Point position, bool isDown, TimeSpan time)
         {
             _game._pointerPosition = position;
+
             if (_game._smokePassOverlayOpen)
             {
                 if (!isDown && _game._pointerWasDown)
@@ -45,6 +46,7 @@ internal sealed partial class SolitaireGame
                 }
 
                 _game._pointerWasDown = isDown;
+
                 return;
             }
 
@@ -52,6 +54,7 @@ internal sealed partial class SolitaireGame
             {
                 var currentWheel = Mouse.GetState().ScrollWheelValue;
                 var wheelDelta = currentWheel - _game._previousScrollWheelValue;
+
                 if (wheelDelta != 0)
                 {
                     _game.ScrollHelpOverlay(wheelDelta < 0 ? 1 : -1);
@@ -65,18 +68,21 @@ internal sealed partial class SolitaireGame
                 }
 
                 _game._pointerWasDown = isDown;
+
                 return;
             }
 
             if (_game.IsNewGamePromptOpen)
             {
                 UpdateNewGamePromptPointer(position, isDown);
+
                 return;
             }
 
             if (_game._optionsOpen)
             {
                 _game.UpdateOptionsPointer(position, isDown);
+
                 return;
             }
 
@@ -111,6 +117,7 @@ internal sealed partial class SolitaireGame
                 _game._lastClickedCard = null;
                 _game._ignoreUntilRelease = isDown;
                 _game._pointerWasDown = isDown;
+
                 return;
             }
 
@@ -118,6 +125,7 @@ internal sealed partial class SolitaireGame
             {
                 _game._ignoreUntilRelease = isDown;
                 _game._pointerWasDown = isDown;
+
                 return;
             }
 
@@ -125,6 +133,7 @@ internal sealed partial class SolitaireGame
             {
                 _game._pressPosition = position;
                 _game._pressedPile = null;
+
                 if (_game.TryGetCardAt(position, out var pile, out var cardIndex, out var bounds))
                 {
                     _game._pressedPile = pile;
@@ -135,6 +144,7 @@ internal sealed partial class SolitaireGame
 
             var movement = position - _game._pressPosition;
             var movedBeyondThreshold = movement.ToVector2().LengthSquared() >= DragThreshold * DragThreshold;
+
             if (_game._pointerWasDown && _game._pressedPile is not null && !_game._isDragging && movedBeyondThreshold)
             {
                 _game.Select(_game._pressedPile, _game._pressedCardIndex);
@@ -148,7 +158,9 @@ internal sealed partial class SolitaireGame
                 if (_game._isDragging)
                 {
                     var before = _game.CaptureCardPresentation();
+
                     DropSelectedCards(position);
+
                     if (_game._cardTransitions.Count == 0)
                     {
                         _game.AnimateChanges(before);
@@ -182,16 +194,20 @@ internal sealed partial class SolitaireGame
             {
                 var card = pile[cardIndex];
                 var clickDistance = (position - _game._lastClickPosition).ToVector2().LengthSquared();
+
                 if (ReferenceEquals(card, _game._lastClickedCard) && time - _game._lastClickTime <= DoubleClickInterval &&
                     clickDistance < DragThreshold * DragThreshold)
                 {
                     _game.Select(pile, cardIndex);
+
                     var movedToFoundation = false;
+
                     for (var foundationIndex = 0; foundationIndex < _game._foundations.Count; foundationIndex++)
                     {
                         if (_game.TryMoveToFoundation(foundationIndex))
                         {
                             movedToFoundation = true;
+
                             break;
                         }
                     }
@@ -202,6 +218,7 @@ internal sealed partial class SolitaireGame
                     }
 
                     _game._lastClickedCard = null;
+
                     return;
                 }
 
@@ -242,6 +259,7 @@ internal sealed partial class SolitaireGame
                 if (GetFoundationBounds(foundationIndex).Contains(position) && _game.CanMoveToFoundation(foundationIndex))
                 {
                     _game.TryMoveToFoundation(foundationIndex);
+
                     return;
                 }
             }
@@ -251,6 +269,7 @@ internal sealed partial class SolitaireGame
                 if (_game.GetTableauBounds(columnIndex).Contains(position) && _game.CanMoveToTableau(columnIndex))
                 {
                     _game.TryMoveToTableau(columnIndex);
+
                     return;
                 }
             }
@@ -269,7 +288,9 @@ internal sealed partial class SolitaireGame
         internal void ToggleOptions()
         {
             var before = _game._isDragging ? _game.CaptureCardPresentation() : null;
+
             ResetPointerGesture();
+
             if (before is not null)
             {
                 _game.ClearSelection();
@@ -291,6 +312,7 @@ internal sealed partial class SolitaireGame
                 _game._optionsOpen = false;
                 _game._newGamePromptOpen = false;
                 ResetPointerGesture();
+
                 return true;
             }
 
@@ -310,18 +332,21 @@ internal sealed partial class SolitaireGame
                     IsNewKey(keyboard, Keys.Up) || IsNewKey(keyboard, Keys.Down))
                 {
                     _game._newGamePromptVariant = _game._newGamePromptVariant.ToggleVariant();
+
                     return true;
                 }
 
                 if (IsNewKey(keyboard, Keys.Enter) || IsNewKey(keyboard, Keys.Space))
                 {
                     _game.ConfirmNewGamePromptSelection();
+
                     return true;
                 }
 
                 if (IsNewKey(keyboard, Keys.Back) || IsNewKey(keyboard, Keys.Escape))
                 {
                     _game.CancelNewGamePrompt();
+
                     return true;
                 }
 
@@ -333,18 +358,21 @@ internal sealed partial class SolitaireGame
                 if (IsNewKey(keyboard, Keys.Escape) || IsNewKey(keyboard, Keys.Back) || IsNewKey(keyboard, Keys.F1))
                 {
                     _game.CloseHelpOverlay();
+
                     return true;
                 }
 
                 if (IsNewKey(keyboard, Keys.Down) || IsNewKey(keyboard, Keys.PageDown))
                 {
                     _game.ScrollHelpOverlay(1);
+
                     return true;
                 }
 
                 if (IsNewKey(keyboard, Keys.Up) || IsNewKey(keyboard, Keys.PageUp))
                 {
                     _game.ScrollHelpOverlay(-1);
+
                     return true;
                 }
 
@@ -354,36 +382,42 @@ internal sealed partial class SolitaireGame
             if (IsNewKey(keyboard, Keys.O))
             {
                 ToggleOptions();
+
                 return true;
             }
 
             if (IsNewKey(keyboard, Keys.M))
             {
                 _game.ToggleSound();
+
                 return true;
             }
 
             if (IsNewKey(keyboard, Keys.F1))
             {
                 _game.OpenHelpOverlay();
+
                 return true;
             }
 
             if (IsNewKey(keyboard, Keys.F2))
             {
                 _game._largeText = !_game._largeText;
+
                 return true;
             }
 
             if (IsNewKey(keyboard, Keys.F3))
             {
                 _game._highContrast = !_game._highContrast;
+
                 return true;
             }
 
             if (IsNewKey(keyboard, Keys.F4))
             {
                 ToggleReducedMotion();
+
                 return true;
             }
 
@@ -396,6 +430,7 @@ internal sealed partial class SolitaireGame
             {
                 var navigateBackward = IsNewKey(keyboard, Keys.Up) || keyboard.IsKeyDown(Keys.LeftShift) ||
                     keyboard.IsKeyDown(Keys.RightShift);
+
                 _game._optionIndex = (_game._optionIndex + (navigateBackward ? LastOptionIndex : 1)) % OptionCount;
             }
             else if (IsNewKey(keyboard, Keys.Enter) || IsNewKey(keyboard, Keys.Space))
@@ -410,6 +445,7 @@ internal sealed partial class SolitaireGame
         internal void ToggleReducedMotion()
         {
             _game._reducedMotion = !_game._reducedMotion;
+
             if (_game._reducedMotion)
             {
                 _game._cardTransitions.Clear();
@@ -426,15 +462,22 @@ internal sealed partial class SolitaireGame
             {
                 case 0:
                     _game._largeText = !_game._largeText;
+
                     break;
+
                 case 1:
                     _game._highContrast = !_game._highContrast;
+
                     break;
+
                 case 2:
                     ToggleReducedMotion();
+
                     break;
+
                 case 3:
                     ToggleOptions();
+
                     break;
             }
         }
@@ -448,6 +491,7 @@ internal sealed partial class SolitaireGame
             {
                 _game._ignoreUntilRelease = isDown;
                 _game._pointerWasDown = isDown;
+
                 return;
             }
 
@@ -496,6 +540,7 @@ internal sealed partial class SolitaireGame
             {
                 _game._ignoreUntilRelease = isDown;
                 _game._pointerWasDown = isDown;
+
                 return;
             }
 
@@ -509,10 +554,12 @@ internal sealed partial class SolitaireGame
                 for (var index = 0; index < OptionCount; index++)
                 {
                     var bounds = GetOptionBounds(index);
+
                     if (bounds.Contains(position) && bounds.Contains(_game._pressPosition))
                     {
                         _game._optionIndex = index;
                         ActivateOption(index);
+
                         break;
                     }
                 }
@@ -536,7 +583,9 @@ internal sealed partial class SolitaireGame
                 var backwards = keyboard.IsKeyDown(Keys.LeftShift) || keyboard.IsKeyDown(Keys.RightShift);
                 var next = !_game._keyboardFocusVisible ? (backwards ? 17 : 0)
                     : (_game._keyboardFocus + (backwards ? 17 : 1)) % 18;
+
                 FocusKeyboardTarget(next);
+
                 return;
             }
 
@@ -554,6 +603,7 @@ internal sealed partial class SolitaireGame
             {
                 _game.ClearSelection();
                 _game.ClearHint();
+
                 return;
             }
 
@@ -562,6 +612,7 @@ internal sealed partial class SolitaireGame
                 var next = !_game._keyboardFocusVisible || _game._keyboardFocus < 5 ? 5
                     : 5 + (_game._keyboardFocus - 5 + (IsNewKey(keyboard, Keys.Left) ? 12 : 1)) % 13;
                 FocusKeyboardTarget(next);
+
                 return;
             }
 
@@ -596,6 +647,7 @@ internal sealed partial class SolitaireGame
 
             var currentWheel = Mouse.GetState().ScrollWheelValue;
             var wheelDelta = currentWheel - _game._previousScrollWheelValue;
+
             if (_game._helpOpen && wheelDelta != 0)
             {
                 _game.ScrollHelpOverlay(wheelDelta < 0 ? 1 : -1);
@@ -624,6 +676,7 @@ internal sealed partial class SolitaireGame
 
             var pile = _game._tableau[_game._keyboardFocus - 11];
             var firstFaceUp = pile.FindIndex(card => card.FaceUp);
+
             _game._keyboardCardIndex = pile.Count == 0 ? 0
                 : Math.Clamp(_game._keyboardCardIndex, Math.Max(0, firstFaceUp), pile.Count - 1);
         }
@@ -645,18 +698,27 @@ internal sealed partial class SolitaireGame
             {
                 case 0:
                     _game.OpenNewGamePrompt();
+
                     break;
+
                 case 1:
                     _game.UndoLastAction();
+
                     break;
+
                 case 2:
                     _game.ShowHint();
+
                     break;
+
                 case 3:
                     _game.ToggleSound();
+
                     break;
+
                 case 4:
                     ToggleOptions();
+
                     break;
             }
         }
@@ -667,6 +729,7 @@ internal sealed partial class SolitaireGame
             if (_game._keyboardFocus < 5)
             {
                 ActivateKeyboardControl();
+
                 return;
             }
 
@@ -674,6 +737,7 @@ internal sealed partial class SolitaireGame
             if (_game._keyboardFocus == 5)
             {
                 _game.DrawFromStock();
+
                 return;
             }
 
@@ -684,6 +748,7 @@ internal sealed partial class SolitaireGame
             {
                 var canMove = _game._keyboardFocus >= 11 ? _game.CanMoveToTableau(_game._keyboardFocus - 11)
                     : _game.CanMoveToFoundation(_game._keyboardFocus - 7);
+
                 if (canMove)
                 {
                     _game.MoveSelectedCards(pile);
@@ -720,11 +785,14 @@ internal sealed partial class SolitaireGame
             if (_game._selectedPile is null)
             {
                 NormalizeKeyboardCard();
+
                 var pile = GetKeyboardPile();
                 var cardIndex = _game._keyboardFocus >= 11 ? _game._keyboardCardIndex : (pile?.Count ?? 0) - 1;
+
                 if (pile is null || cardIndex < 0 || pile.Count == 0 || !pile[cardIndex].FaceUp)
                 {
                     _game.ShowInvalidMove(GetKeyboardBounds().Center);
+
                     return;
                 }
 
@@ -736,6 +804,7 @@ internal sealed partial class SolitaireGame
                 if (_game.TryMoveToFoundation(foundationIndex))
                 {
                     NormalizeKeyboardCard();
+
                     return;
                 }
             }
@@ -748,10 +817,12 @@ internal sealed partial class SolitaireGame
         internal Rectangle GetKeyboardBounds()
         {
             NormalizeKeyboardCard();
+
             if (_game._keyboardFocus >= 11)
             {
                 var pile = _game._tableau[_game._keyboardFocus - 11];
                 var bounds = _game.GetTableauCardBounds(_game._keyboardFocus - 11, _game._keyboardCardIndex);
+
                 if (_game._keyboardCardIndex < pile.Count - 1)
                 {
                     bounds.Height = TableauStep;
@@ -779,6 +850,7 @@ internal sealed partial class SolitaireGame
         internal string GetKeyboardDescription()
         {
             NormalizeKeyboardCard();
+
             var label = _game._keyboardFocus switch
             {
                 0 => KeyboardDescriptionNewGame,
@@ -797,7 +869,9 @@ internal sealed partial class SolitaireGame
                 >= 7 and <= 10 => $"{KeyboardDescriptionFoundationPrefix} {_game._keyboardFocus - 6}",
                 _ => $"{KeyboardDescriptionTableauPrefix} {_game._keyboardFocus - 10}"
             };
+
             var pile = GetKeyboardPile();
+
             if (pile is not null)
             {
                 if (pile.Count == 0)
@@ -808,6 +882,7 @@ internal sealed partial class SolitaireGame
                 {
                     var card = pile[_game._keyboardFocus >= 11 ? _game._keyboardCardIndex : pile.Count - 1];
                     var rank = SolitaireCardLabels.GetLongRankLabel(card.Rank);
+
                     label += card.FaceUp ? $"  {rank} OF {card.Suit}" : KeyboardDescriptionFaceDownSuffix;
                 }
             }
@@ -818,6 +893,7 @@ internal sealed partial class SolitaireGame
                 {
                     var canMove = _game._keyboardFocus >= 11 ? _game.CanMoveToTableau(_game._keyboardFocus - 11)
                         : _game.CanMoveToFoundation(_game._keyboardFocus - 7);
+
                     label += canMove ? KeyboardDescriptionLegalTargetSuffix : KeyboardDescriptionInvalidTargetSuffix;
                 }
 

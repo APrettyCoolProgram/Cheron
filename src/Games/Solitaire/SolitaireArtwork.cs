@@ -1,4 +1,4 @@
-// 261029_code
+// 261031_code
 // 261029_documentation
 
 using System;
@@ -45,11 +45,11 @@ internal sealed class SolitaireArtwork : IDisposable
             return Color.Black * (0.25f * Math.Clamp(1 - distance / 8, 0, 1));
         });
 
-        Slot = CreateRoundedTexture(graphicsDevice, 78, 108, 8, new Color(19, 53, 56), new Color(71, 111, 108));
-        Selection = CreateRoundedTexture(graphicsDevice, 84, 114, 10, new Color(236, 195, 106), new Color(255, 227, 161));
-        Button = CreateRoundedTexture(graphicsDevice, 132, 44, 9, new Color(235, 205, 143), new Color(251, 226, 176));
+        Slot        = CreateRoundedTexture(graphicsDevice, 78, 108, 8, new Color(19, 53, 56), new Color(71, 111, 108));
+        Selection   = CreateRoundedTexture(graphicsDevice, 84, 114, 10, new Color(236, 195, 106), new Color(255, 227, 161));
+        Button      = CreateRoundedTexture(graphicsDevice, 132, 44, 9, new Color(235, 205, 143), new Color(251, 226, 176));
         ButtonHover = CreateRoundedTexture(graphicsDevice, 132, 44, 9, new Color(252, 225, 169), new Color(255, 240, 211));
-        Banner = CreateRoundedTexture(graphicsDevice, 360, 56, 12, new Color(17, 43, 46), new Color(101, 139, 128));
+        Banner      = CreateRoundedTexture(graphicsDevice, 360, 56, 12, new Color(17, 43, 46), new Color(101, 139, 128));
 
         var suits = new Texture2D[4];
 
@@ -65,9 +65,8 @@ internal sealed class SolitaireArtwork : IDisposable
                 {
                     for (var sampleX = 0; sampleX < 3; sampleX++)
                     {
-                        var position = new Vector2(
-                            (x + (sampleX + 0.5f) / 3 - 32) / 28,
-                            (y + (sampleY + 0.5f) / 3 - 32) / 28);
+                        var position = new Vector2((x + ((sampleX + 0.5f) / 3) - 32) / 28, (y + ((sampleY + 0.5f) / 3) - 32) / 28);
+
                         if (ContainsSuit(position, currentSuit))
                         {
                             coveredSamples++;
@@ -204,8 +203,7 @@ internal sealed class SolitaireArtwork : IDisposable
     {
         var horizontal = position.X;
         var vertical = position.Y;
-        var stem = vertical >= 0.3f && vertical <= 0.9f &&
-            Math.Abs(horizontal) <= 0.12f + (vertical - 0.3f) * 0.25f;
+        var stem = vertical >= 0.3f && vertical <= 0.9f && Math.Abs(horizontal) <= 0.12f + (vertical - 0.3f) * 0.25f;
 
         return suitIndex switch
         {

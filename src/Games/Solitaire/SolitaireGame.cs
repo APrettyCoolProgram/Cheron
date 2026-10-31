@@ -1,4 +1,4 @@
-﻿// 261029_code
+﻿// 261031_code
 // 261029_documentation
 
 using System;
@@ -6,19 +6,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Cheron.Engine;
+using Cheron.Games.Solitaire.FreeCell;
+using Cheron.Games.Solitaire.Klondike;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Cheron.Games.Solitaire.FreeCell;
-using Cheron.Games.Solitaire.Klondike;
-using static Cheron.Games.Solitaire.SolitaireAccessibilityOptions;
 using static Cheron.Games.Solitaire.SolitaireAudioConstants;
-using static Cheron.Games.Solitaire.SolitaireCelebrationConstants;
-using static Cheron.Games.Solitaire.SolitaireColors;
 using static Cheron.Games.Solitaire.SolitaireInteractionConstants;
 using static Cheron.Games.Solitaire.SolitaireLayout;
-using static Cheron.Games.Solitaire.SolitaireOptionsLayout;
 using static Cheron.Games.Solitaire.SolitaireTextConstants;
 using static Cheron.Games.Solitaire.SolitaireTimingConstants;
 
@@ -166,6 +162,7 @@ internal sealed partial class SolitaireGame : IGameModule
         }
 
         var lineStep = _largeText ? 34 : 26;
+
         _helpScrollOffset = Math.Clamp(_helpScrollOffset + direction * lineStep, 0, GetHelpMaxScrollOffset());
     }
 
@@ -181,6 +178,7 @@ internal sealed partial class SolitaireGame : IGameModule
         var lineHeight = _largeText ? 34 : 26;
         var contentHeight = GetHelpContentBounds().Height;
         var totalHeight = GetHelpLines().Count * lineHeight;
+
         return Math.Max(0, totalHeight - contentHeight + 10);
     }
 
@@ -284,7 +282,9 @@ internal sealed partial class SolitaireGame : IGameModule
     internal bool TestHandleAccessibilityKeys(KeyboardState keyboard)
     {
         var handled = HandleAccessibilityKeys(keyboard);
+
         _previousKeyboardState = keyboard;
+
         return handled;
     }
 
@@ -532,6 +532,7 @@ internal sealed partial class SolitaireGame : IGameModule
     {
         var noteSamples = (int)(FeedbackSoundSampleRate * noteSeconds);
         var samples = new byte[noteSamples * frequencies.Length * 2];
+
         for (var noteIndex = 0; noteIndex < frequencies.Length; noteIndex++)
         {
             for (var sampleIndex = 0; sampleIndex < noteSamples; sampleIndex++)
@@ -541,14 +542,18 @@ internal sealed partial class SolitaireGame : IGameModule
                 var wave = Math.Sin(2 * Math.PI * frequencies[noteIndex] * sampleIndex / FeedbackSoundSampleRate);
                 var sample = (short)(wave * envelope * envelope * short.MaxValue * 0.5);
                 var byteIndex = (noteIndex * noteSamples + sampleIndex) * 2;
+
                 samples[byteIndex] = (byte)(sample & 255);
                 samples[byteIndex + 1] = (byte)((sample >> 8) & 255);
             }
         }
 
         var sound = new SoundEffect(samples, FeedbackSoundSampleRate, AudioChannels.Mono);
+
         _feedbackSounds.Add(sound);
+
         var voice = sound.CreateInstance();
+
         _feedbackVoices.Add(voice);
         voice.Volume = FeedbackSoundVolume;
     }
@@ -592,6 +597,7 @@ internal sealed partial class SolitaireGame : IGameModule
         }
 
         _soundEnabled = !_soundEnabled;
+
         if (!_soundEnabled)
         {
             foreach (var voice in _feedbackVoices)
@@ -610,6 +616,7 @@ internal sealed partial class SolitaireGame : IGameModule
         }
 
         _feedbackVoices.Clear();
+
         foreach (var sound in _feedbackSounds)
         {
             sound.Dispose();
@@ -622,9 +629,10 @@ internal sealed partial class SolitaireGame : IGameModule
     private void ResetFeedback()
     {
         _invalidTimeRemaining = TimeSpan.Zero;
-        _invalidBounds = Rectangle.Empty;
-        _winFeedbackShown = false;
-        _celebrationElapsed = TimeSpan.Zero;
+        _invalidBounds        = Rectangle.Empty;
+        _winFeedbackShown     = false;
+        _celebrationElapsed   = TimeSpan.Zero;
+
         foreach (var voice in _feedbackVoices)
         {
             voice.Stop();
@@ -637,12 +645,15 @@ internal sealed partial class SolitaireGame : IGameModule
     {
         ClearHint();
         _invalidBounds = Rectangle.Empty;
+
         for (var foundationIndex = 0; foundationIndex < _foundations.Count; foundationIndex++)
         {
             var bounds = GetFoundationBounds(foundationIndex);
+
             if (bounds.Contains(position))
             {
                 _invalidBounds = bounds;
+
                 break;
             }
         }
@@ -654,6 +665,7 @@ internal sealed partial class SolitaireGame : IGameModule
                 if (GetTableauBounds(columnIndex).Contains(position))
                 {
                     _invalidBounds = GetTableauCardBounds(columnIndex, Math.Max(0, _tableau[columnIndex].Count - 1));
+
                     break;
                 }
             }
@@ -668,10 +680,12 @@ internal sealed partial class SolitaireGame : IGameModule
     private void UpdateFeedback(TimeSpan elapsed)
     {
         _invalidTimeRemaining = elapsed >= _invalidTimeRemaining ? TimeSpan.Zero : _invalidTimeRemaining - elapsed;
+
         if (!_hasWon)
         {
             _winFeedbackShown = false;
             _celebrationElapsed = TimeSpan.Zero;
+
             return;
         }
 
@@ -694,12 +708,14 @@ internal sealed partial class SolitaireGame : IGameModule
     {
         _selectionElapsed += (float)elapsed.TotalSeconds;
         _animationElapsed += (float)elapsed.TotalSeconds;
+
         if (_cardTransitions.Count == 0)
         {
             return;
         }
 
         var complete = true;
+
         foreach (var transition in _cardTransitions.Values)
         {
             complete &= _animationElapsed >= transition.Delay + MoveDuration;
@@ -716,8 +732,10 @@ internal sealed partial class SolitaireGame : IGameModule
     private Dictionary<Card, CardPresentation> CaptureCardPresentation()
     {
         var snapshot = new Dictionary<Card, CardPresentation>(52);
+
         CapturePile(_stock, GetStockBounds(), snapshot);
         CapturePile(_waste, GetWasteBounds(), snapshot);
+
         for (var foundationIndex = 0; foundationIndex < _foundations.Count; foundationIndex++)
         {
             CapturePile(_foundations[foundationIndex], GetFoundationBounds(foundationIndex), snapshot);
@@ -728,6 +746,7 @@ internal sealed partial class SolitaireGame : IGameModule
             for (var cardIndex = 0; cardIndex < _tableau[columnIndex].Count; cardIndex++)
             {
                 var card = _tableau[columnIndex][cardIndex];
+
                 snapshot[card] = new CardPresentation(GetTableauCardBounds(columnIndex, cardIndex), card.FaceUp);
             }
         }
@@ -735,9 +754,11 @@ internal sealed partial class SolitaireGame : IGameModule
         if (_isDragging && _selectedPile is not null)
         {
             var position = _pointerPosition - _dragOffset;
+
             for (var cardIndex = _selectedCardIndex; cardIndex < _selectedPile.Count; cardIndex++)
             {
                 var card = _selectedPile[cardIndex];
+
                 snapshot[card] = new CardPresentation(new Rectangle(position.X, position.Y, CardWidth, CardHeight), true);
                 position.Y += TableauStep;
             }
@@ -765,15 +786,20 @@ internal sealed partial class SolitaireGame : IGameModule
         if (_reducedMotion)
         {
             _cardTransitions.Clear();
+
             return;
         }
 
         var wasDragging = _isDragging;
+
         _isDragging = false;
+
         var after = CaptureCardPresentation();
+
         _isDragging = wasDragging;
         _cardTransitions.Clear();
         _animationElapsed = 0;
+
         foreach (var entry in after)
         {
             if (before.TryGetValue(entry.Key, out var start) && start != entry.Value)
@@ -788,12 +814,14 @@ internal sealed partial class SolitaireGame : IGameModule
     {
         _cardTransitions.Clear();
         _animationElapsed = 0;
+
         if (_reducedMotion)
         {
             return;
         }
 
         var dealIndex = 0;
+
         for (var columnIndex = 0; columnIndex < _tableau.Count; columnIndex++)
         {
             for (var cardIndex = 0; cardIndex < _tableau[columnIndex].Count; cardIndex++)
@@ -801,6 +829,7 @@ internal sealed partial class SolitaireGame : IGameModule
                 var card = _tableau[columnIndex][cardIndex];
                 var start = new CardPresentation(GetStockBounds(), false);
                 var end = new CardPresentation(GetTableauCardBounds(columnIndex, cardIndex), card.FaceUp);
+
                 _cardTransitions.Add(card, new CardTransition(start, end, dealIndex++ * 0.025f));
             }
         }
@@ -876,9 +905,11 @@ internal sealed partial class SolitaireGame : IGameModule
         var before = CaptureCardPresentation();
         var snapshot = _undoHistory.Pop();
         var pileIndex = 0;
+
         foreach (var pile in EnumeratePiles())
         {
             pile.Clear();
+
             foreach (var savedCard in snapshot.Piles[pileIndex++])
             {
                 savedCard.Card.FaceUp = savedCard.FaceUp;
@@ -1009,8 +1040,10 @@ internal sealed partial class SolitaireGame : IGameModule
         }
 
         _invalidTimeRemaining = TimeSpan.Zero;
+
         var originalPile = _selectedPile;
         var originalIndex = _selectedCardIndex;
+
         try
         {
             foreach (var pile in HintSourcePiles())
@@ -1022,12 +1055,14 @@ internal sealed partial class SolitaireGame : IGameModule
 
                 _selectedPile = pile;
                 _selectedCardIndex = pile.Count - 1;
+
                 for (var foundationIndex = 0; foundationIndex < _foundations.Count; foundationIndex++)
                 {
                     if (CanMoveToFoundation(foundationIndex))
                     {
                         SetHint(GetHintCardBounds(pile, _selectedCardIndex), GetFoundationBounds(foundationIndex),
                             HintToFoundationMessage);
+
                         return;
                     }
                 }
@@ -1045,6 +1080,7 @@ internal sealed partial class SolitaireGame : IGameModule
                         }
 
                         var revealsCard = _tableau.Contains(pile) && cardIndex > 0 && !pile[cardIndex - 1].FaceUp;
+
                         if ((priority == 0) != revealsCard)
                         {
                             continue;
@@ -1052,15 +1088,18 @@ internal sealed partial class SolitaireGame : IGameModule
 
                         _selectedPile = pile;
                         _selectedCardIndex = cardIndex;
+
                         for (var columnIndex = 0; columnIndex < _tableau.Count; columnIndex++)
                         {
                             if (CanMoveToTableau(columnIndex) &&
                                 !(_tableau[columnIndex].Count == 0 && _tableau.Contains(pile) && cardIndex == 0))
                             {
                                 var destinationIndex = Math.Max(0, _tableau[columnIndex].Count - 1);
+
                                 SetHint(GetHintCardBounds(pile, cardIndex),
                                     GetTableauCardBounds(columnIndex, destinationIndex),
                                     HintToTableauMessage);
+
                                 return;
                             }
                         }
@@ -1090,6 +1129,7 @@ internal sealed partial class SolitaireGame : IGameModule
     private IEnumerable<List<Card>> HintSourcePiles()
     {
         yield return _waste;
+
         foreach (var pile in _tableau)
         {
             yield return pile;
@@ -1108,6 +1148,7 @@ internal sealed partial class SolitaireGame : IGameModule
         }
 
         var bounds = GetTableauCardBounds(_tableau.IndexOf(pile), cardIndex);
+
         if (cardIndex < pile.Count - 1)
         {
             bounds.Height = TableauStep;
@@ -1222,6 +1263,7 @@ internal sealed partial class SolitaireGame : IGameModule
     private bool CanMoveToFoundation(int foundationIndex)
     {
         var destination = _foundations[foundationIndex];
+
         if (_selectedPile is null || ReferenceEquals(destination, _selectedPile) ||
             _selectedCardIndex != _selectedPile.Count - 1)
         {
@@ -1229,6 +1271,7 @@ internal sealed partial class SolitaireGame : IGameModule
         }
 
         var movingCard = _selectedPile[_selectedCardIndex];
+
         return SolitaireMoveRules.CanMoveToFoundation(movingCard, destination);
     }
 
@@ -1247,6 +1290,7 @@ internal sealed partial class SolitaireGame : IGameModule
     {
         var pile = _tableau[columnIndex];
         var bottom = pile.Count == 0 ? TableauTop + CardHeight : GetTableauCardBounds(columnIndex, pile.Count - 1).Bottom;
+
         return new Rectangle(GetTableauColumnX(columnIndex), TableauTop,
             CardWidth, Math.Min(bottom, FooterY) - TableauTop);
     }
@@ -1258,6 +1302,7 @@ internal sealed partial class SolitaireGame : IGameModule
     private Rectangle GetTableauCardBounds(int columnIndex, int cardIndex)
     {
         var cardY = TableauTop;
+
         for (var index = 0; index < cardIndex; index++)
         {
             cardY += _tableau[columnIndex][index].FaceUp ? TableauStep : TableauFaceDownStep;
@@ -1278,6 +1323,7 @@ internal sealed partial class SolitaireGame : IGameModule
                 GetFreeCellBounds, out var topRowPile, out cardIndex, out bounds))
         {
             pile = topRowPile!;
+
             return true;
         }
 
@@ -1286,6 +1332,7 @@ internal sealed partial class SolitaireGame : IGameModule
             pile = _foundations[foundationIndex];
             cardIndex = pile.Count - 1;
             bounds = GetFoundationBounds(foundationIndex);
+
             if (cardIndex >= 0 && bounds.Contains(position))
             {
                 return true;
@@ -1301,9 +1348,11 @@ internal sealed partial class SolitaireGame : IGameModule
 
             pile = _tableau[columnIndex];
             cardIndex = GetTableauCardIndex(columnIndex, position.Y);
+
             if (cardIndex >= 0 && pile[cardIndex].FaceUp)
             {
                 bounds = GetTableauCardBounds(columnIndex, cardIndex);
+
                 return true;
             }
         }
@@ -1479,7 +1528,9 @@ internal sealed partial class SolitaireGame : IGameModule
         }
 
         var before = _isDragging ? CaptureCardPresentation() : null;
+
         ResetPointerGesture();
+
         if (before is not null)
         {
             ClearSelection();
@@ -1514,6 +1565,7 @@ internal sealed partial class SolitaireGame : IGameModule
         _hasWon = false;
 
         var deck = SolitaireDealBuilder.CreateShuffledDeck(new Random());
+
         ActiveVariantBehavior.InitializeDeal(deck, _tableau, _stock, _waste, _foundations, _freeCells);
 
         AnimateDeal();
@@ -1529,9 +1581,11 @@ internal sealed partial class SolitaireGame : IGameModule
         }
 
         ClearHint();
+
         var handledTopRowClick = ActiveVariantBehavior.TryHandleTopRowClick(clickPosition, _freeCells,
             GetFreeCellBounds, _selectedPile, TryMoveToFreeCell, ShowInvalidMove, SelectTop, GetStockBounds,
             GetWasteBounds, _waste, DrawFromStock);
+
         if (handledTopRowClick)
         {
             return;
@@ -1558,6 +1612,7 @@ internal sealed partial class SolitaireGame : IGameModule
             }
 
             SelectTop(_foundations[foundationIndex]);
+
             return;
         }
 
@@ -1579,6 +1634,7 @@ internal sealed partial class SolitaireGame : IGameModule
             }
 
             var clickedCardIndex = GetTableauCardIndex(columnIndex, clickPosition.Y);
+
             if (clickedCardIndex >= 0 && _tableau[columnIndex][clickedCardIndex].FaceUp)
             {
                 Select(_tableau[columnIndex], clickedCardIndex);
@@ -1598,6 +1654,7 @@ internal sealed partial class SolitaireGame : IGameModule
     private void DrawFromStock()
     {
         var before = CaptureCardPresentation();
+
         ClearSelection();
 
         if (_stock.Count > 0)
@@ -1616,6 +1673,7 @@ internal sealed partial class SolitaireGame : IGameModule
         if (_waste.Count > 0)
         {
             RecordAction();
+
             for (var cardIndex = _waste.Count - 1; cardIndex >= 0; cardIndex--)
             {
                 var recycledCard = _waste[cardIndex];
@@ -1644,6 +1702,7 @@ internal sealed partial class SolitaireGame : IGameModule
         if (ReferenceEquals(_selectedPile, destinationPile))
         {
             ClearSelection();
+
             return true;
         }
 
@@ -1653,6 +1712,7 @@ internal sealed partial class SolitaireGame : IGameModule
         }
 
         MoveSelectedCards(destinationPile);
+
         return true;
     }
 
@@ -1676,6 +1736,7 @@ internal sealed partial class SolitaireGame : IGameModule
         }
 
         MoveSelectedCards(_foundations[foundationIndex]);
+
         return true;
     }
 
@@ -1688,7 +1749,9 @@ internal sealed partial class SolitaireGame : IGameModule
     private void MoveSelectedCards(List<Card> destinationPile)
     {
         var before = CaptureCardPresentation();
+
         RecordAction();
+
         var sourcePile = _selectedPile ?? throw new InvalidOperationException("No cards are selected.");
         var selectedCardCount = sourcePile.Count - _selectedCardIndex;
 
@@ -1703,6 +1766,7 @@ internal sealed partial class SolitaireGame : IGameModule
         ClearSelection();
         _hasWon = _foundations.All(foundationPile => foundationPile.Count == 13);
         AnimateChanges(before);
+
         if (!_hasWon)
         {
             PlayFeedbackSound(_foundations.Contains(destinationPile) ? FeedbackSound.Foundation : FeedbackSound.Move);

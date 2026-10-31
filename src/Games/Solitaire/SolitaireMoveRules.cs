@@ -20,6 +20,7 @@ internal static class SolitaireMoveRules
         }
 
         var destinationTop = destination[^1];
+
         return destinationTop.Suit == movingCard.Suit && destinationTop.Rank + 1 == movingCard.Rank;
     }
 }

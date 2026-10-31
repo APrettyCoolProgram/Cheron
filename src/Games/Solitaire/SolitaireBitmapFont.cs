@@ -1,4 +1,4 @@
-// 261029_code
+// 261031_code
 // 261029_documentation
 
 using Microsoft.Xna.Framework;
@@ -43,6 +43,7 @@ internal static class SolitaireBitmapFont
     {
         const int atlasWidth = 37 * 7;
         var pixels = new Color[atlasWidth * 9];
+
         for (var glyphIndex = 0; glyphIndex < 37; glyphIndex++)
         {
             for (var glyphRow = 0; glyphRow < 7; glyphRow++)
@@ -50,6 +51,7 @@ internal static class SolitaireBitmapFont
                 var rowBits = glyphIndex == 36
                     ? (glyphRow < 5 || glyphRow == 6 ? 4 : 0)
                     : Glyphs[glyphIndex, glyphRow];
+
                 for (var glyphColumn = 0; glyphColumn < 5; glyphColumn++)
                 {
                     if ((rowBits & (1 << (4 - glyphColumn))) != 0)
@@ -61,7 +63,9 @@ internal static class SolitaireBitmapFont
         }
 
         var texture = new Texture2D(graphicsDevice, atlasWidth, 9);
+
         texture.SetData(pixels);
+
         return texture;
     }
 
@@ -75,16 +79,7 @@ internal static class SolitaireBitmapFont
     /// <param name="scale">The size of each glyph pixel in logical board units.</param>
     /// <param name="color">The normal-theme text color.</param>
     /// <param name="preserveColor">Whether to retain contrasting card or button ink in high-contrast mode.</param>
-    public static void DrawText(
-        SpriteBatch spriteBatch,
-        Texture2D glyphTexture,
-        bool highContrast,
-        string text,
-        int textX,
-        int textY,
-        int scale,
-        Color color,
-        bool preserveColor = false)
+    public static void DrawText(SpriteBatch spriteBatch, Texture2D glyphTexture, bool highContrast, string text, int textX, int textY, int scale, Color color, bool preserveColor = false)
     {
         if (highContrast && !preserveColor)
         {
@@ -96,6 +91,7 @@ internal static class SolitaireBitmapFont
             if (character == ' ')
             {
                 textX += 4 * scale;
+
                 continue;
             }
 

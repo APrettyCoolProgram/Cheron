@@ -1,4 +1,4 @@
-// 261029_code
+// 261031_code
 // 261029_documentation
 
 using System.Collections.Generic;
@@ -30,6 +30,7 @@ internal static class SolitaireFoundationRules
         }
 
         var destinationTop = destination[^1];
+
         return destinationTop.Suit == movingCard.Suit && destinationTop.Rank + 1 == movingCard.Rank;
     }
 }

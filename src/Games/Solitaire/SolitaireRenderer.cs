@@ -1,4 +1,4 @@
-// 261029_code
+// 261031_code
 // 261029_documentation
 
 using System;
@@ -57,11 +57,14 @@ internal sealed partial class SolitaireGame
         public void Draw(GameTime gameTime, GraphicsDevice graphicsDevice)
         {
             graphicsDevice.Clear(BoardClearColor);
+
             var previousScissor = graphicsDevice.ScissorRectangle;
             var previousRasterizer = graphicsDevice.RasterizerState;
+
             graphicsDevice.ScissorRectangle = _game._viewport.ScissorBounds;
 
             BeginBoardDrawing();
+
             if (_game._highContrast)
             {
                 Fill(GetBoardBounds(), Color.Black);
@@ -210,9 +213,9 @@ internal sealed partial class SolitaireGame
             var firstLineY = stripBounds.Y + (stripBounds.Height - blockHeight) / 2;
             var secondLineY = firstLineY + 7 * labelScale + lineGap;
             var color = enabled ? GoldHighlight : ToolbarSecondaryText;
-
             var labelX = bounds.X + (bounds.Width - label.Length * 6 * labelScale + 2) / 2;
             var shortcutX = bounds.X + (bounds.Width - shortcut.Length * 6 * shortcutScale + 2) / 2;
+
             DrawText(label, labelX, firstLineY, labelScale, color, preserveColor: true);
             DrawText(shortcut, shortcutX, secondLineY, shortcutScale, color, preserveColor: true);
         }
@@ -248,6 +251,7 @@ internal sealed partial class SolitaireGame
             }
 
             var shortcutX = bounds.X + (bounds.Width - shortcut.Length * 6 * shortcutScale + 2) / 2;
+
             DrawText(shortcut, shortcutX, secondLineY, shortcutScale, color, preserveColor: true);
         }
 
@@ -259,6 +263,7 @@ internal sealed partial class SolitaireGame
         {
             var isHovered = enabled && bounds.Contains(_game._pointerPosition);
             var texture = isHovered ? _game._artwork.ButtonHover : _game._artwork.Button;
+
             if (_game._highContrast)
             {
                 Fill(bounds, enabled ? Color.White : ButtonDisabledHighContrastFill);
@@ -271,6 +276,7 @@ internal sealed partial class SolitaireGame
 
             var ink = _game._highContrast ? (enabled ? Color.Black : Color.White)
                 : enabled ? ButtonEnabledInk : ButtonDisabledInk;
+
             DrawText(label, bounds.X + (bounds.Width - label.Length * 12 + 2) / 2, bounds.Y + 15,
                 2, ink, preserveColor: true);
         }
@@ -283,6 +289,7 @@ internal sealed partial class SolitaireGame
                 var opacity = _game._reducedMotion ? 1
                     : (float)(_game._invalidTimeRemaining.TotalSeconds / InvalidFeedbackDuration.TotalSeconds);
                 var color = _game._highContrast ? Color.White : InvalidFeedbackColor;
+
                 DrawTargetOutline(_game._invalidBounds, color * Math.Min(1, opacity * 2));
             }
         }
@@ -298,6 +305,7 @@ internal sealed partial class SolitaireGame
 
             var elapsedSeconds = (float)_game._celebrationElapsed.TotalSeconds;
             var opacity = Math.Clamp((float)CelebrationDuration.TotalSeconds - elapsedSeconds, 0, 1);
+
             for (var particleIndex = 0; particleIndex < ParticleCount; particleIndex++)
             {
                 var horizontalDirection = particleIndex % 2 == 0 ? -1 : 1;
@@ -305,12 +313,14 @@ internal sealed partial class SolitaireGame
                 var particleX = OriginX + horizontalDirection * (BaseHorizontalOffset + horizontalSpeed * elapsedSeconds);
                 var particleY = OriginY - (BaseRise + particleIndex % RiseVariationCycle * RiseVariationStep) * elapsedSeconds +
                     VerticalAcceleration * elapsedSeconds * elapsedSeconds;
+
                 if (particleX < MinX || particleX > MaxX || particleY < MinY || particleY > MaxY)
                 {
                     continue;
                 }
 
                 var particleColor = particleIndex % 3 == 0 ? MintHighlight : GoldHighlight;
+
                 Fill(new Rectangle((int)particleX, (int)particleY, ParticleWidth, ParticleHeight),
                     particleColor * opacity);
             }
@@ -322,6 +332,7 @@ internal sealed partial class SolitaireGame
             foreach (var entry in _game._cardTransitions)
             {
                 var transition = entry.Value;
+
                 if (_game._animationElapsed < transition.Delay)
                 {
                     continue;
@@ -335,6 +346,7 @@ internal sealed partial class SolitaireGame
                     CardHeight);
                 var isFlipping = transition.Start.FaceUp != transition.End.FaceUp;
                 var faceUp = progress < 0.5f ? transition.Start.FaceUp : transition.End.FaceUp;
+
                 if (!isFlipping || progress >= 1)
                 {
                     DrawCardArtwork(entry.Key, bounds, false, !faceUp);
@@ -343,6 +355,7 @@ internal sealed partial class SolitaireGame
 
                 var widthScale = Math.Max(0.02f, Math.Abs(1 - 2 * progress));
                 var centerX = bounds.Center.X;
+
                 _game._spriteBatch.End();
                 BeginBoardDrawing(Matrix.CreateTranslation(-centerX, 0, 0) *
                     Matrix.CreateScale(widthScale, 1, 1) * Matrix.CreateTranslation(centerX, 0, 0));
@@ -400,6 +413,7 @@ internal sealed partial class SolitaireGame
             if (_game._isDragging && _game._selectedPile is not null)
             {
                 var position = _game._pointerPosition - _game._dragOffset;
+
                 for (var cardIndex = _game._selectedCardIndex; cardIndex < _game._selectedPile.Count; cardIndex++)
                 {
                     DrawCard(_game._selectedPile[cardIndex],
@@ -419,6 +433,7 @@ internal sealed partial class SolitaireGame
             }
 
             var color = GoldHighlight;
+
             if (_game._hintSource != Rectangle.Empty)
             {
                 DrawTargetOutline(_game._hintSource, color);
@@ -448,16 +463,23 @@ internal sealed partial class SolitaireGame
         private void DrawAccessibilityOptions()
         {
             Fill(GetBoardBounds(), Color.Black * 0.75f);
+
             var panelBounds = GetPanelBounds();
+
             Fill(panelBounds, Color.Black);
             DrawTargetOutline(panelBounds, Color.White);
             DrawText(AccessibilityTitle, FirstRowX, TitleY, 3, Color.White);
+
             for (var index = 0; index < OptionCount; index++)
             {
                 var bounds = GetOptionBounds(index);
+
                 Fill(bounds, OptionsRowFill);
+
                 var label = GetOptionLabel(index, _game._largeText, _game._highContrast, _game._reducedMotion);
+
                 DrawText(label, bounds.X + LabelPaddingX, bounds.Y + LabelPaddingY, 2, Color.White);
+
                 if (index == _game._optionIndex)
                 {
                     DrawFocusCorners(bounds);
@@ -492,21 +514,17 @@ internal sealed partial class SolitaireGame
             const int valueScale = 2;
             const int columnGap = 88;
             const int rowGap = 4;
-
             var totalSeconds = (long)_game._playingTime.TotalSeconds;
             var movesValue = _game._moveCount.ToString();
             var timeValue = $"{totalSeconds / 60:00}M {totalSeconds % 60:00}S";
-
             var movesCaptionWidth = ToolbarMovesLabel.Length * 6 * captionScale;
             var movesValueWidth = movesValue.Length * 6 * valueScale;
             var timeCaptionWidth = ToolbarTimeLabel.Length * 6 * captionScale;
             var timeValueWidth = timeValue.Length * 6 * valueScale;
-
             var movesColumnWidth = Math.Max(movesCaptionWidth, movesValueWidth);
             var timeColumnWidth = Math.Max(timeCaptionWidth, timeValueWidth);
             var totalWidth = movesColumnWidth + columnGap + timeColumnWidth;
             var startX = (BoardWidth - totalWidth) / 2;
-
             var valueY = FooterY - 12 - 7 * valueScale;
             var captionY = valueY - rowGap - 7 * captionScale;
 
@@ -516,6 +534,7 @@ internal sealed partial class SolitaireGame
                 valueScale, ToolbarPrimaryText);
 
             var timeX = startX + movesColumnWidth + columnGap;
+
             DrawText(ToolbarTimeLabel, timeX + (timeColumnWidth - timeCaptionWidth) / 2, captionY,
                 captionScale, ToolbarSecondaryText);
             DrawText(timeValue, timeX + (timeColumnWidth - timeValueWidth) / 2, valueY,
@@ -542,14 +561,16 @@ internal sealed partial class SolitaireGame
             var components = text.Split("  ", StringSplitOptions.RemoveEmptyEntries);
             const int componentGapUnits = 18;
             const int wordGapUnits = 4;
-
             var totalWidth = 0;
+
             for (var componentIndex = 0; componentIndex < components.Length; componentIndex++)
             {
                 var words = components[componentIndex].Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
                 for (var wordIndex = 0; wordIndex < words.Length; wordIndex++)
                 {
                     totalWidth += words[wordIndex].Length * 6 * scale;
+
                     if (wordIndex < words.Length - 1)
                     {
                         totalWidth += wordGapUnits * scale;
@@ -568,17 +589,21 @@ internal sealed partial class SolitaireGame
             for (var componentIndex = 0; componentIndex < components.Length; componentIndex++)
             {
                 var words = components[componentIndex].Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
                 for (var wordIndex = 0; wordIndex < words.Length; wordIndex++)
                 {
                     var word = words[wordIndex];
                     var isBoldWord = word is "DRAG" or "TAB" or "ARROWS" or "ENTER" or "F" or "BACKSPACE" or "CLICK" or "ESC";
+
                     DrawText(word, x, y, scale, baseColor, preserveColor: true);
+
                     if (isBoldWord)
                     {
                         DrawText(word, x + 1, y, scale, baseColor, preserveColor: true);
                     }
 
                     x += word.Length * 6 * scale;
+
                     if (wordIndex < words.Length - 1)
                     {
                         x += wordGapUnits * scale;
@@ -617,17 +642,17 @@ internal sealed partial class SolitaireGame
         private void DrawNewGameVariantPrompt()
         {
             Fill(GetBoardBounds(), Color.Black * 0.7f);
+
             var panelBounds = GetNewGamePromptPanelBounds();
+
             Fill(panelBounds, Color.Black);
             DrawTargetOutline(panelBounds, Color.White);
-
             DrawText(NewGameVariantPromptTitle, panelBounds.X + 110, panelBounds.Y + 22, 2, GoldHighlight);
 
             var klondikeBounds = GetNewGamePromptKlondikeBounds();
             var freeCellBounds = GetNewGamePromptFreeCellBounds();
             var confirmBounds = GetNewGamePromptConfirmBounds();
             var cancelBounds = GetNewGamePromptCancelBounds();
-
             var klondikeSelected = _game._newGamePromptVariant == SolitaireVariant.Klondike;
             var freeCellSelected = _game._newGamePromptVariant == SolitaireVariant.FreeCell;
 
@@ -652,10 +677,11 @@ internal sealed partial class SolitaireGame
         private void DrawSmokePassOverlay()
         {
             Fill(GetBoardBounds(), Color.Black * 0.75f);
+
             var panelBounds = new Rectangle(120, 120, 860, 560);
+
             Fill(panelBounds, Color.Black);
             DrawTargetOutline(panelBounds, Color.White);
-
             DrawText(SmokePassTitle, panelBounds.X + 170, panelBounds.Y + 24, 2, GoldHighlight);
             DrawText(SmokePassStep1, panelBounds.X + 42, panelBounds.Y + 92, 2, Color.White);
             DrawText(SmokePassStep2, panelBounds.X + 42, panelBounds.Y + 142, 2, Color.White);
@@ -670,14 +696,16 @@ internal sealed partial class SolitaireGame
         private void DrawHelpOverlay(GraphicsDevice graphicsDevice)
         {
             Fill(GetBoardBounds(), Color.Black * 0.78f);
+
             var panelBounds = GetHelpPanelBounds();
+
             Fill(panelBounds, Color.Black);
             DrawTargetOutline(panelBounds, Color.White);
-
             DrawText(HelpOverlayTitle, panelBounds.X + 30, panelBounds.Y + 20, 3, GoldHighlight);
             DrawText(_game.GetHelpSubtitle(), panelBounds.Right - 240, panelBounds.Y + 28, 2, MintHighlight);
 
             var contentBounds = GetHelpContentBounds();
+
             Fill(contentBounds, _game._highContrast ? Color.Black : new Color(18, 24, 34));
             DrawTargetOutline(contentBounds, ToolbarSecondaryText);
 
@@ -688,9 +716,9 @@ internal sealed partial class SolitaireGame
                 (int)MathF.Ceiling(contentBounds.Width * _game._viewport.Scale),
                 (int)MathF.Ceiling(contentBounds.Height * _game._viewport.Scale)));
             graphicsDevice.ScissorRectangle = clip;
-
             var lineHeight = _game._largeText ? 34 : 26;
             var textY = contentBounds.Y + 10 - _game._helpScrollOffset;
+
             foreach (var line in _game.GetHelpLines())
             {
                 DrawText(line, contentBounds.X + 16, textY, 2, Color.White);
@@ -700,6 +728,7 @@ internal sealed partial class SolitaireGame
             graphicsDevice.ScissorRectangle = previousScissor;
 
             var closeHint = GetHelpCloseHintBounds();
+
             DrawText(HelpOverlayFooterHint, closeHint.X + 8, closeHint.Y + 2, 2, ToolbarSecondaryText);
         }
 
@@ -710,6 +739,7 @@ internal sealed partial class SolitaireGame
         private void DrawPile(List<Card> pile, Rectangle bounds, bool faceDown = false)
         {
             var visibleCardIndex = pile.Count - 1;
+
             if (visibleCardIndex >= 0 && _game.IsDraggedCard(pile, visibleCardIndex))
             {
                 visibleCardIndex = _game._selectedCardIndex - 1;
@@ -760,6 +790,7 @@ internal sealed partial class SolitaireGame
                 var highlightOpacity = _game._reducedMotion
                     ? 1
                     : Math.Clamp(_game._selectionElapsed / SelectionHighlightFadeDuration, 0, 1);
+
                 _game._spriteBatch.Draw(_game._artwork.Selection,
                     new Rectangle(bounds.X - CardSelectionInset, bounds.Y - CardSelectionInset,
                         bounds.Width + CardSelectionInset * 2, bounds.Height + CardSelectionInset * 2),
@@ -770,6 +801,7 @@ internal sealed partial class SolitaireGame
             {
                 Fill(bounds, faceDown ? Color.Black : Color.White);
                 DrawTargetOutline(bounds, isSelected && !faceDown ? Color.Yellow : Color.White);
+
                 if (faceDown)
                 {
                     DrawText(CardBackLabel, bounds.X + CardBackLabelOffsetX, bounds.Y + CardBackLabelOffsetY,
@@ -790,10 +822,9 @@ internal sealed partial class SolitaireGame
             var suitColor = _game._highContrast ? (card.IsRed ? CardSuitRedHighContrast : Color.Black)
                 : card.IsRed ? CardSuitRed : CardSuitBlack;
             var rankLabel = SolitaireCardLabels.GetShortRankLabel(card.Rank);
-
             var suitTexture = _game._artwork.Suits[(int)card.Suit];
-
             var rankScale = _game._largeText ? 3 : 2;
+
             DrawText(rankLabel, bounds.X + CardRankTopOffsetX,
                 bounds.Y + (_game._largeText ? CardRankTopOffsetYLarge : CardRankTopOffsetY), rankScale, suitColor,
                 preserveColor: true);

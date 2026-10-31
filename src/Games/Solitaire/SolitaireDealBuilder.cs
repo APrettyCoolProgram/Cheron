@@ -1,4 +1,4 @@
-// 261029_code
+// 261031_code
 // 261029_documentation
 
 using System;
@@ -15,7 +15,9 @@ internal static class SolitaireDealBuilder
     public static List<SolitaireCard> CreateShuffledDeck(Random random)
     {
         var deck = CreateOrderedDeck();
+
         Shuffle(deck, random);
+
         return deck;
     }
 
@@ -24,6 +26,7 @@ internal static class SolitaireDealBuilder
     private static List<SolitaireCard> CreateOrderedDeck()
     {
         var deck = new List<SolitaireCard>(52);
+
         foreach (var suit in Enum.GetValues<SolitaireSuit>())
         {
             for (var rank = 1; rank <= 13; rank++)
@@ -43,6 +46,7 @@ internal static class SolitaireDealBuilder
         for (var cardIndex = deck.Count - 1; cardIndex > 0; cardIndex--)
         {
             var swapIndex = random.Next(cardIndex + 1);
+
             (deck[cardIndex], deck[swapIndex]) = (deck[swapIndex], deck[cardIndex]);
         }
     }
