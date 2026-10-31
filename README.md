@@ -3,9 +3,10 @@
   <img src=".github/logo/Cheron-Logo-512x512.png" alt="Cheron">
 
   ![RELEASE](https://img.shields.io/badge/release-26.10-teal)&nbsp;
-  ![STAGE](https://img.shields.io/badge/Development-red)&nbsp; <!-- Alpha = Red, Beta = Yellow, Stable = Green -->
-  ![.NET](https://img.shields.io/badge/.NET-10.0-purple)
-  ![MonoGame](https://shields.io)
+  ![STAGE](https://img.shields.io/badge/Development-gold)&nbsp; <!-- Alpha = Red, Beta = Yellow, Stable = Green -->
+  ![.NET](https://img.shields.io/badge/.NET-10.0-purple)&nbsp;
+  ![LANGUAGE](https://img.shields.io/badge/language-C%23-blue)&nbsp;
+  ![FRAMEWORK](https://img.shields.io/badge/framwork-MonoGame-orange)
   ![Platform](https://img.shields.io/badge/platform-windows-lightgrey)&nbsp;
 
 </div>
@@ -41,30 +42,18 @@ Cheron is:
 The *idea* is to create a game engine that can be used to create and play a variety of different game types.
 
 2. **An experiment**  
-I'm using AI to build Cheron. Why? [Because](./making-of/README.md)
-
-
-
-
-Cheron is a desktop card game built with C# and MonoGame. It currently includes
-Klondike and FreeCell Solitaire, hosted by a small game engine that separates
-the game lifecycle from individual game modules.
-
-![License](https://img.shields.io/badge/License-Apache%202.0-blue)
-
-
-## Features
-
-- Modular game host and game-module lifecycle.
-- Start screen that transitions into Solitaire.
-- Klondike and FreeCell variants.
-- Keyboard and pointer controls, help, and options.
-- xUnit regression tests for Solitaire behavior.
+I'm using AI to build Cheron. Why? [Because *experimenting*!](./making-of/README.md)
 
 ## Requirements
 
 - .NET 10 SDK.
 - A desktop environment supported by MonoGame DesktopGL.
+
+# Documentation
+
+
+
+# Using
 
 ## Build and run
 
@@ -108,11 +97,15 @@ src/
 
 ## Documentation
 
-- [Manual](docs/man/README.md)
-- [Solitaire guide](docs/man/Solitaire.md)
-- [API documentation](docs/api/README.md)
-- [Development notes](docs/dev/README.md)
+# License
 
-## License
+Copyright &copy; 2026 [A Pretty Cool Program](https://github.com/aprettycoolprogram)  
+Distributed under the [Apache 2.0 License](LICENSE)  
 
-Cheron is distributed under the [Apache 2.0 License](LICENSE).
+***
+
+<h6 align="center">
+
+  [FAQ](docs/FAQ.md)&nbsp;&bull;&nbsp;[DEVELOPMENT](docs/DEVELOPMENT.md)&nbsp;&bull;&nbsp;[API](docs/api/README.md)&nbsp;&bull;&nbsp;[SUPPORT](docs/SUPPORT.md)&nbsp;&bull;&nbsp;[NOTICES](docs/NOTICES.md)
+
+</h6>
