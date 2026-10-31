@@ -36,6 +36,9 @@
 * Better way to exit back to the console
 * Better spacing for top/bottom bar components
 * Tighten up classes/methods
+* Let user know if there aren't any more moves
+* Sometimes hints are dumb...remove?
+* Far left freecell label
 
 ### Memory Tiles
 
