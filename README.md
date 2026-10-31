@@ -5,7 +5,7 @@
   ![RELEASE](https://img.shields.io/badge/release-26.10--dev-teal)&nbsp;
   ![.NET](https://img.shields.io/badge/.NET-10.0-purple)&nbsp;
   ![LANGUAGE](https://img.shields.io/badge/language-C%23-blue)&nbsp;
-  ![FRAMEWORK](https://img.shields.io/badge/framwork-MonoGame-orange)
+  ![FRAMEWORK](https://img.shields.io/badge/framwork-monogame-orange)
   ![Platform](https://img.shields.io/badge/platform-windows-lightgrey)&nbsp;
 
 </div>
@@ -23,12 +23,8 @@
 | CONTENTS                                    |
 |---------------------------------------------|
 | [About Cheron](#about-Cheron)               |
-| [How it works](#how-it-works)               |
-| [Getting started](#getting-started)         |
-| [Installing](#installing)                   |
+| [Documentation](#documentation)             |
 | [Usage](#usage)                             |
-| [Acknowledgements](#acknowledgements)       |
-| [Related projects](#related-projects)       |
 | [License](#license)                         |
 
 ***
@@ -39,6 +35,8 @@ Cheron is:
 
 1. **A game engine**  
 The *idea* is to create a game engine that can be used to create and play a variety of different game types.
+
+Cheron is developed
 
 2. **An experiment**  
 I'm using AI to build Cheron. Why? [Because *experimenting*!](./docs/making-of/README.md)
