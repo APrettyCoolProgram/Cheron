@@ -1,0 +1,18 @@
+﻿================
+THE CARDS
+CHANGELOG
+NOVEMBER 23,2015
+================
+
+
+
+
+
+BETA 01 - BETA 99 (versions 00.00.01.YYMMDD - 00.00.99.YYMMDD)
+-----------------
+
+
+ALPHA 01 - ALPHA XX
+--------------------
+The Alpha version of The Cards spanned a few months, and was used to build the foundation of the application. Since
+everything was in flux during the alpha versions, a changelog was not kept.

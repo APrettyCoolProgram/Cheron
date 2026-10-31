@@ -1,0 +1,113 @@
+﻿================
+THE CARDS
+SCRATCHPAD
+NOVEMBER 23,2015
+================
+
+Card image resolutions (percentage)
+-----------------------------------
+100: 312    x   445
+ 75: 234    x   333.75
+ 66: 205.92 x   293.7
+ 60: 187.2	x	267
+ 50: 156    x   222.50
+ 33: 170.91 x   146.85
+ 25: 78     x   111.25
+
+Card border resolutions (percentage)
+------------------------------------
+100: 322    x   458
+ 75: 241.5  x   343.5
+ 66: 212.52 x   302.28
+ 60: 193.2	x	274.8
+ 50: 161    x   229
+ 33: 106.26 x   151.14
+ 25: 80.5   x   114.5
+
+Playmat notes
+-------------
+Large 2x6(12) w ?px buffers - includes everything
+Medium 01 3x8(24) w/5px buffers - includes deck/collection counters, and favorite
+Medium 02 3x7(21) w/?px buffers - includes deck/collection counters, and favorite
+Small 4x9(36) w/?px buffers - nothing included, no buffer choice
+
+Delimiter character
+-------------------
+The default delimiter character for CSVs: "¤"
+The default delimeter for dictionary lists: "ɓ"
+
+Default CSV keywords (as of 11-23-15)
+-------------------------------------
+cardName
+cardSet
+cardSetCode
+cardID
+cardType
+cardAttack
+cardDefense
+cardAllegiance
+cardSpecificCost
+cardGenericCost
+cardArtist
+cardFlavor
+cardColor
+colorGeneratedResource
+cardNumber
+cardRarity
+cardBack
+cardAbility
+
+Sorting options
+---------------
+* Sort by
+	* Name
+		* Ascending
+		* Decending
+	* Sets
+	* Color(S)
+		* Black
+		* Blue
+		* Green
+		* Red
+		* White
+	* Type
+		* ...
+	* SubType
+		* ...
+	* Keyword
+		* ...
+	* Power
+	* Toughness
+	* Loyalty
+	* Casting Cost
+	* Abilities
+		* ...
+	* Presets
+		* Counters
+		* ...
+
+Goals
+-----
+* Resources are relative to executable (100% portable)
+
+
+Other questions
+---------------
+* How to handle different graphic options (i.e. low quality, high quality)
+* Best font to use?
+* How to embed fonts into the project?
+
+
+Classes
+-------
+* DoFile
+	- Should make it so you can have the comment character be more than one character, or a combination
+	- ToDoictionary
+		- ***NOTE*** Make this work for value as well, and change "NOT_USED" to "---"
+
+
+
+Device resolutions
+------------------
+1280x800 - Macbook Pro (Retina)
+1366x768 - Toshiba Portege

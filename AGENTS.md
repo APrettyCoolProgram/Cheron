@@ -11,15 +11,18 @@ Use the **Applies to** column to determine which agent should handle a given fil
 
 | Agent                           | Applies to (glob) | Purpose                                      |
 |---------------------------------|-------------------|----------------------------------------------|
-| `AGENT-CSharp-XmlDocumentation` | `**/*.cs`         | Add/maintain XML doc comments on C# members. |
+| `AGENT-CSharp-ExpertDeveloper`  | `**/*.cs`         | C# developer.                                |
 | `AGENT-CSharp-ProjectFlow       | `**/*.cs`         | Create project flow Mermaid charts.          |
+| `AGENT-CSharp-XmlDocumentation` | `**/*.cs`         | Add/maintain XML doc comments on C# members. |
+| `AGENT-MonoGame-Engine          | `**/*.cs`         | MonoGame developer.                          |
 
 ---
 
 # CSharp agents
 
-@./.github/agents/AGENT-CSharp-XmlDocumentation.md
+@./.github/agents/AGENT-CSharp-ExpertDeveloper.md
 @./.github/agents/AGENT-CSharp-ProjectFlow.md
+@./.github/agents/AGENT-CSharp-XmlDocumentation.md
 
 ---
 
