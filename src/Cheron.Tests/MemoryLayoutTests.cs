@@ -1,5 +1,5 @@
-// 261030_code
-// 261030_documentation
+// 261031_code
+// 261031_documentation
 
 using Cheron.Games.Memory;
 using Xunit;
@@ -63,15 +63,21 @@ public sealed class MemoryLayoutTests
     [InlineData(4)]
     [InlineData(8)]
     [InlineData(12)]
-    public void ToolbarButtons_AreOrdered_NewGameThenHelpThenSound_WithoutOverlap(int gridSize)
+    public void BarActionBounds_PlaceNewGameLeftTop_SoundRightTop_AndHelpRightBottom(int gridSize)
     {
+        var toolbarBounds = MemoryLayout.GetToolbarBounds(gridSize);
+        var footerBounds = MemoryLayout.GetFooterBounds(gridSize, gridSize);
         var newGameBounds = MemoryLayout.GetNewGameButtonBounds(gridSize);
-        var helpBounds = MemoryLayout.GetHelpButtonBounds(gridSize);
         var soundBounds = MemoryLayout.GetSoundButtonBounds(gridSize);
+        var helpBounds = MemoryLayout.GetHelpButtonBounds(gridSize);
 
-        Assert.True(newGameBounds.Right <= helpBounds.Left);
-        Assert.True(helpBounds.Right <= soundBounds.Left);
+        Assert.True(toolbarBounds.Contains(newGameBounds));
+        Assert.True(toolbarBounds.Contains(soundBounds));
+        Assert.True(footerBounds.Contains(helpBounds));
+
+        Assert.True(newGameBounds.Left <= MemoryLayout.BoardMargin + MemoryLayout.ButtonRightMargin);
         Assert.True(soundBounds.Right <= MemoryLayout.GetBoardWidth(gridSize));
+        Assert.True(helpBounds.Right <= MemoryLayout.GetBoardWidth(gridSize));
     }
 
     [Theory]
@@ -124,6 +130,28 @@ public sealed class MemoryLayoutTests
         var bottomMargin = footerBounds.Top - lastTile.Bottom;
 
         Assert.Equal(leftMargin, rightMargin);
+        Assert.Equal(topMargin, bottomMargin);
+    }
+
+    [Theory]
+    [InlineData(4, 12)]
+    [InlineData(12, 4)]
+    [InlineData(6, 10)]
+    public void RectangularBoards_HaveCenteredGrid_WithBalancedMargins(int columns, int rows)
+    {
+        var toolbarBounds = MemoryLayout.GetToolbarBounds(columns, rows);
+        var footerBounds = MemoryLayout.GetFooterBounds(columns, rows);
+        var firstTile = MemoryLayout.GetTileBounds(0, 0, columns, rows);
+        var lastTile = MemoryLayout.GetTileBounds(columns - 1, rows - 1, columns, rows);
+
+        var leftMargin = firstTile.Left;
+        var rightMargin = MemoryLayout.GetBoardWidth(columns, rows) - lastTile.Right;
+        var topMargin = firstTile.Top - toolbarBounds.Bottom;
+        var bottomMargin = footerBounds.Top - lastTile.Bottom;
+
+        Assert.Equal(MemoryLayout.BoardMargin, leftMargin);
+        Assert.Equal(leftMargin, rightMargin);
+        Assert.Equal(MemoryLayout.BoardMargin, topMargin);
         Assert.Equal(topMargin, bottomMargin);
     }
 

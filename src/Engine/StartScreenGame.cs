@@ -1,9 +1,8 @@
-// 261029_code
-// 261029_documentation
+// 261031_code
+// 261031_documentation
 
 using System;
 using System.Collections.Generic;
-using Cheron.Engine;
 using Cheron.Games.Memory;
 using Cheron.Games.Solitaire;
 using Microsoft.Xna.Framework;
@@ -77,7 +76,7 @@ internal sealed class StartScreenGame : IGameModule
 
     public string Title => _activeGame?.Title ?? "Cheron";
 
-    public Point PreferredWindowSize => BoardSize;
+    public Point PreferredWindowSize => _activeGame?.PreferredWindowSize ?? BoardSize;
 
     public void Initialize()
     {
@@ -482,7 +481,8 @@ internal sealed class StartScreenGame : IGameModule
         };
 
         nextGame.Initialize();
-        nextGame.SetViewport(_viewport);
+        var nextViewport = new GameViewport(nextGame.PreferredWindowSize, _viewport.ClientSize, _viewport.BackBufferSize);
+        nextGame.SetViewport(nextViewport);
         nextGame.LoadContent(_pixel.GraphicsDevice);
 
         _activeGame = nextGame;

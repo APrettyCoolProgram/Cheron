@@ -1,5 +1,5 @@
-// 261030_code
-// 261030_documentation
+// 261031_code
+// 261031_documentation
 
 using System;
 using System.Collections.Generic;
@@ -110,7 +110,7 @@ internal sealed class MemoryGame : IGameModule
     public string Title => TitleLabel;
 
     /// <summary>Gets the logical board size for the current tile dimensions.</summary>
-    public Point PreferredWindowSize => new(MemoryLayout.GetBoardWidth(_columns), MemoryLayout.GetBoardHeight(_rows));
+    public Point PreferredWindowSize => new(MemoryLayout.GetBoardWidth(_columns, _rows), MemoryLayout.GetBoardHeight(_columns, _rows));
 
     /// <summary>Deals a shuffled board before graphics resources are loaded.</summary>
     public void Initialize()
@@ -145,7 +145,7 @@ internal sealed class MemoryGame : IGameModule
         var tileSize = MemoryLayout.GetTileSize(_columns, _rows);
         var cornerRadius = Math.Max(6, Math.Min(MemoryLayout.CornerRadius, tileSize / 4));
 
-        _artwork = new MemoryArtwork(_graphicsDevice, MemoryLayout.GetBoardWidth(_columns), MemoryLayout.GetBoardHeight(_rows),
+        _artwork = new MemoryArtwork(_graphicsDevice, MemoryLayout.GetBoardWidth(_columns, _rows), MemoryLayout.GetBoardHeight(_columns, _rows),
             tileSize, cornerRadius, MemoryColors.GetPairColors(_columns * _rows / 2),
             MemoryLayout.ButtonWidth, MemoryLayout.ButtonHeight, MemoryLayout.ButtonCornerRadius,
             560, 420);
@@ -217,7 +217,7 @@ internal sealed class MemoryGame : IGameModule
         graphicsDevice.Clear(MemoryColors.TableBackground);
 
         _spriteBatch.Begin(transformMatrix: _viewport.Transform, samplerState: SamplerState.PointClamp);
-        _spriteBatch.Draw(_artwork.Background, new Rectangle(0, 0, MemoryLayout.GetBoardWidth(_columns), MemoryLayout.GetBoardHeight(_rows)), Color.White);
+        _spriteBatch.Draw(_artwork.Background, new Rectangle(0, 0, MemoryLayout.GetBoardWidth(_columns, _rows), MemoryLayout.GetBoardHeight(_columns, _rows)), Color.White);
 
         for (var index = 0; index < _tiles.Count; index++)
         {
@@ -359,7 +359,7 @@ internal sealed class MemoryGame : IGameModule
         return false;
     }
 
-    /// <summary>Processes mouse clicks against the toolbar buttons while the board is interactive.</summary>
+    /// <summary>Processes mouse clicks against the bar action labels while the board is interactive.</summary>
     /// <param name="mouseState">The current mouse state.</param>
     private void HandleToolbarMouseInput(MouseState mouseState)
     {
@@ -368,15 +368,15 @@ internal sealed class MemoryGame : IGameModule
             return;
         }
 
-        if (MemoryLayout.GetNewGameButtonBounds(_columns).Contains(_pointerPosition))
+        if (MemoryLayout.GetNewGameButtonBounds(_columns, _rows).Contains(_pointerPosition))
         {
             OpenSizePrompt();
         }
-        else if (MemoryLayout.GetHelpButtonBounds(_columns).Contains(_pointerPosition))
+        else if (MemoryLayout.GetHelpButtonBounds(_columns, _rows).Contains(_pointerPosition))
         {
             _helpOpen = true;
         }
-        else if (MemoryLayout.GetSoundButtonBounds(_columns).Contains(_pointerPosition) && !_audioUnavailable)
+        else if (MemoryLayout.GetSoundButtonBounds(_columns, _rows).Contains(_pointerPosition) && !_audioUnavailable)
         {
             ToggleSound();
         }
@@ -644,76 +644,115 @@ internal sealed class MemoryGame : IGameModule
     private void DrawText(string text, int textX, int textY, int scale, Color color) =>
         Solitaire.SolitaireBitmapFont.DrawText(_spriteBatch, _glyphTexture, false, text, textX, textY, scale, color);
 
-    /// <summary>Draws the top toolbar strip, title, statistics, and buttons.</summary>
+    /// <summary>Draws the top toolbar strip with left and right actions, centered title, and centered statistics.</summary>
     private void DrawToolbar()
     {
-        var toolbarBounds = MemoryLayout.GetToolbarBounds(_columns);
+        var toolbarBounds = MemoryLayout.GetToolbarBounds(_columns, _rows);
         Fill(toolbarBounds, new Color(30, 20, 32));
         Fill(new Rectangle(toolbarBounds.X, toolbarBounds.Bottom - 2, toolbarBounds.Width, 2), new Color(176, 96, 150));
 
+        var newGameBounds = MemoryLayout.GetNewGameButtonBounds(_columns, _rows);
+        var soundBounds = MemoryLayout.GetSoundButtonBounds(_columns, _rows);
+        DrawTopBarActionLabel(newGameBounds, NewGameLabel, "N", true);
+        DrawTopBarSoundActionLabel(soundBounds, "M", !_audioUnavailable);
+
         const int titleScale = 3;
-        DrawText(TitleLabel, 24, (toolbarBounds.Height - 7 * titleScale) / 2, titleScale, new Color(240, 220, 236));
+        var titleX = toolbarBounds.X + (toolbarBounds.Width - TitleLabel.Length * 6 * titleScale) / 2;
+        var titleY = toolbarBounds.Y + 12;
+        DrawText(TitleLabel, titleX, titleY, titleScale, new Color(240, 220, 236));
 
-        var movesText = $"{MovesCaptionLabel} {_moveCount}";
-        var timeText = $"{TimeCaptionLabel} {FormatElapsedTime(_elapsedSeconds)}";
-        var newGameBounds = MemoryLayout.GetNewGameButtonBounds(_columns);
+        var statsText = $"{MovesCaptionLabel} {_moveCount}      {TimeCaptionLabel} {FormatElapsedTime(_elapsedSeconds)}";
         const int statsScale = 1;
-        var statsWidth = Math.Max(movesText.Length, timeText.Length) * 6 * statsScale;
-        var titleRight = 24 + TitleLabel.Length * 6 * titleScale;
-        var statsLeftBound = titleRight + 16;
-        var statsRightBound = newGameBounds.X - 16;
-        var statsX = Math.Max(statsLeftBound, statsRightBound - statsWidth);
-        DrawText(movesText, statsX, toolbarBounds.Height / 2 - 7 * statsScale - 2, statsScale, new Color(200, 180, 210));
-        DrawText(timeText, statsX, toolbarBounds.Height / 2 + 3, statsScale, new Color(200, 180, 210));
-
-        DrawToolbarButton(newGameBounds, NewGameLabel, "N");
-        DrawToolbarButton(MemoryLayout.GetHelpButtonBounds(_columns), HelpLabel, "F1");
-        DrawSoundButton(MemoryLayout.GetSoundButtonBounds(_columns));
+        var statsX = toolbarBounds.X + (toolbarBounds.Width - statsText.Length * 6 * statsScale) / 2;
+        var statsY = toolbarBounds.Bottom - 18;
+        DrawText(statsText, statsX, statsY, statsScale, new Color(200, 180, 210));
     }
 
-    /// <summary>Draws one themed toolbar button with its label and shortcut, highlighting it on hover.</summary>
-    /// <param name="bounds">The button's drawing and hit-test bounds.</param>
-    /// <param name="label">The primary button label.</param>
-    /// <param name="shortcut">The keyboard shortcut shown beneath the label.</param>
-    private void DrawToolbarButton(Rectangle bounds, string label, string shortcut)
-    {
-        var isHovered = bounds.Contains(_pointerPosition);
-        _spriteBatch.Draw(isHovered ? _artwork.ButtonHover : _artwork.Button, bounds, Color.White);
-        DrawButtonText(bounds, label, shortcut);
-    }
-
-    /// <summary>Draws the Sound toggle button, reflecting the current enabled state or audio availability.</summary>
-    /// <param name="bounds">The button's drawing and hit-test bounds.</param>
-    private void DrawSoundButton(Rectangle bounds)
-    {
-        var isHovered = !_audioUnavailable && bounds.Contains(_pointerPosition);
-        _spriteBatch.Draw(isHovered ? _artwork.ButtonHover : _artwork.Button, bounds, Color.White);
-
-        var label = _audioUnavailable ? AudioUnavailableLabel : $"{SoundLabel} {(_soundEnabled ? "ON" : "OFF")}";
-        DrawButtonText(bounds, label, "M");
-    }
-
-    /// <summary>Draws a centered two-line button label and shortcut.</summary>
-    /// <param name="bounds">The button bounds.</param>
+    /// <summary>Draws a two-line top-bar action label centered vertically in the toolbar strip.</summary>
+    /// <param name="bounds">The action's hit-test bounds.</param>
     /// <param name="label">The primary label text.</param>
-    /// <param name="shortcut">The shortcut text.</param>
-    private void DrawButtonText(Rectangle bounds, string label, string shortcut)
+    /// <param name="shortcut">The keyboard shortcut shown beneath the label.</param>
+    /// <param name="enabled">Whether the action can be used.</param>
+    private void DrawTopBarActionLabel(Rectangle bounds, string label, string shortcut, bool enabled)
     {
-        const int labelScale = 1;
+        const int labelScale = 2;
         const int shortcutScale = 1;
-        const int lineGap = 4;
+        const int lineGap = 5;
+        var stripBounds = MemoryLayout.GetToolbarBounds(_columns, _rows);
         var blockHeight = 7 * labelScale + lineGap + 7 * shortcutScale;
-        var firstLineY = bounds.Y + (bounds.Height - blockHeight) / 2;
+        var firstLineY = stripBounds.Y + (stripBounds.Height - blockHeight) / 2;
         var secondLineY = firstLineY + 7 * labelScale + lineGap;
-        var color = new Color(240, 230, 240);
+        var isHovered = enabled && bounds.Contains(_pointerPosition);
+        var color = !enabled ? new Color(150, 134, 158) : isHovered ? new Color(255, 230, 178) : new Color(240, 220, 236);
 
-        var labelX = bounds.X + (bounds.Width - label.Length * 6 * labelScale) / 2;
-        var shortcutX = bounds.X + (bounds.Width - shortcut.Length * 6 * shortcutScale) / 2;
+        var labelX = bounds.X + (bounds.Width - label.Length * 6 * labelScale + 2) / 2;
+        var shortcutX = bounds.X + (bounds.Width - shortcut.Length * 6 * shortcutScale + 2) / 2;
         DrawText(label, labelX, firstLineY, labelScale, color);
-        DrawText(shortcut, shortcutX, secondLineY, shortcutScale, new Color(190, 160, 190));
+        DrawText(shortcut, shortcutX, secondLineY, shortcutScale, color);
     }
 
-    /// <summary>Draws the bottom footer strip and its shortcut legend.</summary>
+    /// <summary>Draws the two-line Sound action label using the same top-bar typography as Solitaire.</summary>
+    /// <param name="bounds">The action's hit-test bounds.</param>
+    /// <param name="shortcut">The keyboard shortcut shown beneath the label.</param>
+    /// <param name="enabled">Whether the action can be used.</param>
+    private void DrawTopBarSoundActionLabel(Rectangle bounds, string shortcut, bool enabled)
+    {
+        const int labelScale = 2;
+        const int shortcutScale = 1;
+        const int lineGap = 5;
+        var stripBounds = MemoryLayout.GetToolbarBounds(_columns, _rows);
+        var blockHeight = 7 * labelScale + lineGap + 7 * shortcutScale;
+        var firstLineY = stripBounds.Y + (stripBounds.Height - blockHeight) / 2;
+        var secondLineY = firstLineY + 7 * labelScale + lineGap;
+        var isHovered = enabled && bounds.Contains(_pointerPosition);
+        var color = !enabled ? new Color(150, 134, 158) : isHovered ? new Color(255, 230, 178) : new Color(240, 220, 236);
+
+        if (_audioUnavailable)
+        {
+            var unavailableX = bounds.X + (bounds.Width - AudioUnavailableLabel.Length * 6 * labelScale + 2) / 2;
+            DrawText(AudioUnavailableLabel, unavailableX, firstLineY, labelScale, color);
+        }
+        else
+        {
+            const string soundPrefix = "SOUND";
+            const int stateSlotCharacters = 3;
+            var prefixWidth = soundPrefix.Length * 6 * labelScale;
+            var stateX = bounds.X +
+                (bounds.Width - (prefixWidth + 6 * labelScale + stateSlotCharacters * 6 * labelScale) + 2) / 2 +
+                prefixWidth + 6 * labelScale;
+            var prefixX = stateX - (prefixWidth + 6 * labelScale);
+
+            DrawText(soundPrefix, prefixX, firstLineY, labelScale, color);
+            DrawText(_soundEnabled ? "ON" : "OFF", stateX, firstLineY, labelScale, color);
+        }
+
+        var shortcutX = bounds.X + (bounds.Width - shortcut.Length * 6 * shortcutScale + 2) / 2;
+        DrawText(shortcut, shortcutX, secondLineY, shortcutScale, color);
+    }
+
+    /// <summary>Draws a two-line footer action label centered vertically in the footer strip.</summary>
+    /// <param name="bounds">The action's hit-test bounds.</param>
+    /// <param name="label">The primary label text.</param>
+    /// <param name="shortcut">The keyboard shortcut shown beneath the label.</param>
+    private void DrawFooterActionLabel(Rectangle bounds, string label, string shortcut)
+    {
+        const int labelScale = 2;
+        const int shortcutScale = 1;
+        const int lineGap = 5;
+        var footerBounds = MemoryLayout.GetFooterBounds(_columns, _rows);
+        var blockHeight = 7 * labelScale + lineGap + 7 * shortcutScale;
+        var firstLineY = footerBounds.Y + (footerBounds.Height - blockHeight) / 2;
+        var secondLineY = firstLineY + 7 * labelScale + lineGap;
+        var isHovered = bounds.Contains(_pointerPosition);
+        var color = isHovered ? new Color(255, 230, 178) : new Color(240, 220, 236);
+
+        var labelX = bounds.X + (bounds.Width - label.Length * 6 * labelScale + 2) / 2;
+        var shortcutX = bounds.X + (bounds.Width - shortcut.Length * 6 * shortcutScale + 2) / 2;
+        DrawText(label, labelX, firstLineY, labelScale, color);
+        DrawText(shortcut, shortcutX, secondLineY, shortcutScale, color);
+    }
+
+    /// <summary>Draws the bottom footer strip with centered movement hint and right-aligned Help action.</summary>
     private void DrawFooter()
     {
         var footerBounds = MemoryLayout.GetFooterBounds(_columns, _rows);
@@ -721,8 +760,11 @@ internal sealed class MemoryGame : IGameModule
         Fill(new Rectangle(footerBounds.X, footerBounds.Y, footerBounds.Width, 2), new Color(176, 96, 150));
 
         const int scale = 1;
+        var centeredInstructionX = footerBounds.X + (footerBounds.Width - FooterFlipInstructionLabel.Length * 6 * scale) / 2;
         var textY = footerBounds.Y + (footerBounds.Height - 7 * scale) / 2;
-        DrawText(FooterShortcutsLabel, MemoryLayout.BoardMargin, textY, scale, new Color(200, 180, 210));
+        DrawText(FooterFlipInstructionLabel, centeredInstructionX, textY, scale, new Color(200, 180, 210));
+
+        DrawFooterActionLabel(MemoryLayout.GetHelpButtonBounds(_columns, _rows), HelpLabel, "F1");
     }
 
     /// <summary>Draws the semi-transparent scrim and centered panel shared by the help and win overlays.</summary>
@@ -731,7 +773,7 @@ internal sealed class MemoryGame : IGameModule
     /// <param name="footerLine">The instruction line drawn at the bottom of the panel.</param>
     private void DrawOverlay(string headline, IReadOnlyList<string> bodyLines, string footerLine)
     {
-        Fill(new Rectangle(0, 0, MemoryLayout.GetBoardWidth(_columns), MemoryLayout.GetBoardHeight(_rows)), new Color(0, 0, 0, 150));
+        Fill(new Rectangle(0, 0, MemoryLayout.GetBoardWidth(_columns, _rows), MemoryLayout.GetBoardHeight(_columns, _rows)), new Color(0, 0, 0, 150));
 
         var panelBounds = MemoryLayout.GetSizePromptPanelBounds(_columns, _rows);
         _spriteBatch.Draw(_artwork.Banner, panelBounds, Color.White);
@@ -779,7 +821,7 @@ internal sealed class MemoryGame : IGameModule
     /// <summary>Draws the board-size picker prompt, highlighting the currently selected size.</summary>
     private void DrawSizePromptOverlay()
     {
-        Fill(new Rectangle(0, 0, MemoryLayout.GetBoardWidth(_columns), MemoryLayout.GetBoardHeight(_rows)), new Color(0, 0, 0, 150));
+        Fill(new Rectangle(0, 0, MemoryLayout.GetBoardWidth(_columns, _rows), MemoryLayout.GetBoardHeight(_columns, _rows)), new Color(0, 0, 0, 150));
 
         var panelBounds = MemoryLayout.GetOverlayPanelBounds(_columns, _rows);
         _spriteBatch.Draw(_artwork.Banner, panelBounds, Color.White);

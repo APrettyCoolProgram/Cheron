@@ -57,17 +57,28 @@ internal static class MemoryLayout
     /// <summary>Gets the maximum playable horizontal span used to size adaptive boards.</summary>
     private static int MaxGridSpan => DefaultGridSize * TileSize + (DefaultGridSize - 1) * TileSpacing;
 
+    /// <summary>Computes the logical width of the Memory window canvas for a square board.</summary>
+    /// <param name="gridSize">The number of tile columns and rows on the board.</param>
+    public static int GetBoardWidth(int gridSize) => GetBoardWidth(gridSize, gridSize);
+
     /// <summary>Computes the logical width of the Memory window canvas for the current board size.</summary>
     /// <param name="columns">The number of tile columns on the board.</param>
-    public static int GetBoardWidth(int columns) => BoardMargin * 2 + GetGridWidth(columns, columns);
-
-    /// <summary>Computes the logical height of the tile grid area, excluding the toolbar and footer.</summary>
     /// <param name="rows">The number of tile rows on the board.</param>
-    public static int GetGridHeight(int rows) => GetGridHeight(rows, rows);
+    public static int GetBoardWidth(int columns, int rows) => BoardMargin * 2 + GetGridWidth(columns, rows);
+
+    /// <summary>Computes the logical height of the tile grid area, excluding the toolbar and footer, for a square board.</summary>
+    /// <param name="gridSize">The number of tile columns and rows on the board.</param>
+    public static int GetGridHeight(int gridSize) => GetGridHeight(gridSize, gridSize);
+
+    /// <summary>Computes the logical height of the game window canvas for a square board.</summary>
+    /// <param name="gridSize">The number of tile columns and rows on the board.</param>
+    public static int GetBoardHeight(int gridSize) => GetBoardHeight(gridSize, gridSize);
 
     /// <summary>Computes the logical height of the game window canvas for the current board size.</summary>
+    /// <param name="columns">The number of tile columns on the board.</param>
     /// <param name="rows">The number of tile rows on the board.</param>
-    public static int GetBoardHeight(int rows) => TopBarHeight + BoardMargin + GetGridHeight(rows, rows) + BoardMargin + FooterHeight;
+    public static int GetBoardHeight(int columns, int rows) =>
+        TopBarHeight + BoardMargin + GetGridHeight(columns, rows) + BoardMargin + FooterHeight;
 
     /// <summary>Gets the side length used for each tile for the current board dimensions.</summary>
     /// <param name="columns">The number of tile columns on the board.</param>
@@ -88,7 +99,7 @@ internal static class MemoryLayout
     {
         var tileSize = GetTileSize(columns, rows);
         var gridWidth = GetGridWidth(columns, rows);
-        var startX = (GetBoardWidth(columns) - gridWidth) / 2;
+        var startX = (GetBoardWidth(columns, rows) - gridWidth) / 2;
         var startY = TopBarHeight + BoardMargin;
         var x = startX + column * (tileSize + TileSpacing);
         var y = startY + row * (tileSize + TileSpacing);
@@ -109,39 +120,62 @@ internal static class MemoryLayout
         return rows * tileSize + (rows - 1) * TileSpacing;
     }
 
+    /// <summary>Gets the bounds of the top toolbar strip for a square board.</summary>
+    /// <param name="gridSize">The number of tile columns and rows on the board.</param>
+    public static Rectangle GetToolbarBounds(int gridSize) => GetToolbarBounds(gridSize, gridSize);
+
     /// <summary>Gets the bounds of the top toolbar strip.</summary>
     /// <param name="columns">The number of tile columns on the board.</param>
-    public static Rectangle GetToolbarBounds(int columns) => new(0, 0, GetBoardWidth(columns), TopBarHeight);
+    /// <param name="rows">The number of tile rows on the board.</param>
+    public static Rectangle GetToolbarBounds(int columns, int rows) => new(0, 0, GetBoardWidth(columns, rows), TopBarHeight);
 
     /// <summary>Gets the bounds of the bottom footer strip.</summary>
     /// <param name="columns">The number of tile columns on the board.</param>
     /// <param name="rows">The number of tile rows on the board.</param>
     public static Rectangle GetFooterBounds(int columns, int rows) =>
-        new(0, GetBoardHeight(rows) - FooterHeight, GetBoardWidth(columns), FooterHeight);
+        new(0, GetBoardHeight(columns, rows) - FooterHeight, GetBoardWidth(columns, rows), FooterHeight);
 
-    /// <summary>Gets the bounds of the Sound toggle button, rightmost in the toolbar.</summary>
+    /// <summary>Gets the bounds of the New Game action area, left-aligned in the toolbar, for a square board.</summary>
+    /// <param name="gridSize">The number of tile columns and rows on the board.</param>
+    public static Rectangle GetNewGameButtonBounds(int gridSize) => GetNewGameButtonBounds(gridSize, gridSize);
+
+    /// <summary>Gets the bounds of the New Game action area, left-aligned in the toolbar.</summary>
     /// <param name="columns">The number of tile columns on the board.</param>
-    public static Rectangle GetSoundButtonBounds(int columns)
+    /// <param name="rows">The number of tile rows on the board.</param>
+    public static Rectangle GetNewGameButtonBounds(int columns, int rows)
     {
-        var x = GetBoardWidth(columns) - ButtonRightMargin - ButtonWidth;
+        var x = ButtonRightMargin;
         var y = (TopBarHeight - ButtonHeight) / 2;
         return new Rectangle(x, y, ButtonWidth, ButtonHeight);
     }
 
-    /// <summary>Gets the bounds of the Help button, to the left of the Sound button.</summary>
+    /// <summary>Gets the bounds of the Sound toggle action area, right-aligned in the toolbar, for a square board.</summary>
+    /// <param name="gridSize">The number of tile columns and rows on the board.</param>
+    public static Rectangle GetSoundButtonBounds(int gridSize) => GetSoundButtonBounds(gridSize, gridSize);
+
+    /// <summary>Gets the bounds of the Sound toggle action area, right-aligned in the toolbar.</summary>
     /// <param name="columns">The number of tile columns on the board.</param>
-    public static Rectangle GetHelpButtonBounds(int columns)
+    /// <param name="rows">The number of tile rows on the board.</param>
+    public static Rectangle GetSoundButtonBounds(int columns, int rows)
     {
-        var soundBounds = GetSoundButtonBounds(columns);
-        return new Rectangle(soundBounds.X - ButtonGap - ButtonWidth, soundBounds.Y, ButtonWidth, ButtonHeight);
+        var x = GetBoardWidth(columns, rows) - ButtonRightMargin - ButtonWidth;
+        var y = (TopBarHeight - ButtonHeight) / 2;
+        return new Rectangle(x, y, ButtonWidth, ButtonHeight);
     }
 
-    /// <summary>Gets the bounds of the New Game button, to the left of the Help button.</summary>
+    /// <summary>Gets the bounds of the Help action area, right-aligned in the footer, for a square board.</summary>
+    /// <param name="gridSize">The number of tile columns and rows on the board.</param>
+    public static Rectangle GetHelpButtonBounds(int gridSize) => GetHelpButtonBounds(gridSize, gridSize);
+
+    /// <summary>Gets the bounds of the Help action area, right-aligned in the footer.</summary>
     /// <param name="columns">The number of tile columns on the board.</param>
-    public static Rectangle GetNewGameButtonBounds(int columns)
+    /// <param name="rows">The number of tile rows on the board.</param>
+    public static Rectangle GetHelpButtonBounds(int columns, int rows)
     {
-        var helpBounds = GetHelpButtonBounds(columns);
-        return new Rectangle(helpBounds.X - ButtonGap - ButtonWidth, helpBounds.Y, ButtonWidth, ButtonHeight);
+        var footerBounds = GetFooterBounds(columns, rows);
+        var x = footerBounds.Right - ButtonRightMargin - ButtonWidth;
+        var y = footerBounds.Y + (footerBounds.Height - ButtonHeight) / 2;
+        return new Rectangle(x, y, ButtonWidth, ButtonHeight);
     }
 
     /// <summary>Gets the bounds of the centered help/win/size-prompt overlay panel.</summary>
@@ -151,7 +185,8 @@ internal static class MemoryLayout
     {
         const int panelWidth = 560;
         const int panelHeight = 420;
-        return new Rectangle((GetBoardWidth(columns) - panelWidth) / 2, (GetBoardHeight(rows) - panelHeight) / 2,
+        return new Rectangle((GetBoardWidth(columns, rows) - panelWidth) / 2,
+            (GetBoardHeight(columns, rows) - panelHeight) / 2,
             panelWidth, panelHeight);
     }
 

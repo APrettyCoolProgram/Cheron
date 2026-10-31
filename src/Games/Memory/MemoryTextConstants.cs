@@ -21,8 +21,8 @@ internal static class MemoryTextConstants
     /// <summary>The label shown on the Sound button when audio could not be initialized.</summary>
     public const string AudioUnavailableLabel = "NO AUDIO";
 
-    /// <summary>The footer shortcut legend.</summary>
-    public const string FooterShortcutsLabel = "N  NEW GAME     F1  HELP     M  SOUND     ARROWS + ENTER  FLIP";
+    /// <summary>The footer instruction shown centered in the bottom strip.</summary>
+    public const string FooterFlipInstructionLabel = "ARROWS + ENTER  FLIP";
 
     /// <summary>The headline shown on the board-size picker prompt.</summary>
     public const string SizePromptTitleLabel = "CHOOSE BOARD SIZE";
