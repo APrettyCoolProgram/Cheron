@@ -1,11 +1,11 @@
 // 261101_code
 // 261101_documentation
 
-using Cheron.Games.Solitaire;
-using Cheron.Games.Solitaire.FreeCell;
-using Cheron.Games.Solitaire.Klondike;
-using Cheron.Games.Solitaire.Spider;
-using Cheron.Games.Solitaire.Yukon;
+using global::Cheron.Games.Card.Solitaire;
+using global::Cheron.Games.Card.Solitaire.FreeCell;
+using global::Cheron.Games.Card.Solitaire.Klondike;
+using global::Cheron.Games.Card.Solitaire.Spider;
+using global::Cheron.Games.Card.Solitaire.Yukon;
 using Xunit;
 
 namespace Cheron.Tests;

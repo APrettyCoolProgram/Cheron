@@ -1,7 +1,7 @@
 // 261101_code
 // 261101_documentation
 
-using Cheron.Games.Solitaire;
+using global::Cheron.Games.Card.Solitaire;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Xunit;

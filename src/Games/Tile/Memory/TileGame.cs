@@ -147,7 +147,7 @@ internal sealed class TileGame : IGameModule
         _spriteBatch = new SpriteBatch(graphicsDevice);
         _pixelTexture = new Texture2D(graphicsDevice, 1, 1);
         _pixelTexture.SetData([Color.White]);
-        _glyphTexture = Solitaire.SolitaireBitmapFont.CreateGlyphTexture(graphicsDevice);
+        _glyphTexture = global::Cheron.Games.Card.Solitaire.SolitaireBitmapFont.CreateGlyphTexture(graphicsDevice);
         RebuildArtwork();
         LoadFeedbackSounds();
     }
@@ -656,7 +656,7 @@ internal sealed class TileGame : IGameModule
     /// <param name="scale">The size of each glyph pixel in logical board units.</param>
     /// <param name="color">The text color.</param>
     private void DrawText(string text, int textX, int textY, int scale, Color color) =>
-        Solitaire.SolitaireBitmapFont.DrawText(_spriteBatch, _glyphTexture, false, text, textX, textY, scale, color);
+        global::Cheron.Games.Card.Solitaire.SolitaireBitmapFont.DrawText(_spriteBatch, _glyphTexture, false, text, textX, textY, scale, color);
 
     /// <summary>Draws the top toolbar strip with left and right actions, centered title, and centered statistics.</summary>
     private void DrawToolbar()

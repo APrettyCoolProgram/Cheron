@@ -5,12 +5,12 @@ using System;
 using System.Collections.Generic;
 using Cheron.Games.Tile;
 using Cheron.Games.Tile.Memory;
-using Cheron.Games.Solitaire;
+using global::Cheron.Games.Card.Solitaire;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using static Cheron.Games.Solitaire.SolitaireLayout;
+using static global::Cheron.Games.Card.Solitaire.SolitaireLayout;
 
 namespace Cheron.Engine;
 
