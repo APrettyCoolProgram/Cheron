@@ -8,14 +8,21 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using static Cheron.Games.Memory.MemoryAudioConstants;
-using static Cheron.Games.Memory.MemoryTextConstants;
+using static Cheron.Games.Tile.Memory.TileAudioConstants;
+using static Cheron.Games.Tile.Memory.TileTextConstants;
 
-namespace Cheron.Games.Memory;
+namespace Cheron.Games.Tile.Memory;
 
-/// <summary>Implements the Memory tile-matching game module, including toolbar, help, and sound options.</summary>
-internal sealed class MemoryGame : IGameModule
+/// <summary>Implements Tile game variants, including the Memory tile-matching variant.</summary>
+internal sealed class TileGame : IGameModule
 {
+    private readonly TileVariant _variant;
+
+    public TileGame(TileVariant variant = TileVariant.Memory)
+    {
+        _variant = variant;
+    }
+
     /// <summary>The number of seconds a mismatched pair remains face up before flipping back down.</summary>
     private const double MismatchRevealSeconds = 0.75;
 
@@ -23,13 +30,13 @@ internal sealed class MemoryGame : IGameModule
     private static readonly int[] SelectableGridSizes = [4, 6, 8, 10, 12];
 
     /// <summary>The board tiles in row-major order.</summary>
-    private readonly List<MemoryTile> _tiles = new();
+    private readonly List<TileBoardTile> _tiles = new();
 
     /// <summary>The number of tile columns on the current board.</summary>
-    private int _columns = MemoryLayout.DefaultGridSize;
+    private int _columns = TileLayout.DefaultGridSize;
 
     /// <summary>The number of tile rows on the current board.</summary>
-    private int _rows = MemoryLayout.DefaultGridSize;
+    private int _rows = TileLayout.DefaultGridSize;
 
     /// <summary>The host-owned graphics device, cached to rebuild artwork when the board size changes.</summary>
     private GraphicsDevice _graphicsDevice = null!;
@@ -44,7 +51,7 @@ internal sealed class MemoryGame : IGameModule
     private Texture2D _glyphTexture = null!;
 
     /// <summary>The module-owned cached textures used for the table, tiles, and toolbar chrome.</summary>
-    private MemoryArtwork _artwork = null!;
+    private TileArtwork _artwork = null!;
 
     /// <summary>The host-computed drawing transform and mouse-coordinate mapping.</summary>
     private GameViewport _viewport;
@@ -80,7 +87,7 @@ internal sealed class MemoryGame : IGameModule
     private bool _sizePromptOpen;
 
     /// <summary>The index into <see cref="SelectableGridSizes"/> currently highlighted in the size picker prompt.</summary>
-    private int _sizePromptIndex = Array.IndexOf(SelectableGridSizes, MemoryLayout.DefaultGridSize);
+    private int _sizePromptIndex = Array.IndexOf(SelectableGridSizes, TileLayout.DefaultGridSize);
 
     /// <summary>Whether every pair on the board has been matched.</summary>
     private bool _hasWon;
@@ -100,17 +107,24 @@ internal sealed class MemoryGame : IGameModule
     /// <summary>Whether the audio device could not be initialized or used.</summary>
     private bool _audioUnavailable;
 
-    /// <summary>The module-owned sounds, ordered by <see cref="MemoryFeedbackSound"/>.</summary>
+    /// <summary>The module-owned sounds, ordered by <see cref="TileFeedbackSound"/>.</summary>
     private readonly List<SoundEffect> _feedbackSounds = new();
 
     /// <summary>The module-owned playback instances, stopped immediately when muted.</summary>
     private readonly List<SoundEffectInstance> _feedbackVoices = new();
 
-    /// <summary>Gets the Memory window title.</summary>
-    public string Title => TitleLabel;
+    /// <summary>Gets the Tile window title including the active variant.</summary>
+    public string Title => $"{TitleLabel} - {GetVariantLabel(_variant)}";
 
     /// <summary>Gets the logical board size for the current tile dimensions.</summary>
-    public Point PreferredWindowSize => new(MemoryLayout.GetBoardWidth(_columns, _rows), MemoryLayout.GetBoardHeight(_columns, _rows));
+    public Point PreferredWindowSize => new(TileLayout.GetBoardWidth(_columns, _rows), TileLayout.GetBoardHeight(_columns, _rows));
+
+    private static string GetVariantLabel(TileVariant variant) =>
+        variant switch
+        {
+            TileVariant.Memory => "MEMORY",
+            _ => variant.ToString().ToUpperInvariant()
+        };
 
     /// <summary>Deals a shuffled board before graphics resources are loaded.</summary>
     public void Initialize()
@@ -142,12 +156,12 @@ internal sealed class MemoryGame : IGameModule
     private void RebuildArtwork()
     {
         _artwork?.Dispose();
-        var tileSize = MemoryLayout.GetTileSize(_columns, _rows);
-        var cornerRadius = Math.Max(6, Math.Min(MemoryLayout.CornerRadius, tileSize / 4));
+        var tileSize = TileLayout.GetTileSize(_columns, _rows);
+        var cornerRadius = Math.Max(6, Math.Min(TileLayout.CornerRadius, tileSize / 4));
 
-        _artwork = new MemoryArtwork(_graphicsDevice, MemoryLayout.GetBoardWidth(_columns, _rows), MemoryLayout.GetBoardHeight(_columns, _rows),
-            tileSize, cornerRadius, MemoryColors.GetPairColors(_columns * _rows / 2),
-            MemoryLayout.ButtonWidth, MemoryLayout.ButtonHeight, MemoryLayout.ButtonCornerRadius,
+        _artwork = new TileArtwork(_graphicsDevice, TileLayout.GetBoardWidth(_columns, _rows), TileLayout.GetBoardHeight(_columns, _rows),
+            tileSize, cornerRadius, TileColors.GetPairColors(_columns * _rows / 2),
+            TileLayout.ButtonWidth, TileLayout.ButtonHeight, TileLayout.ButtonCornerRadius,
             560, 420);
     }
 
@@ -214,10 +228,10 @@ internal sealed class MemoryGame : IGameModule
     /// <param name="graphicsDevice">The host-owned graphics device, which the module must not dispose.</param>
     public void Draw(GameTime gameTime, GraphicsDevice graphicsDevice)
     {
-        graphicsDevice.Clear(MemoryColors.TableBackground);
+        graphicsDevice.Clear(TileColors.TableBackground);
 
         _spriteBatch.Begin(transformMatrix: _viewport.Transform, samplerState: SamplerState.PointClamp);
-        _spriteBatch.Draw(_artwork.Background, new Rectangle(0, 0, MemoryLayout.GetBoardWidth(_columns, _rows), MemoryLayout.GetBoardHeight(_columns, _rows)), Color.White);
+        _spriteBatch.Draw(_artwork.Background, new Rectangle(0, 0, TileLayout.GetBoardWidth(_columns, _rows), TileLayout.GetBoardHeight(_columns, _rows)), Color.White);
 
         for (var index = 0; index < _tiles.Count; index++)
         {
@@ -274,7 +288,7 @@ internal sealed class MemoryGame : IGameModule
 
         foreach (var colorId in colorIds)
         {
-            _tiles.Add(new MemoryTile(colorId));
+            _tiles.Add(new TileBoardTile(colorId));
         }
 
         _focusedIndex = 0;
@@ -368,15 +382,15 @@ internal sealed class MemoryGame : IGameModule
             return;
         }
 
-        if (MemoryLayout.GetNewGameButtonBounds(_columns, _rows).Contains(_pointerPosition))
+        if (TileLayout.GetNewGameButtonBounds(_columns, _rows).Contains(_pointerPosition))
         {
             OpenSizePrompt();
         }
-        else if (MemoryLayout.GetHelpButtonBounds(_columns, _rows).Contains(_pointerPosition))
+        else if (TileLayout.GetHelpButtonBounds(_columns, _rows).Contains(_pointerPosition))
         {
             _helpOpen = true;
         }
-        else if (MemoryLayout.GetSoundButtonBounds(_columns, _rows).Contains(_pointerPosition) && !_audioUnavailable)
+        else if (TileLayout.GetSoundButtonBounds(_columns, _rows).Contains(_pointerPosition) && !_audioUnavailable)
         {
             ToggleSound();
         }
@@ -393,18 +407,18 @@ internal sealed class MemoryGame : IGameModule
 
         for (var optionIndex = 0; optionIndex < SelectableGridSizes.Length; optionIndex++)
         {
-            if (MemoryLayout.GetSizePromptOptionBounds(_columns, _rows, optionIndex).Contains(_pointerPosition))
+            if (TileLayout.GetSizePromptOptionBounds(_columns, _rows, optionIndex).Contains(_pointerPosition))
             {
                 _sizePromptIndex = optionIndex;
                 return;
             }
         }
 
-        if (MemoryLayout.GetSizePromptConfirmBounds(_columns, _rows).Contains(_pointerPosition))
+        if (TileLayout.GetSizePromptConfirmBounds(_columns, _rows).Contains(_pointerPosition))
         {
             ConfirmSizePromptSelection();
         }
-        else if (MemoryLayout.GetSizePromptCancelBounds(_columns, _rows).Contains(_pointerPosition))
+        else if (TileLayout.GetSizePromptCancelBounds(_columns, _rows).Contains(_pointerPosition))
         {
             CancelSizePrompt();
         }
@@ -522,7 +536,7 @@ internal sealed class MemoryGame : IGameModule
         }
 
         tile.IsFaceUp = true;
-        PlayFeedbackSound(MemoryFeedbackSound.Flip);
+        PlayFeedbackSound(TileFeedbackSound.Flip);
 
         if (_firstPickIndex < 0)
         {
@@ -542,12 +556,12 @@ internal sealed class MemoryGame : IGameModule
                 _tiles[_secondPickIndex].IsMatched = true;
                 _firstPickIndex = -1;
                 _secondPickIndex = -1;
-                PlayFeedbackSound(MemoryFeedbackSound.Match);
+                PlayFeedbackSound(TileFeedbackSound.Match);
                 CheckForWin();
             }
             else
             {
-                PlayFeedbackSound(MemoryFeedbackSound.Mismatch);
+                PlayFeedbackSound(TileFeedbackSound.Mismatch);
             }
         }
     }
@@ -585,7 +599,7 @@ internal sealed class MemoryGame : IGameModule
         if (!_winFeedbackPlayed)
         {
             _winFeedbackPlayed = true;
-            PlayFeedbackSound(MemoryFeedbackSound.Win);
+            PlayFeedbackSound(TileFeedbackSound.Win);
         }
     }
 
@@ -595,7 +609,7 @@ internal sealed class MemoryGame : IGameModule
     {
         for (var index = 0; index < _tiles.Count; index++)
         {
-            var bounds = MemoryLayout.GetTileBounds(index % _columns, index / _columns, _columns, _rows);
+            var bounds = TileLayout.GetTileBounds(index % _columns, index / _columns, _columns, _rows);
             if (bounds.Contains(logicalPosition))
             {
                 return index;
@@ -610,9 +624,9 @@ internal sealed class MemoryGame : IGameModule
     private void DrawTile(int index)
     {
         var tile = _tiles[index];
-        var bounds = MemoryLayout.GetTileBounds(index % _columns, index / _columns, _columns, _rows);
+        var bounds = TileLayout.GetTileBounds(index % _columns, index / _columns, _columns, _rows);
 
-        var shadowBounds = new Rectangle(bounds.X - 8 + MemoryLayout.ShadowOffset, bounds.Y - 8 + MemoryLayout.ShadowOffset,
+        var shadowBounds = new Rectangle(bounds.X - 8 + TileLayout.ShadowOffset, bounds.Y - 8 + TileLayout.ShadowOffset,
             bounds.Width + 16, bounds.Height + 16);
         _spriteBatch.Draw(_artwork.TileShadow, shadowBounds, Color.White);
 
@@ -647,12 +661,12 @@ internal sealed class MemoryGame : IGameModule
     /// <summary>Draws the top toolbar strip with left and right actions, centered title, and centered statistics.</summary>
     private void DrawToolbar()
     {
-        var toolbarBounds = MemoryLayout.GetToolbarBounds(_columns, _rows);
+        var toolbarBounds = TileLayout.GetToolbarBounds(_columns, _rows);
         Fill(toolbarBounds, new Color(30, 20, 32));
         Fill(new Rectangle(toolbarBounds.X, toolbarBounds.Bottom - 2, toolbarBounds.Width, 2), new Color(176, 96, 150));
 
-        var newGameBounds = MemoryLayout.GetNewGameButtonBounds(_columns, _rows);
-        var soundBounds = MemoryLayout.GetSoundButtonBounds(_columns, _rows);
+        var newGameBounds = TileLayout.GetNewGameButtonBounds(_columns, _rows);
+        var soundBounds = TileLayout.GetSoundButtonBounds(_columns, _rows);
         DrawTopBarActionLabel(newGameBounds, NewGameLabel, "N", true);
         DrawTopBarSoundActionLabel(soundBounds, "M", !_audioUnavailable);
 
@@ -678,7 +692,7 @@ internal sealed class MemoryGame : IGameModule
         const int labelScale = 2;
         const int shortcutScale = 1;
         const int lineGap = 5;
-        var stripBounds = MemoryLayout.GetToolbarBounds(_columns, _rows);
+        var stripBounds = TileLayout.GetToolbarBounds(_columns, _rows);
         var blockHeight = 7 * labelScale + lineGap + 7 * shortcutScale;
         var firstLineY = stripBounds.Y + (stripBounds.Height - blockHeight) / 2;
         var secondLineY = firstLineY + 7 * labelScale + lineGap;
@@ -700,7 +714,7 @@ internal sealed class MemoryGame : IGameModule
         const int labelScale = 2;
         const int shortcutScale = 1;
         const int lineGap = 5;
-        var stripBounds = MemoryLayout.GetToolbarBounds(_columns, _rows);
+        var stripBounds = TileLayout.GetToolbarBounds(_columns, _rows);
         var blockHeight = 7 * labelScale + lineGap + 7 * shortcutScale;
         var firstLineY = stripBounds.Y + (stripBounds.Height - blockHeight) / 2;
         var secondLineY = firstLineY + 7 * labelScale + lineGap;
@@ -739,7 +753,7 @@ internal sealed class MemoryGame : IGameModule
         const int labelScale = 2;
         const int shortcutScale = 1;
         const int lineGap = 5;
-        var footerBounds = MemoryLayout.GetFooterBounds(_columns, _rows);
+        var footerBounds = TileLayout.GetFooterBounds(_columns, _rows);
         var blockHeight = 7 * labelScale + lineGap + 7 * shortcutScale;
         var firstLineY = footerBounds.Y + (footerBounds.Height - blockHeight) / 2;
         var secondLineY = firstLineY + 7 * labelScale + lineGap;
@@ -755,7 +769,7 @@ internal sealed class MemoryGame : IGameModule
     /// <summary>Draws the bottom footer strip with centered movement hint and right-aligned Help action.</summary>
     private void DrawFooter()
     {
-        var footerBounds = MemoryLayout.GetFooterBounds(_columns, _rows);
+        var footerBounds = TileLayout.GetFooterBounds(_columns, _rows);
         Fill(footerBounds, new Color(30, 20, 32));
         Fill(new Rectangle(footerBounds.X, footerBounds.Y, footerBounds.Width, 2), new Color(176, 96, 150));
 
@@ -764,7 +778,7 @@ internal sealed class MemoryGame : IGameModule
         var textY = footerBounds.Y + (footerBounds.Height - 7 * scale) / 2;
         DrawText(FooterFlipInstructionLabel, centeredInstructionX, textY, scale, new Color(200, 180, 210));
 
-        DrawFooterActionLabel(MemoryLayout.GetHelpButtonBounds(_columns, _rows), HelpLabel, "F1");
+        DrawFooterActionLabel(TileLayout.GetHelpButtonBounds(_columns, _rows), HelpLabel, "F1");
     }
 
     /// <summary>Draws the semi-transparent scrim and centered panel shared by the help and win overlays.</summary>
@@ -773,9 +787,9 @@ internal sealed class MemoryGame : IGameModule
     /// <param name="footerLine">The instruction line drawn at the bottom of the panel.</param>
     private void DrawOverlay(string headline, IReadOnlyList<string> bodyLines, string footerLine)
     {
-        Fill(new Rectangle(0, 0, MemoryLayout.GetBoardWidth(_columns, _rows), MemoryLayout.GetBoardHeight(_columns, _rows)), new Color(0, 0, 0, 150));
+        Fill(new Rectangle(0, 0, TileLayout.GetBoardWidth(_columns, _rows), TileLayout.GetBoardHeight(_columns, _rows)), new Color(0, 0, 0, 150));
 
-        var panelBounds = MemoryLayout.GetSizePromptPanelBounds(_columns, _rows);
+        var panelBounds = TileLayout.GetSizePromptPanelBounds(_columns, _rows);
         _spriteBatch.Draw(_artwork.Banner, panelBounds, Color.White);
 
         const int headlineScale = 3;
@@ -821,9 +835,9 @@ internal sealed class MemoryGame : IGameModule
     /// <summary>Draws the board-size picker prompt, highlighting the currently selected size.</summary>
     private void DrawSizePromptOverlay()
     {
-        Fill(new Rectangle(0, 0, MemoryLayout.GetBoardWidth(_columns, _rows), MemoryLayout.GetBoardHeight(_columns, _rows)), new Color(0, 0, 0, 150));
+        Fill(new Rectangle(0, 0, TileLayout.GetBoardWidth(_columns, _rows), TileLayout.GetBoardHeight(_columns, _rows)), new Color(0, 0, 0, 150));
 
-        var panelBounds = MemoryLayout.GetOverlayPanelBounds(_columns, _rows);
+        var panelBounds = TileLayout.GetOverlayPanelBounds(_columns, _rows);
         _spriteBatch.Draw(_artwork.Banner, panelBounds, Color.White);
 
         const int headlineScale = 3;
@@ -833,7 +847,7 @@ internal sealed class MemoryGame : IGameModule
 
         for (var optionIndex = 0; optionIndex < SelectableGridSizes.Length; optionIndex++)
         {
-            var optionBounds = MemoryLayout.GetSizePromptOptionBounds(_columns, _rows, optionIndex);
+            var optionBounds = TileLayout.GetSizePromptOptionBounds(_columns, _rows, optionIndex);
             var isSelected = optionIndex == _sizePromptIndex;
             var isHovered = optionBounds.Contains(_pointerPosition);
             Fill(optionBounds, isSelected ? new Color(176, 96, 150) : isHovered ? new Color(70, 50, 72) : new Color(50, 36, 54));
@@ -845,13 +859,13 @@ internal sealed class MemoryGame : IGameModule
             DrawText(label, labelX, labelY, 2, new Color(240, 230, 240));
         }
 
-        var confirmBounds = MemoryLayout.GetSizePromptConfirmBounds(_columns, _rows);
+        var confirmBounds = TileLayout.GetSizePromptConfirmBounds(_columns, _rows);
         Fill(confirmBounds, confirmBounds.Contains(_pointerPosition) ? new Color(90, 150, 96) : new Color(60, 110, 66));
         var confirmLabelX = confirmBounds.X + (confirmBounds.Width - SizePromptConfirmLabel.Length * 6) / 2;
         var confirmLabelY = confirmBounds.Y + (confirmBounds.Height - 7) / 2;
         DrawText(SizePromptConfirmLabel, confirmLabelX, confirmLabelY, 1, new Color(240, 230, 240));
 
-        var cancelBounds = MemoryLayout.GetSizePromptCancelBounds(_columns, _rows);
+        var cancelBounds = TileLayout.GetSizePromptCancelBounds(_columns, _rows);
         Fill(cancelBounds, cancelBounds.Contains(_pointerPosition) ? new Color(150, 90, 96) : new Color(110, 60, 66));
         var cancelLabelX = cancelBounds.X + (cancelBounds.Width - SizePromptCancelLabel.Length * 6) / 2;
         var cancelLabelY = cancelBounds.Y + (cancelBounds.Height - 7) / 2;
@@ -917,7 +931,7 @@ internal sealed class MemoryGame : IGameModule
 
     /// <summary>Plays one cached cue, restarting it if it is already playing.</summary>
     /// <param name="sound">The feedback sound to play.</param>
-    private void PlayFeedbackSound(MemoryFeedbackSound sound)
+    private void PlayFeedbackSound(TileFeedbackSound sound)
     {
         if (!_soundEnabled || _audioUnavailable || _feedbackVoices.Count == 0)
         {
@@ -967,7 +981,7 @@ internal sealed class MemoryGame : IGameModule
     internal int TestTileCount => _tiles.Count;
 
     /// <summary>Gets the tile at the given index for tests.</summary>
-    internal MemoryTile TestGetTile(int index) => _tiles[index];
+    internal TileBoardTile TestGetTile(int index) => _tiles[index];
 
     /// <summary>Gets the keyboard-focused tile index for tests.</summary>
     internal int TestGetFocusedIndex() => _focusedIndex;

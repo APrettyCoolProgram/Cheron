@@ -1,13 +1,13 @@
 // 261030_code
 // 261030_documentation
 
-using Cheron.Games.Memory;
+using Cheron.Games.Tile.Memory;
 using Microsoft.Xna.Framework.Input;
 using Xunit;
 
 namespace Cheron.Tests;
 
-public sealed class MemoryGameTests
+public sealed class TileGameTests
 {
     [Fact]
     public void StartNewGame_DealsShuffledBoard_With8ColorPairs()
@@ -227,7 +227,7 @@ public sealed class MemoryGameTests
     [Fact]
     public void HandleGlobalShortcuts_M_TogglesSound()
     {
-        var game = new MemoryGame();
+        var game = new TileGame();
         game.TestResetPreviousKeyboardState();
 
         var handled = game.TestHandleGlobalShortcuts(new KeyboardState(Keys.M));
@@ -239,7 +239,7 @@ public sealed class MemoryGameTests
     [Fact]
     public void HandleGlobalShortcuts_F1_TogglesHelpOverlay()
     {
-        var game = new MemoryGame();
+        var game = new TileGame();
         game.TestResetPreviousKeyboardState();
 
         var handled = game.TestHandleGlobalShortcuts(new KeyboardState(Keys.F1));
@@ -252,7 +252,7 @@ public sealed class MemoryGameTests
     public void GetTileIndexAt_PointWithinTileBounds_ReturnsMatchingIndex()
     {
         var game = CreateDealtGame();
-        var bounds = MemoryLayout.GetTileBounds(0, 0, game.TestGetColumns(), game.TestGetRows());
+        var bounds = TileLayout.GetTileBounds(0, 0, game.TestGetColumns(), game.TestGetRows());
 
         var index = game.TestGetTileIndexAt(bounds.Center);
 
@@ -269,14 +269,14 @@ public sealed class MemoryGameTests
         Assert.Equal(-1, index);
     }
 
-    private static MemoryGame CreateDealtGame()
+    private static TileGame CreateDealtGame()
     {
-        var game = new MemoryGame();
+        var game = new TileGame();
         game.TestStartNewGame();
         return game;
     }
 
-    private static (int FirstIndex, int SecondIndex) FindMatchingPair(MemoryGame game)
+    private static (int FirstIndex, int SecondIndex) FindMatchingPair(TileGame game)
     {
         for (var i = 0; i < game.TestTileCount; i++)
         {
@@ -297,7 +297,7 @@ public sealed class MemoryGameTests
         throw new InvalidOperationException("No matching pair found on the board.");
     }
 
-    private static (int FirstIndex, int SecondIndex) FindMismatchedPair(MemoryGame game)
+    private static (int FirstIndex, int SecondIndex) FindMismatchedPair(TileGame game)
     {
         for (var i = 0; i < game.TestTileCount; i++)
         {

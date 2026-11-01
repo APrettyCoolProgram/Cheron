@@ -46,7 +46,7 @@
 
 ### CCG
 
-### Text Adventure
+### Text
 
 ### Platformer
 

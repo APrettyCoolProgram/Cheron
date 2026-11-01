@@ -4,10 +4,10 @@
 using System;
 using Microsoft.Xna.Framework;
 
-namespace Cheron.Games.Memory;
+namespace Cheron.Games.Tile.Memory;
 
 /// <summary>Defines the board, toolbar, footer, and tile geometry for the Memory game.</summary>
-internal static class MemoryLayout
+internal static class TileLayout
 {
     /// <summary>The smallest selectable board dimension (columns and rows).</summary>
     public const int MinGridSize = 4;

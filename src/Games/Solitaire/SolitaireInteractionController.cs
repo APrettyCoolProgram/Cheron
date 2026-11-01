@@ -328,10 +328,16 @@ internal sealed partial class SolitaireGame
 
             if (_game.IsNewGamePromptOpen)
             {
-                if (IsNewKey(keyboard, Keys.Left) || IsNewKey(keyboard, Keys.Right) ||
-                    IsNewKey(keyboard, Keys.Up) || IsNewKey(keyboard, Keys.Down))
+                if (IsNewKey(keyboard, Keys.Left) || IsNewKey(keyboard, Keys.Up))
                 {
-                    _game._newGamePromptVariant = _game._newGamePromptVariant.ToggleVariant();
+                    _game._newGamePromptVariant = _game._newGamePromptVariant.PreviousPromptVariant();
+
+                    return true;
+                }
+
+                if (IsNewKey(keyboard, Keys.Right) || IsNewKey(keyboard, Keys.Down))
+                {
+                    _game._newGamePromptVariant = _game._newGamePromptVariant.NextPromptVariant();
 
                     return true;
                 }
@@ -505,6 +511,7 @@ internal sealed partial class SolitaireGame
                 var panelBounds = GetNewGamePromptPanelBounds();
                 var klondikeBounds = GetNewGamePromptKlondikeBounds();
                 var freeCellBounds = GetNewGamePromptFreeCellBounds();
+                var spiderBounds = GetNewGamePromptSpiderBounds();
                 var confirmBounds = GetNewGamePromptConfirmBounds();
                 var cancelBounds = GetNewGamePromptCancelBounds();
 
@@ -515,6 +522,10 @@ internal sealed partial class SolitaireGame
                 else if (freeCellBounds.Contains(position) && freeCellBounds.Contains(_game._pressPosition))
                 {
                     _game.StartNewGameFromPromptVariant(SolitaireVariant.FreeCell);
+                }
+                else if (spiderBounds.Contains(position) && spiderBounds.Contains(_game._pressPosition))
+                {
+                    _game.StartNewGameFromPromptVariant(SolitaireVariant.Spider);
                 }
                 else if (confirmBounds.Contains(position) && confirmBounds.Contains(_game._pressPosition))
                 {

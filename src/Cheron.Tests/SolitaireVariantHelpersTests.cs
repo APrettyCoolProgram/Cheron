@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Cheron.Games.Solitaire;
 using Cheron.Games.Solitaire.FreeCell;
 using Cheron.Games.Solitaire.Klondike;
+using Cheron.Games.Solitaire.Spider;
 using Microsoft.Xna.Framework;
 using Xunit;
 
@@ -46,6 +47,48 @@ public sealed class SolitaireVariantHelpersTests
         Assert.Equal(new[] { 0, 0, 0, 0 }, GetPileCounts(foundations));
         Assert.Equal(24, deck.Count);
         Assert.Equal(stock.Count, deck.Count);
+    }
+
+    [Fact]
+    public void SpiderInitializeDeal_PopulatesTableauStockAndFoundations()
+    {
+        var deck = CreateOrderedDeck();
+        var tableau = new List<List<SolitaireCard>>();
+        var stock = new List<SolitaireCard>();
+        var foundations = new List<List<SolitaireCard>>();
+
+        SpiderGameplay.InitializeDeal(deck, tableau, stock, foundations);
+
+        Assert.Equal(10, tableau.Count);
+        Assert.Equal(new[] { 6, 6, 6, 6, 5, 5, 5, 5, 5, 5 }, GetPileCounts(tableau));
+        Assert.Equal(50, stock.Count);
+        Assert.Equal(4, foundations.Count);
+        Assert.Equal(new[] { 0, 0, 0, 0 }, GetPileCounts(foundations));
+        Assert.Equal(50, deck.Count);
+    }
+
+    [Fact]
+    public void SpiderMoveRules_RequiresSameSuitDescendingRun()
+    {
+        var destination = new List<SolitaireCard>
+        {
+            new(10, SolitaireSuit.Spades) { FaceUp = true }
+        };
+
+        var validRun = new List<SolitaireCard>
+        {
+            new(9, SolitaireSuit.Spades) { FaceUp = true },
+            new(8, SolitaireSuit.Spades) { FaceUp = true }
+        };
+
+        var invalidRun = new List<SolitaireCard>
+        {
+            new(9, SolitaireSuit.Spades) { FaceUp = true },
+            new(8, SolitaireSuit.Hearts) { FaceUp = true }
+        };
+
+        Assert.True(SpiderMoveRules.CanMoveToTableau(validRun, 0, destination));
+        Assert.False(SpiderMoveRules.CanMoveToTableau(invalidRun, 0, destination));
     }
 
     [Fact]

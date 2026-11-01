@@ -1,17 +1,17 @@
 // 261030_code
 // 261030_documentation
 
-using Cheron.Games.Memory;
+using Cheron.Games.Tile.Memory;
 using Xunit;
 
 namespace Cheron.Tests;
 
-public sealed class MemoryTileTests
+public sealed class TileBoardTileTests
 {
     [Fact]
     public void Constructor_SetsColorId_AndDefaultsFaceDownAndUnmatched()
     {
-        var tile = new MemoryTile(3);
+        var tile = new TileBoardTile(3);
 
         Assert.Equal(3, tile.ColorId);
         Assert.False(tile.IsFaceUp);
@@ -21,7 +21,7 @@ public sealed class MemoryTileTests
     [Fact]
     public void IsFaceUp_CanBeSetIndependently()
     {
-        var tile = new MemoryTile(0);
+        var tile = new TileBoardTile(0);
 
         tile.IsFaceUp = true;
 
@@ -32,7 +32,7 @@ public sealed class MemoryTileTests
     [Fact]
     public void IsMatched_CanBeSetIndependently()
     {
-        var tile = new MemoryTile(0);
+        var tile = new TileBoardTile(0);
 
         tile.IsMatched = true;
 

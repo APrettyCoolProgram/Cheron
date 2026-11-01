@@ -11,9 +11,30 @@ internal static class SolitaireVariantExtensions
     /// <returns><see langword="true"/> for FreeCell; otherwise, <see langword="false"/>.</returns>
     public static bool IsFreeCell(this SolitaireVariant variant) => variant == SolitaireVariant.FreeCell;
 
-    /// <summary>Toggles between the two supported Solitaire variants.</summary>
+    /// <summary>Returns whether the active variant is Spider.</summary>
+    /// <param name="variant">The active variant.</param>
+    /// <returns><see langword="true"/> for Spider; otherwise, <see langword="false"/>.</returns>
+    public static bool IsSpider(this SolitaireVariant variant) => variant == SolitaireVariant.Spider;
+
+    /// <summary>Returns the next variant in prompt-order cycling.</summary>
     /// <param name="variant">The current variant.</param>
-    /// <returns>The alternate variant.</returns>
-    public static SolitaireVariant ToggleVariant(this SolitaireVariant variant) =>
-        variant == SolitaireVariant.Klondike ? SolitaireVariant.FreeCell : SolitaireVariant.Klondike;
+    /// <returns>The next variant option.</returns>
+    public static SolitaireVariant NextPromptVariant(this SolitaireVariant variant) =>
+        variant switch
+        {
+            SolitaireVariant.Klondike => SolitaireVariant.FreeCell,
+            SolitaireVariant.FreeCell => SolitaireVariant.Spider,
+            _ => SolitaireVariant.Klondike
+        };
+
+    /// <summary>Returns the previous variant in prompt-order cycling.</summary>
+    /// <param name="variant">The current variant.</param>
+    /// <returns>The previous variant option.</returns>
+    public static SolitaireVariant PreviousPromptVariant(this SolitaireVariant variant) =>
+        variant switch
+        {
+            SolitaireVariant.Klondike => SolitaireVariant.Spider,
+            SolitaireVariant.FreeCell => SolitaireVariant.Klondike,
+            _ => SolitaireVariant.FreeCell
+        };
 }

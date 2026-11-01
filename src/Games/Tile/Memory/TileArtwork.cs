@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Cheron.Games.Memory;
+namespace Cheron.Games.Tile.Memory;
 
-/// <summary>Creates and owns the textures used by Memory's modern rounded-tile theme.</summary>
+/// <summary>Creates and owns the textures used by Tile's modern rounded-tile theme.</summary>
 /// <remarks>Mirrors the rounded-panel, soft-shadow approach used by <c>SolitaireArtwork</c> for a consistent look.</remarks>
-internal sealed class MemoryArtwork : IDisposable
+internal sealed class TileArtwork : IDisposable
 {
     private readonly List<Texture2D> _textures = [];
 
@@ -26,7 +26,7 @@ internal sealed class MemoryArtwork : IDisposable
     /// <param name="buttonCornerRadius">The corner radius, in pixels, applied to buttons and overlay panels.</param>
     /// <param name="panelWidth">The width, in pixels, of the centered overlay panel texture.</param>
     /// <param name="panelHeight">The height, in pixels, of the centered overlay panel texture.</param>
-    public MemoryArtwork(GraphicsDevice graphicsDevice, int boardWidth, int boardHeight, int tileSize, int cornerRadius,
+    public TileArtwork(GraphicsDevice graphicsDevice, int boardWidth, int boardHeight, int tileSize, int cornerRadius,
         IReadOnlyList<Color> frontColors, int buttonWidth, int buttonHeight, int buttonCornerRadius,
         int panelWidth, int panelHeight)
     {
@@ -35,7 +35,7 @@ internal sealed class MemoryArtwork : IDisposable
             var distance = Vector2.Distance(new Vector2(x, y), new Vector2(boardWidth / 2f, boardHeight * 0.3f)) /
                 (boardWidth + boardHeight);
 
-            return Color.Lerp(new Color(44, 30, 46), MemoryColors.TableBackground, Math.Clamp(distance * 1.6f, 0, 1));
+            return Color.Lerp(new Color(44, 30, 46), TileColors.TableBackground, Math.Clamp(distance * 1.6f, 0, 1));
         });
 
         TileShadow = CreateTexture(graphicsDevice, tileSize + 16, tileSize + 16, (x, y) =>

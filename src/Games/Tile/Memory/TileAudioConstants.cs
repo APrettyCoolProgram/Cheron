@@ -1,10 +1,10 @@
 // 261030_code
 // 261030_documentation
 
-namespace Cheron.Games.Memory;
+namespace Cheron.Games.Tile.Memory;
 
 /// <summary>Centralizes fixed audio synthesis/playback values used by Memory feedback sounds.</summary>
-internal static class MemoryAudioConstants
+internal static class TileAudioConstants
 {
     /// <summary>The sample rate for synthesized feedback sounds, in hertz.</summary>
     internal const int FeedbackSoundSampleRate = 22050;

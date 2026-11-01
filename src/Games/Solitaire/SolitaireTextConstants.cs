@@ -57,6 +57,9 @@ internal static class SolitaireTextConstants
     /// <summary>The new-game prompt variant option label for FreeCell.</summary>
     internal const string NewGameVariantFreeCellLabel = "FREECELL";
 
+    /// <summary>The new-game prompt variant option label for Spider.</summary>
+    internal const string NewGameVariantSpiderLabel = "SPIDER";
+
     /// <summary>The new-game variant prompt confirm label.</summary>
     internal const string NewGameVariantConfirmLabel = "ENTER  START";
 
@@ -70,7 +73,7 @@ internal static class SolitaireTextConstants
     internal const string SmokePassStep1 = "1  OPEN NEW GAME PROMPT  (N OR NEW GAME BUTTON)";
 
     /// <summary>The manual smoke-pass overlay step 2.</summary>
-    internal const string SmokePassStep2 = "2  VERIFY KLONDIKE AND FREECELL OPTIONS RENDER";
+    internal const string SmokePassStep2 = "2  VERIFY KLONDIKE FREECELL AND SPIDER OPTIONS RENDER";
 
     /// <summary>The manual smoke-pass overlay step 3.</summary>
     internal const string SmokePassStep3 = "3  KEYBOARD  ARROWS TOGGLE   ENTER START   ESC CANCEL";
@@ -128,6 +131,9 @@ internal static class SolitaireTextConstants
     /// <summary>The Help overlay subtitle for FreeCell instructions.</summary>
     internal const string HelpOverlayFreeCellSubtitle = "FREECELL";
 
+    /// <summary>The Help overlay subtitle for Spider instructions.</summary>
+    internal const string HelpOverlaySpiderSubtitle = "SPIDER";
+
     /// <summary>The close/scroll hint shown in the Help overlay footer.</summary>
     internal const string HelpOverlayFooterHint = "ESC CLOSE   UP DOWN OR WHEEL SCROLL";
 
@@ -178,6 +184,30 @@ internal static class SolitaireTextConstants
 
     /// <summary>FreeCell Help line 8.</summary>
     internal const string HelpFreeCellLine8 = "PLAN AHEAD  BLOCKED LOW CARDS CAN STOP PROGRESS";
+
+    /// <summary>Spider Help line 1.</summary>
+    internal const string HelpSpiderLine1 = "GOAL  BUILD COMPLETE KING-TO-ACE SUIT RUNS";
+
+    /// <summary>Spider Help line 2.</summary>
+    internal const string HelpSpiderLine2 = "TEN TABLEAU COLUMNS START WITH FACE-DOWN STACKS";
+
+    /// <summary>Spider Help line 3.</summary>
+    internal const string HelpSpiderLine3 = "ONLY FACE-UP SAME-SUIT DESCENDING RUNS MOVE AS GROUPS";
+
+    /// <summary>Spider Help line 4.</summary>
+    internal const string HelpSpiderLine4 = "SINGLE CARDS MAY MOVE ONTO A CARD ONE RANK HIGHER";
+
+    /// <summary>Spider Help line 5.</summary>
+    internal const string HelpSpiderLine5 = "ANY CARD OR RUN MAY MOVE TO AN EMPTY COLUMN";
+
+    /// <summary>Spider Help line 6.</summary>
+    internal const string HelpSpiderLine6 = "WHEN A COLUMN'S TOP FACE-DOWN CARD IS EXPOSED IT FLIPS";
+
+    /// <summary>Spider Help line 7.</summary>
+    internal const string HelpSpiderLine7 = "COMPLETE SUIT RUNS CLEAR TO FOUNDATIONS AUTOMATICALLY";
+
+    /// <summary>Spider Help line 8.</summary>
+    internal const string HelpSpiderLine8 = "PLAN SPACES CAREFULLY  EMPTY COLUMNS ENABLE BIG MOVES";
 
     /// <summary>The footer-adjacent options action label.</summary>
     internal const string FooterOptionsLabel = "OPTIONS";

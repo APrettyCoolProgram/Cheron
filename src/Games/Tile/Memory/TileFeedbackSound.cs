@@ -1,10 +1,10 @@
 // 261030_code
 // 261030_documentation
 
-namespace Cheron.Games.Memory;
+namespace Cheron.Games.Tile.Memory;
 
 /// <summary>Identifies the cached sound associated with a player-visible Memory outcome.</summary>
-internal enum MemoryFeedbackSound
+internal enum TileFeedbackSound
 {
     /// <summary>A soft tone played when a tile is flipped face up.</summary>
     Flip,

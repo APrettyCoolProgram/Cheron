@@ -1,13 +1,13 @@
 // 261030_code
 // 261030_documentation
 
-namespace Cheron.Games.Memory;
+namespace Cheron.Games.Tile.Memory;
 
 /// <summary>Centralizes fixed label and help text used by the Memory toolbar, footer, and overlays.</summary>
-internal static class MemoryTextConstants
+internal static class TileTextConstants
 {
     /// <summary>The toolbar title label.</summary>
-    public const string TitleLabel = "MEMORY";
+    public const string TitleLabel = "TILE";
 
     /// <summary>The New Game toolbar button label.</summary>
     public const string NewGameLabel = "NEW GAME";

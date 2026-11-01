@@ -7,5 +7,6 @@ namespace Cheron.Games.Solitaire;
 internal enum SolitaireVariant
 {
     Klondike,
-    FreeCell
+    FreeCell,
+    Spider
 }

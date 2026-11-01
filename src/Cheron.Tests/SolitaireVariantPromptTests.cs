@@ -84,6 +84,21 @@ public sealed class SolitaireVariantPromptTests
     }
 
     [Fact]
+    public void PromptArrowKey_CyclesToSpiderVariant()
+    {
+        var game = new SolitaireGame();
+
+        game.TestSetPromptVariant(SolitaireVariant.FreeCell);
+        game.TestSetNewGamePromptOpen(true);
+        game.TestResetPreviousKeyboardState();
+
+        var handled = game.TestHandleAccessibilityKeys(Press(Keys.Right));
+
+        Assert.True(handled);
+        Assert.Equal(SolitaireVariant.Spider, game.TestGetNewGamePromptVariant());
+    }
+
+    [Fact]
     public void PromptEscape_ClosesPrompt_WithoutChangingVariant()
     {
         var game = new SolitaireGame();
@@ -134,6 +149,22 @@ public sealed class SolitaireVariantPromptTests
     }
 
     [Fact]
+    public void PromptPointerClickOnSpider_StartsSpiderGame()
+    {
+        var game = new SolitaireGame();
+
+        game.TestSetVariant(SolitaireVariant.Klondike);
+        game.TestOpenNewGamePrompt();
+
+        var clickPoint = SolitaireLayout.GetNewGamePromptSpiderBounds().Center;
+        game.TestUpdatePointer(clickPoint, true, TimeSpan.Zero);
+        game.TestUpdatePointer(clickPoint, false, TimeSpan.Zero);
+
+        Assert.False(game.TestIsNewGamePromptOpen());
+        Assert.Equal(SolitaireVariant.Spider, game.TestGetVariant());
+    }
+
+    [Fact]
     public void PromptPointerClickCancel_ClosesPromptWithoutChangingVariant()
     {
         var game = new SolitaireGame();
@@ -177,6 +208,21 @@ public sealed class SolitaireVariantPromptTests
         Assert.Equal(0, game.TestGetStockCount());
         Assert.Equal(new[] { 0, 0, 0, 0 }, game.TestGetFoundationCounts());
         Assert.Equal(new[] { 0, 0, 0, 0 }, game.TestGetFreeCellCounts());
+    }
+
+    [Fact]
+    public void StartNewGame_Spider_DealsExpectedLayout()
+    {
+        var game = new SolitaireGame();
+
+        game.TestSetVariant(SolitaireVariant.Spider);
+        game.TestStartNewGame();
+
+        Assert.Equal(new[] { 6, 6, 6, 6, 5, 5, 5, 5, 5, 5 }, game.TestGetTableauCounts());
+        Assert.Equal(new[] { 5, 5, 5, 5, 4, 4, 4, 4, 4, 4 }, game.TestGetTableauFaceDownCounts());
+        Assert.Equal(50, game.TestGetStockCount());
+        Assert.Equal(new[] { 0, 0, 0, 0 }, game.TestGetFoundationCounts());
+        Assert.Empty(game.TestGetFreeCellCounts());
     }
 
     [Fact]
@@ -622,5 +668,10 @@ public sealed class SolitaireVariantPromptTests
         game.TestOpenHelpOverlay();
         Assert.Equal("FREECELL", game.TestGetHelpSubtitle());
         Assert.Contains("USE FREECELLS TO HOLD ONE CARD EACH", game.TestGetHelpLines());
+
+        game.TestSetVariant(SolitaireVariant.Spider);
+        game.TestOpenHelpOverlay();
+        Assert.Equal("SPIDER", game.TestGetHelpSubtitle());
+        Assert.Contains("ONLY FACE-UP SAME-SUIT DESCENDING RUNS MOVE AS GROUPS", game.TestGetHelpLines());
     }
 }

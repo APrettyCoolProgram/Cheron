@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="SpiderGame.cs" />
+    <Compile Include="SpiderLayout.cs" />
+    <Compile Include="SpiderMoveRules.cs" />
+    <Compile Include="SpiderBoardRenderer.cs" />
+    <Compile Include="SpiderVariantBehavior.cs" />
+    <Compile Include="GameHost.cs" />
+    <Compile Include="SolitaireVariant.cs" />
+    <Compile Include="SolitaireVariantRegistry.cs" />
+  </ItemGroup>
+
+</Project>

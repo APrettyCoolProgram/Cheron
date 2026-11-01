@@ -4,10 +4,10 @@
 using System;
 using Microsoft.Xna.Framework;
 
-namespace Cheron.Games.Memory;
+namespace Cheron.Games.Tile.Memory;
 
-/// <summary>Defines the color palette used to build Memory's tile artwork.</summary>
-internal static class MemoryColors
+/// <summary>Defines the color palette used to build Memory's artwork.</summary>
+internal static class TileColors
 {
     /// <summary>The background color used while clearing the device before drawing the table texture.</summary>
     public static readonly Color TableBackground = new(30, 20, 32);

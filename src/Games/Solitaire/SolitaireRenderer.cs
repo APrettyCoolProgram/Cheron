@@ -82,7 +82,7 @@ internal sealed partial class SolitaireGame
             {
                 FreeCellBoardRenderer.DrawTopRow(_game._freeCells, _game.SmallTextScale, DrawPile, DrawText);
             }
-            else
+            else if (_game._variant == SolitaireVariant.Klondike)
             {
                 KlondikeBoardRenderer.DrawTopRow(_game._stock, _game._waste, _game._largeText, _game.SmallTextScale,
                     DrawPile, DrawText);
@@ -191,7 +191,12 @@ internal sealed partial class SolitaireGame
             const int titleScale = 4;
             const int variantScale = 1;
             const int titleGap = 5;
-            var variantLabel = _game._variant == SolitaireVariant.FreeCell ? "FREECELL" : "KLONDIKE";
+            var variantLabel = _game._variant switch
+            {
+                SolitaireVariant.FreeCell => "FREECELL",
+                SolitaireVariant.Spider => "SPIDER",
+                _ => "KLONDIKE"
+            };
             var titleBlockHeight = 7 * titleScale + titleGap + 7 * variantScale;
             var titleTopY = GetTopBarBounds().Y + (GetTopBarBounds().Height - titleBlockHeight) / 2;
             var titleWidth = ToolbarTitleLabel.Length * 6 * titleScale;
@@ -651,22 +656,33 @@ internal sealed partial class SolitaireGame
 
             var klondikeBounds = GetNewGamePromptKlondikeBounds();
             var freeCellBounds = GetNewGamePromptFreeCellBounds();
+            var spiderBounds = GetNewGamePromptSpiderBounds();
             var confirmBounds = GetNewGamePromptConfirmBounds();
             var cancelBounds = GetNewGamePromptCancelBounds();
             var klondikeSelected = _game._newGamePromptVariant == SolitaireVariant.Klondike;
             var freeCellSelected = _game._newGamePromptVariant == SolitaireVariant.FreeCell;
+            var spiderSelected = _game._newGamePromptVariant == SolitaireVariant.Spider;
 
             Fill(klondikeBounds, klondikeSelected ? GoldHighlight : OptionsRowFill);
             Fill(freeCellBounds, freeCellSelected ? GoldHighlight : OptionsRowFill);
+            Fill(spiderBounds, spiderSelected ? GoldHighlight : OptionsRowFill);
             DrawTargetOutline(klondikeBounds, Color.White);
             DrawTargetOutline(freeCellBounds, Color.White);
+            DrawTargetOutline(spiderBounds, Color.White);
 
-            DrawText(NewGameVariantKlondikeLabel, klondikeBounds.X + 34, klondikeBounds.Y + 18, 2,
+            DrawText(NewGameVariantKlondikeLabel, klondikeBounds.X + 14, klondikeBounds.Y + 18, 2,
                 klondikeSelected ? Color.Black : Color.White, preserveColor: true);
-            DrawText(NewGameVariantFreeCellLabel, freeCellBounds.X + 40, freeCellBounds.Y + 18, 2,
+            DrawText(NewGameVariantFreeCellLabel, freeCellBounds.X + 20, freeCellBounds.Y + 18, 2,
                 freeCellSelected ? Color.Black : Color.White, preserveColor: true);
+            DrawText(NewGameVariantSpiderLabel, spiderBounds.X + 38, spiderBounds.Y + 18, 2,
+                spiderSelected ? Color.Black : Color.White, preserveColor: true);
 
-            DrawFocusCorners(klondikeSelected ? klondikeBounds : freeCellBounds);
+            DrawFocusCorners(_game._newGamePromptVariant switch
+            {
+                SolitaireVariant.Klondike => klondikeBounds,
+                SolitaireVariant.FreeCell => freeCellBounds,
+                _ => spiderBounds
+            });
             DrawTargetOutline(confirmBounds, Color.White);
             DrawTargetOutline(cancelBounds, Color.White);
             DrawText(NewGameVariantConfirmLabel, confirmBounds.X + 6, confirmBounds.Y + 2, 2, Color.White);

@@ -8,6 +8,7 @@ using System.Linq;
 using Cheron.Engine;
 using Cheron.Games.Solitaire.FreeCell;
 using Cheron.Games.Solitaire.Klondike;
+using Cheron.Games.Solitaire.Spider;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -20,7 +21,7 @@ using static Cheron.Games.Solitaire.SolitaireTimingConstants;
 
 namespace Cheron.Games.Solitaire;
 
-/// <summary>Implements shared Solitaire state, interaction, and rendering orchestration across Klondike and FreeCell.</summary>
+/// <summary>Implements shared Solitaire state, interaction, and rendering orchestration across Klondike, FreeCell, and Spider.</summary>
 internal sealed partial class SolitaireGame : IGameModule
 {
     /// <summary>The face-down draw pile, with the next card at the end of the list.</summary>
@@ -85,6 +86,7 @@ internal sealed partial class SolitaireGame : IGameModule
     {
         _variantBehaviors[SolitaireVariant.Klondike] = new KlondikeVariantBehavior();
         _variantBehaviors[SolitaireVariant.FreeCell] = new FreeCellVariantBehavior();
+        _variantBehaviors[SolitaireVariant.Spider] = new SpiderVariantBehavior();
         _renderer = new SolitaireRenderer(this);
         _interactionController = new SolitaireInteractionController(this);
     }
@@ -167,10 +169,22 @@ internal sealed partial class SolitaireGame : IGameModule
     }
 
     /// <summary>Gets the variant-specific help subtitle shown in the Help overlay.</summary>
-    private string GetHelpSubtitle() => _variant.IsFreeCell() ? HelpOverlayFreeCellSubtitle : HelpOverlayKlondikeSubtitle;
+    private string GetHelpSubtitle() =>
+        _variant switch
+        {
+            SolitaireVariant.FreeCell => HelpOverlayFreeCellSubtitle,
+            SolitaireVariant.Spider => HelpOverlaySpiderSubtitle,
+            _ => HelpOverlayKlondikeSubtitle
+        };
 
     /// <summary>Gets variant-specific gameplay instruction lines for the Help overlay.</summary>
-    private IReadOnlyList<string> GetHelpLines() => _variant.IsFreeCell() ? FreeCellHelpLines : KlondikeHelpLines;
+    private IReadOnlyList<string> GetHelpLines() =>
+        _variant switch
+        {
+            SolitaireVariant.FreeCell => FreeCellHelpLines,
+            SolitaireVariant.Spider => SpiderHelpLines,
+            _ => KlondikeHelpLines
+        };
 
     /// <summary>Calculates the maximum vertical scroll offset for Help overlay content.</summary>
     private int GetHelpMaxScrollOffset()
@@ -263,7 +277,7 @@ internal sealed partial class SolitaireGame : IGameModule
     /// <summary>Toggles prompt variant for tests.</summary>
     internal void TestTogglePromptVariant()
     {
-        _newGamePromptVariant = _newGamePromptVariant.ToggleVariant();
+        _newGamePromptVariant = _newGamePromptVariant.NextPromptVariant();
     }
 
     /// <summary>Confirms the prompt selection for tests.</summary>
@@ -483,6 +497,19 @@ internal sealed partial class SolitaireGame : IGameModule
         HelpFreeCellLine6,
         HelpFreeCellLine7,
         HelpFreeCellLine8
+    ];
+
+    /// <summary>Variant-specific Help lines for Spider gameplay.</summary>
+    private static readonly string[] SpiderHelpLines =
+    [
+        HelpSpiderLine1,
+        HelpSpiderLine2,
+        HelpSpiderLine3,
+        HelpSpiderLine4,
+        HelpSpiderLine5,
+        HelpSpiderLine6,
+        HelpSpiderLine7,
+        HelpSpiderLine8
     ];
 
     /// <summary>Whether sounds are enabled for this module session, preserved across deals.</summary>
