@@ -29,106 +29,29 @@ Please modify all of the source code files in "src/Games/Card/*" so their namesp
 
 ---
 
-# Scoundrel
+## New card game: Scoundrel
 
-## Overview
+### High-level plan
 
-Scoundrel is a **single-player roguelike dungeon card game**. You play as an adventurer exploring a dangerous dungeon
+```text
+Cheron is a custom game engine designed to create/play a variety of computer game genres. It is written in .NET 10, C#, and MonoGame. The codebase is here:
 
-Your objective is to **survive the dungeon** without your health reaching zero.
+'D:/Repositories/GitHub/APCP/Public/Cheron/src/'
 
-## What you need
+We are going to be creating a new card game type in Cheron called "Scoundrel".
 
-The dungeon is represented by a deck of standard playing cards, with the following modifications:
+The logic for Scoundrel will be in the `Cheron.Games.Card.Scoundrel` namespace, and all source code will be located in "src/Games/Card/Scoundrel/*".
 
-* Remove **all 6 red face cards** (Jack, Queen, and King of Hearts and Diamonds)
-* Remove **both red Aces**: Ace of Hearts and Ace of Diamonds
-* Remove **both Jokers**
+These are the rules of the game: 'D:/Repositories/GitHub/APCP/Public/Cheron/docs/making-of/R26-11-Akira/Scoundrel-Instructions.md`
 
-This removes 8 cards, leaving you with a **44-card deck**.
+Create a high-level step-by-step plan to implement Scoundrel.
 
-Before playing a game, shuffle the deck.
+Use the existing codebase as a reference, following the existing conventions and style. Refer to existing card games (e.g., `Cheron.Games.Card.Solitaire.Klondike`, `Cheron.Games.Card.Solitaire.FreeCell`, etc.), if needed. 
+```
 
-## The three card types
+### Step-by-step plan
 
-Each card in the dungeon has a specific role based on its suit:
 
-| Card Type | Suits                  | Values         | Effect                                      |
-|-----------|------------------------|----------------|---------------------------------------------|
-| Monsters  | ♠ Spades, ♣ Clubs      | 2–14 (Ace = 14) | Deal damage equal to their value           |
-| Weapons   | ♦ Diamonds             | 2–10           | Reduce damage from monsters                 |
-| Potions   | ♥ Hearts               | 2–10           | Restore health equal to their value         |
-
-Monster values:
-* 2 through 10 are face value.
-* Jack = 11
-* Queen = 12
-* King = 13
-* Ace = 14.
-
-## Starting health
-
-You begin the game with **20 health points**. Your health can never exceed this maximum.
-
-## Gameplay
-
-### Creating a room
-
-On each turn, flip cards from the top of the Dungeon until you have four face-up. These four cards form a Room.
-
-You must resolve any three of them, in any order.
-
-Resolved cards go into the discard pile.
-
-The fourth stays face-up and joins your next Room.
-
-#### Avoiding a room
-
-Before resolving any cards, you may place the four cards that comprise the Room at the bottom of the Dungeon.
-
-You can avoid as many Rooms as you like, but never two in a row.
-
-### Weapons
-
-If you pick up a weapon, you must equip it.
-
-If you currently have a weapon equipped, and pick up a new weapon, the old weapon is discarded.
-
-Each weapon does as much damage as its value.
-
-#### Weapon degradation
-
-Once a weapon has killed a monster, it can only fight monsters with a value strictly less than its last kill.
-
-### Fighting Monsters
-
-When you choose to face a monster, you have two options:
-
-1. **Barehanded**: Take damage equal to the monster's full value. A 12 Monster deals 12 damage.
-2. **With a weapon**: The weapon's power is subtracted from the monster's strength. You take the remaining difference as damage (minimum 0).
-
-Example:
-You have a 8 Weapon and face a 12 Monster.
-Damage taken = 12 − 8 = **4 damage**.
-If your weapon was a 14, you'd take **0 damage**.
-
-### Health potions
-
-Health potions restore health equal to their face value. However, there are two important restrictions:
-
-1. You may only drink one potion per room. Additional potions in the same room must be left behind or resolved without healing.
-2. Your health cannot exceed your maximum (20 on Normal). A 10 Potion at 18 health only heals 2 points.
-
-## Winning and losing
-
-You win when all cards in the dungeon deck have been resolved — you've cleared the dungeon!
-
-You lose when your health drops to zero or below at any point during the game.
-
-## Scoring
-
-If you win, your remaining health becomes your score. A perfect score of 20 means you cleared the entire dungeon without taking any net damage — an extremely rare achievement. Most winning runs end with a score between 1 and 10.
 
 ---
-
 ## Copilot documentation

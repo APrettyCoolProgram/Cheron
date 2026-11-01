@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using Cheron.Games.Tile;
 using Cheron.Games.Tile.Memory;
+using global::Cheron.Games.Card.Scoundrel;
 using global::Cheron.Games.Card.Solitaire;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -19,8 +20,9 @@ internal sealed class StartScreenGame : IGameModule
 {
     private readonly List<StartScreenCartridge> _cartridges =
     [
-        new("Solitaire", StartScreenGameKind.Solitaire, new Point(370, 560)),
-        new("Tile", StartScreenGameKind.Tile, new Point(590, 560))
+        new("Solitaire", StartScreenGameKind.Solitaire, new Point(260, 560)),
+        new("Tile", StartScreenGameKind.Tile, new Point(480, 560)),
+        new("Scoundrel", StartScreenGameKind.Scoundrel, new Point(700, 560))
     ];
 
     private static readonly Rectangle ConsoleBounds = new(260, 140, 580, 260);
@@ -478,6 +480,7 @@ internal sealed class StartScreenGame : IGameModule
         {
             StartScreenGameKind.Solitaire => new SolitaireGame(),
             StartScreenGameKind.Tile => new TileGame(TileVariant.Memory),
+            StartScreenGameKind.Scoundrel => new ScoundrelGame(),
             _ => throw new InvalidOperationException($"Unsupported game kind: {cartridge.GameKind}.")
         };
 
@@ -630,7 +633,10 @@ internal sealed class StartScreenGame : IGameModule
         Solitaire,
 
         /// <summary>The cartridge launches the Tile game module.</summary>
-        Tile
+        Tile,
+
+        /// <summary>The cartridge launches the Scoundrel game module.</summary>
+        Scoundrel
     }
 
     private sealed class StartScreenCartridge
