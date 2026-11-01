@@ -1,6 +1,5 @@
-// 261029_code
-// 261029_documentation
-
+// 261101_code
+// 261101_documentation
 namespace Cheron.Games.Solitaire;
 
 /// <summary>Centralizes toolbar labels and hint text used by the Solitaire UI.</summary>
@@ -60,6 +59,9 @@ internal static class SolitaireTextConstants
     /// <summary>The new-game prompt variant option label for Spider.</summary>
     internal const string NewGameVariantSpiderLabel = "SPIDER";
 
+    /// <summary>The new-game prompt variant option label for Yukon.</summary>
+    internal const string NewGameVariantYukonLabel = "YUKON";
+
     /// <summary>The new-game variant prompt confirm label.</summary>
     internal const string NewGameVariantConfirmLabel = "ENTER  START";
 
@@ -73,7 +75,7 @@ internal static class SolitaireTextConstants
     internal const string SmokePassStep1 = "1  OPEN NEW GAME PROMPT  (N OR NEW GAME BUTTON)";
 
     /// <summary>The manual smoke-pass overlay step 2.</summary>
-    internal const string SmokePassStep2 = "2  VERIFY KLONDIKE FREECELL AND SPIDER OPTIONS RENDER";
+    internal const string SmokePassStep2 = "2  VERIFY KLONDIKE FREECELL SPIDER AND YUKON OPTIONS RENDER";
 
     /// <summary>The manual smoke-pass overlay step 3.</summary>
     internal const string SmokePassStep3 = "3  KEYBOARD  ARROWS TOGGLE   ENTER START   ESC CANCEL";
@@ -133,6 +135,9 @@ internal static class SolitaireTextConstants
 
     /// <summary>The Help overlay subtitle for Spider instructions.</summary>
     internal const string HelpOverlaySpiderSubtitle = "SPIDER";
+
+    /// <summary>The Help overlay subtitle for Yukon instructions.</summary>
+    internal const string HelpOverlayYukonSubtitle = "YUKON";
 
     /// <summary>The close/scroll hint shown in the Help overlay footer.</summary>
     internal const string HelpOverlayFooterHint = "ESC CLOSE   UP DOWN OR WHEEL SCROLL";
@@ -208,6 +213,30 @@ internal static class SolitaireTextConstants
 
     /// <summary>Spider Help line 8.</summary>
     internal const string HelpSpiderLine8 = "PLAN SPACES CAREFULLY  EMPTY COLUMNS ENABLE BIG MOVES";
+
+    /// <summary>Yukon Help line 1.</summary>
+    internal const string HelpYukonLine1 = "GOAL  BUILD FOUR FOUNDATIONS FROM ACE TO KING";
+
+    /// <summary>Yukon Help line 2.</summary>
+    internal const string HelpYukonLine2 = "ALL 52 CARDS START IN TABLEAU COLUMNS";
+
+    /// <summary>Yukon Help line 3.</summary>
+    internal const string HelpYukonLine3 = "TABLEAU BUILDS DOWN BY ALTERNATING COLORS";
+
+    /// <summary>Yukon Help line 4.</summary>
+    internal const string HelpYukonLine4 = "MOVE ANY FACE-UP GROUP ONTO A CARD ONE RANK HIGHER";
+
+    /// <summary>Yukon Help line 5.</summary>
+    internal const string HelpYukonLine5 = "FACE-DOWN CARDS MAY STAY INSIDE A MOVED GROUP";
+
+    /// <summary>Yukon Help line 6.</summary>
+    internal const string HelpYukonLine6 = "ANY CARD OR GROUP MAY MOVE TO AN EMPTY COLUMN";
+
+    /// <summary>Yukon Help line 7.</summary>
+    internal const string HelpYukonLine7 = "WHEN A FACE-DOWN TOP CARD IS EXPOSED IT FLIPS";
+
+    /// <summary>Yukon Help line 8.</summary>
+    internal const string HelpYukonLine8 = "EMPTY COLUMNS ARE POWERFUL  CREATE THEM EARLY";
 
     /// <summary>The footer-adjacent options action label.</summary>
     internal const string FooterOptionsLabel = "OPTIONS";

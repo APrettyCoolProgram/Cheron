@@ -1,5 +1,5 @@
-// 261029_code
-// 261029_documentation
+// 261101_code
+// 261101_documentation
 
 using Microsoft.Xna.Framework;
 
@@ -294,32 +294,37 @@ internal static class SolitaireLayout
     /// <summary>Gets the outer panel bounds for the new-game variant picker prompt.</summary>
     /// <returns>The prompt panel bounds.</returns>
     internal static Rectangle GetNewGamePromptPanelBounds() =>
-        new(BoardWidth / 2 - 310, BoardHeight / 2 - 120, 620, 240);
+        new(BoardWidth / 2 - 380, BoardHeight / 2 - 120, 760, 240);
 
     /// <summary>Gets the Klondike option bounds within the new-game variant picker prompt.</summary>
     /// <returns>The Klondike option bounds.</returns>
     internal static Rectangle GetNewGamePromptKlondikeBounds() =>
-        new(GetNewGamePromptPanelBounds().X + 40, GetNewGamePromptPanelBounds().Y + 82, 160, 52);
+        new(GetNewGamePromptPanelBounds().X + 30, GetNewGamePromptPanelBounds().Y + 82, 160, 52);
 
     /// <summary>Gets the FreeCell option bounds within the new-game variant picker prompt.</summary>
     /// <returns>The FreeCell option bounds.</returns>
     internal static Rectangle GetNewGamePromptFreeCellBounds() =>
-        new(GetNewGamePromptPanelBounds().X + 230, GetNewGamePromptPanelBounds().Y + 82, 160, 52);
+        new(GetNewGamePromptPanelBounds().X + 210, GetNewGamePromptPanelBounds().Y + 82, 160, 52);
 
     /// <summary>Gets the Spider option bounds within the new-game variant picker prompt.</summary>
     /// <returns>The Spider option bounds.</returns>
     internal static Rectangle GetNewGamePromptSpiderBounds() =>
-        new(GetNewGamePromptPanelBounds().X + 420, GetNewGamePromptPanelBounds().Y + 82, 160, 52);
+        new(GetNewGamePromptPanelBounds().X + 390, GetNewGamePromptPanelBounds().Y + 82, 160, 52);
+
+    /// <summary>Gets the Yukon option bounds within the new-game variant picker prompt.</summary>
+    /// <returns>The Yukon option bounds.</returns>
+    internal static Rectangle GetNewGamePromptYukonBounds() =>
+        new(GetNewGamePromptPanelBounds().X + 570, GetNewGamePromptPanelBounds().Y + 82, 160, 52);
 
     /// <summary>Gets the confirm action bounds for the new-game variant picker prompt.</summary>
     /// <returns>The confirm action bounds.</returns>
     internal static Rectangle GetNewGamePromptConfirmBounds() =>
-        new(GetNewGamePromptPanelBounds().X + 164, GetNewGamePromptPanelBounds().Bottom - 76, 286, 24);
+        new(GetNewGamePromptPanelBounds().X + 237, GetNewGamePromptPanelBounds().Bottom - 76, 286, 24);
 
     /// <summary>Gets the cancel action bounds for the new-game variant picker prompt.</summary>
     /// <returns>The cancel action bounds.</returns>
     internal static Rectangle GetNewGamePromptCancelBounds() =>
-        new(GetNewGamePromptPanelBounds().X + 164, GetNewGamePromptPanelBounds().Bottom - 46, 286, 24);
+        new(GetNewGamePromptPanelBounds().X + 237, GetNewGamePromptPanelBounds().Bottom - 46, 286, 24);
 
     /// <summary>Gets the outer panel bounds for the in-game Help overlay.</summary>
     /// <returns>The Help overlay panel bounds.</returns>

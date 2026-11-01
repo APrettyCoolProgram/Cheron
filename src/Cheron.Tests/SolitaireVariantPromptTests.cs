@@ -1,3 +1,6 @@
+// 261101_code
+// 261101_documentation
+
 using Cheron.Games.Solitaire;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -99,6 +102,21 @@ public sealed class SolitaireVariantPromptTests
     }
 
     [Fact]
+    public void PromptArrowKey_CyclesToYukonVariant()
+    {
+        var game = new SolitaireGame();
+
+        game.TestSetPromptVariant(SolitaireVariant.Spider);
+        game.TestSetNewGamePromptOpen(true);
+        game.TestResetPreviousKeyboardState();
+
+        var handled = game.TestHandleAccessibilityKeys(Press(Keys.Right));
+
+        Assert.True(handled);
+        Assert.Equal(SolitaireVariant.Yukon, game.TestGetNewGamePromptVariant());
+    }
+
+    [Fact]
     public void PromptEscape_ClosesPrompt_WithoutChangingVariant()
     {
         var game = new SolitaireGame();
@@ -165,6 +183,22 @@ public sealed class SolitaireVariantPromptTests
     }
 
     [Fact]
+    public void PromptPointerClickOnYukon_StartsYukonGame()
+    {
+        var game = new SolitaireGame();
+
+        game.TestSetVariant(SolitaireVariant.Klondike);
+        game.TestOpenNewGamePrompt();
+
+        var clickPoint = SolitaireLayout.GetNewGamePromptYukonBounds().Center;
+        game.TestUpdatePointer(clickPoint, true, TimeSpan.Zero);
+        game.TestUpdatePointer(clickPoint, false, TimeSpan.Zero);
+
+        Assert.False(game.TestIsNewGamePromptOpen());
+        Assert.Equal(SolitaireVariant.Yukon, game.TestGetVariant());
+    }
+
+    [Fact]
     public void PromptPointerClickCancel_ClosesPromptWithoutChangingVariant()
     {
         var game = new SolitaireGame();
@@ -221,6 +255,21 @@ public sealed class SolitaireVariantPromptTests
         Assert.Equal(new[] { 6, 6, 6, 6, 5, 5, 5, 5, 5, 5 }, game.TestGetTableauCounts());
         Assert.Equal(new[] { 5, 5, 5, 5, 4, 4, 4, 4, 4, 4 }, game.TestGetTableauFaceDownCounts());
         Assert.Equal(50, game.TestGetStockCount());
+        Assert.Equal(new[] { 0, 0, 0, 0 }, game.TestGetFoundationCounts());
+        Assert.Empty(game.TestGetFreeCellCounts());
+    }
+
+    [Fact]
+    public void StartNewGame_Yukon_DealsExpectedLayout()
+    {
+        var game = new SolitaireGame();
+
+        game.TestSetVariant(SolitaireVariant.Yukon);
+        game.TestStartNewGame();
+
+        Assert.Equal(new[] { 1, 6, 7, 8, 9, 10, 11 }, game.TestGetTableauCounts());
+        Assert.Equal(new[] { 0, 1, 2, 3, 4, 5, 6 }, game.TestGetTableauFaceDownCounts());
+        Assert.Equal(0, game.TestGetStockCount());
         Assert.Equal(new[] { 0, 0, 0, 0 }, game.TestGetFoundationCounts());
         Assert.Empty(game.TestGetFreeCellCounts());
     }
@@ -673,5 +722,10 @@ public sealed class SolitaireVariantPromptTests
         game.TestOpenHelpOverlay();
         Assert.Equal("SPIDER", game.TestGetHelpSubtitle());
         Assert.Contains("ONLY FACE-UP SAME-SUIT DESCENDING RUNS MOVE AS GROUPS", game.TestGetHelpLines());
+
+        game.TestSetVariant(SolitaireVariant.Yukon);
+        game.TestOpenHelpOverlay();
+        Assert.Equal("YUKON", game.TestGetHelpSubtitle());
+        Assert.Contains("MOVE ANY FACE-UP GROUP ONTO A CARD ONE RANK HIGHER", game.TestGetHelpLines());
     }
 }

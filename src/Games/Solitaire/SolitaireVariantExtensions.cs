@@ -1,5 +1,5 @@
-// 261029_code
-// 261029_documentation
+// 261101_code
+// 261101_documentation
 
 namespace Cheron.Games.Solitaire;
 
@@ -16,6 +16,11 @@ internal static class SolitaireVariantExtensions
     /// <returns><see langword="true"/> for Spider; otherwise, <see langword="false"/>.</returns>
     public static bool IsSpider(this SolitaireVariant variant) => variant == SolitaireVariant.Spider;
 
+    /// <summary>Returns whether the active variant is Yukon.</summary>
+    /// <param name="variant">The active variant.</param>
+    /// <returns><see langword="true"/> for Yukon; otherwise, <see langword="false"/>.</returns>
+    public static bool IsYukon(this SolitaireVariant variant) => variant == SolitaireVariant.Yukon;
+
     /// <summary>Returns the next variant in prompt-order cycling.</summary>
     /// <param name="variant">The current variant.</param>
     /// <returns>The next variant option.</returns>
@@ -24,6 +29,7 @@ internal static class SolitaireVariantExtensions
         {
             SolitaireVariant.Klondike => SolitaireVariant.FreeCell,
             SolitaireVariant.FreeCell => SolitaireVariant.Spider,
+            SolitaireVariant.Spider => SolitaireVariant.Yukon,
             _ => SolitaireVariant.Klondike
         };
 
@@ -33,8 +39,9 @@ internal static class SolitaireVariantExtensions
     public static SolitaireVariant PreviousPromptVariant(this SolitaireVariant variant) =>
         variant switch
         {
-            SolitaireVariant.Klondike => SolitaireVariant.Spider,
+            SolitaireVariant.Klondike => SolitaireVariant.Yukon,
             SolitaireVariant.FreeCell => SolitaireVariant.Klondike,
-            _ => SolitaireVariant.FreeCell
+            SolitaireVariant.Spider => SolitaireVariant.FreeCell,
+            _ => SolitaireVariant.Spider
         };
 }

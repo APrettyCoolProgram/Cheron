@@ -1,5 +1,5 @@
-// 261031_code
-// 261029_documentation
+// 261101_code
+// 261101_documentation
 
 using System;
 using System.Collections.Generic;
@@ -195,6 +195,7 @@ internal sealed partial class SolitaireGame
             {
                 SolitaireVariant.FreeCell => "FREECELL",
                 SolitaireVariant.Spider => "SPIDER",
+                SolitaireVariant.Yukon => "YUKON",
                 _ => "KLONDIKE"
             };
             var titleBlockHeight = 7 * titleScale + titleGap + 7 * variantScale;
@@ -652,23 +653,27 @@ internal sealed partial class SolitaireGame
 
             Fill(panelBounds, Color.Black);
             DrawTargetOutline(panelBounds, Color.White);
-            DrawText(NewGameVariantPromptTitle, panelBounds.X + 110, panelBounds.Y + 22, 2, GoldHighlight);
+            DrawText(NewGameVariantPromptTitle, panelBounds.X + 180, panelBounds.Y + 22, 2, GoldHighlight);
 
             var klondikeBounds = GetNewGamePromptKlondikeBounds();
             var freeCellBounds = GetNewGamePromptFreeCellBounds();
             var spiderBounds = GetNewGamePromptSpiderBounds();
+            var yukonBounds = GetNewGamePromptYukonBounds();
             var confirmBounds = GetNewGamePromptConfirmBounds();
             var cancelBounds = GetNewGamePromptCancelBounds();
             var klondikeSelected = _game._newGamePromptVariant == SolitaireVariant.Klondike;
             var freeCellSelected = _game._newGamePromptVariant == SolitaireVariant.FreeCell;
             var spiderSelected = _game._newGamePromptVariant == SolitaireVariant.Spider;
+            var yukonSelected = _game._newGamePromptVariant == SolitaireVariant.Yukon;
 
             Fill(klondikeBounds, klondikeSelected ? GoldHighlight : OptionsRowFill);
             Fill(freeCellBounds, freeCellSelected ? GoldHighlight : OptionsRowFill);
             Fill(spiderBounds, spiderSelected ? GoldHighlight : OptionsRowFill);
+            Fill(yukonBounds, yukonSelected ? GoldHighlight : OptionsRowFill);
             DrawTargetOutline(klondikeBounds, Color.White);
             DrawTargetOutline(freeCellBounds, Color.White);
             DrawTargetOutline(spiderBounds, Color.White);
+            DrawTargetOutline(yukonBounds, Color.White);
 
             DrawText(NewGameVariantKlondikeLabel, klondikeBounds.X + 14, klondikeBounds.Y + 18, 2,
                 klondikeSelected ? Color.Black : Color.White, preserveColor: true);
@@ -676,12 +681,15 @@ internal sealed partial class SolitaireGame
                 freeCellSelected ? Color.Black : Color.White, preserveColor: true);
             DrawText(NewGameVariantSpiderLabel, spiderBounds.X + 38, spiderBounds.Y + 18, 2,
                 spiderSelected ? Color.Black : Color.White, preserveColor: true);
+            DrawText(NewGameVariantYukonLabel, yukonBounds.X + 44, yukonBounds.Y + 18, 2,
+                yukonSelected ? Color.Black : Color.White, preserveColor: true);
 
             DrawFocusCorners(_game._newGamePromptVariant switch
             {
                 SolitaireVariant.Klondike => klondikeBounds,
                 SolitaireVariant.FreeCell => freeCellBounds,
-                _ => spiderBounds
+                SolitaireVariant.Spider => spiderBounds,
+                _ => yukonBounds
             });
             DrawTargetOutline(confirmBounds, Color.White);
             DrawTargetOutline(cancelBounds, Color.White);

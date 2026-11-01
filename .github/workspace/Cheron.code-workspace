@@ -6,6 +6,7 @@
 	],
 	"settings": {
 		"workbench.colorTheme": "SynthWave '84",
-		"dotnet.defaultSolution": "src/Cheron.slnx"
+		"dotnet.defaultSolution": "src/Cheron.slnx",
+		"files.autoSave": "onWindowChange"
 	}
 }

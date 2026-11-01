@@ -1,5 +1,5 @@
-﻿// 261031_code
-// 261029_documentation
+﻿// 261101_code
+// 261101_documentation
 
 using System;
 using System.Collections.Generic;
@@ -9,6 +9,7 @@ using Cheron.Engine;
 using Cheron.Games.Solitaire.FreeCell;
 using Cheron.Games.Solitaire.Klondike;
 using Cheron.Games.Solitaire.Spider;
+using Cheron.Games.Solitaire.Yukon;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -21,7 +22,7 @@ using static Cheron.Games.Solitaire.SolitaireTimingConstants;
 
 namespace Cheron.Games.Solitaire;
 
-/// <summary>Implements shared Solitaire state, interaction, and rendering orchestration across Klondike, FreeCell, and Spider.</summary>
+/// <summary>Implements shared Solitaire state, interaction, and rendering orchestration across Klondike, FreeCell, Spider, and Yukon.</summary>
 internal sealed partial class SolitaireGame : IGameModule
 {
     /// <summary>The face-down draw pile, with the next card at the end of the list.</summary>
@@ -87,6 +88,7 @@ internal sealed partial class SolitaireGame : IGameModule
         _variantBehaviors[SolitaireVariant.Klondike] = new KlondikeVariantBehavior();
         _variantBehaviors[SolitaireVariant.FreeCell] = new FreeCellVariantBehavior();
         _variantBehaviors[SolitaireVariant.Spider] = new SpiderVariantBehavior();
+        _variantBehaviors[SolitaireVariant.Yukon] = new YukonVariantBehavior();
         _renderer = new SolitaireRenderer(this);
         _interactionController = new SolitaireInteractionController(this);
     }
@@ -174,6 +176,7 @@ internal sealed partial class SolitaireGame : IGameModule
         {
             SolitaireVariant.FreeCell => HelpOverlayFreeCellSubtitle,
             SolitaireVariant.Spider => HelpOverlaySpiderSubtitle,
+            SolitaireVariant.Yukon => HelpOverlayYukonSubtitle,
             _ => HelpOverlayKlondikeSubtitle
         };
 
@@ -183,6 +186,7 @@ internal sealed partial class SolitaireGame : IGameModule
         {
             SolitaireVariant.FreeCell => FreeCellHelpLines,
             SolitaireVariant.Spider => SpiderHelpLines,
+            SolitaireVariant.Yukon => YukonHelpLines,
             _ => KlondikeHelpLines
         };
 
@@ -510,6 +514,19 @@ internal sealed partial class SolitaireGame : IGameModule
         HelpSpiderLine6,
         HelpSpiderLine7,
         HelpSpiderLine8
+    ];
+
+    /// <summary>Variant-specific Help lines for Yukon gameplay.</summary>
+    private static readonly string[] YukonHelpLines =
+    [
+        HelpYukonLine1,
+        HelpYukonLine2,
+        HelpYukonLine3,
+        HelpYukonLine4,
+        HelpYukonLine5,
+        HelpYukonLine6,
+        HelpYukonLine7,
+        HelpYukonLine8
     ];
 
     /// <summary>Whether sounds are enabled for this module session, preserved across deals.</summary>

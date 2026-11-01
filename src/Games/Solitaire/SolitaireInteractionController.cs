@@ -1,6 +1,5 @@
-// 261031_code
-// 261029_documentation
-
+// 261101_code
+// 261101_documentation
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
@@ -512,6 +511,7 @@ internal sealed partial class SolitaireGame
                 var klondikeBounds = GetNewGamePromptKlondikeBounds();
                 var freeCellBounds = GetNewGamePromptFreeCellBounds();
                 var spiderBounds = GetNewGamePromptSpiderBounds();
+                var yukonBounds = GetNewGamePromptYukonBounds();
                 var confirmBounds = GetNewGamePromptConfirmBounds();
                 var cancelBounds = GetNewGamePromptCancelBounds();
 
@@ -526,6 +526,10 @@ internal sealed partial class SolitaireGame
                 else if (spiderBounds.Contains(position) && spiderBounds.Contains(_game._pressPosition))
                 {
                     _game.StartNewGameFromPromptVariant(SolitaireVariant.Spider);
+                }
+                else if (yukonBounds.Contains(position) && yukonBounds.Contains(_game._pressPosition))
+                {
+                    _game.StartNewGameFromPromptVariant(SolitaireVariant.Yukon);
                 }
                 else if (confirmBounds.Contains(position) && confirmBounds.Contains(_game._pressPosition))
                 {

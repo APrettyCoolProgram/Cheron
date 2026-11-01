@@ -1,10 +1,11 @@
-using System;
-using System.Collections.Generic;
+// 261101_code
+// 261101_documentation
+
 using Cheron.Games.Solitaire;
 using Cheron.Games.Solitaire.FreeCell;
 using Cheron.Games.Solitaire.Klondike;
 using Cheron.Games.Solitaire.Spider;
-using Microsoft.Xna.Framework;
+using Cheron.Games.Solitaire.Yukon;
 using Xunit;
 
 namespace Cheron.Tests;
@@ -89,6 +90,40 @@ public sealed class SolitaireVariantHelpersTests
 
         Assert.True(SpiderMoveRules.CanMoveToTableau(validRun, 0, destination));
         Assert.False(SpiderMoveRules.CanMoveToTableau(invalidRun, 0, destination));
+    }
+
+    [Fact]
+    public void YukonInitializeDeal_PopulatesTableauAndFoundations()
+    {
+        var deck = CreateOrderedDeck();
+        var tableau = new List<List<SolitaireCard>>();
+        var foundations = new List<List<SolitaireCard>>();
+
+        YukonGameplay.InitializeDeal(deck, tableau, foundations);
+
+        Assert.Equal(7, tableau.Count);
+        Assert.Equal(new[] { 1, 6, 7, 8, 9, 10, 11 }, GetPileCounts(tableau));
+        Assert.Equal(4, foundations.Count);
+        Assert.Equal(new[] { 0, 0, 0, 0 }, GetPileCounts(foundations));
+        Assert.Empty(deck);
+    }
+
+    [Fact]
+    public void YukonMoveRules_AllowsFaceUpSelectionOnDescendingAlternatingTarget()
+    {
+        var source = new List<SolitaireCard>
+        {
+            new(9, SolitaireSuit.Clubs) { FaceUp = true },
+            new(8, SolitaireSuit.Hearts) { FaceUp = true }
+        };
+        var destination = new List<SolitaireCard>
+        {
+            new(10, SolitaireSuit.Diamonds) { FaceUp = true }
+        };
+
+        var canMove = YukonMoveRules.CanMoveToTableau(source, 0, destination);
+
+        Assert.True(canMove);
     }
 
     [Fact]

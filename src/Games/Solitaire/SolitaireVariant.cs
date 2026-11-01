@@ -1,5 +1,5 @@
-// 261029_code
-// 261029_documentation
+// 261101_code
+// 261101_documentation
 
 namespace Cheron.Games.Solitaire;
 
@@ -8,5 +8,6 @@ internal enum SolitaireVariant
 {
     Klondike,
     FreeCell,
-    Spider
+    Spider,
+    Yukon
 }
